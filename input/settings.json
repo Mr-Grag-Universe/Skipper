@@ -1,0 +1,11 @@
+{
+    "inspect_inline" : false,
+    "inspect_functions" : [
+        "_asm_sort"
+    ],
+    "tracer_config" : {
+        "start_location" : 0,
+        "trace_size" : -1,
+        "trace_area_name" : "__libfuzzer_extra_counters"
+    }
+}

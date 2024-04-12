@@ -1,0 +1,4 @@
+crash-*
+build/
+.vscode/
+*.o

@@ -1,12 +1,13 @@
 #ifndef MY_TRACER_header
 #define MY_TRACER_header
 
+#define X86
+
 #include "Config.h"
 
 struct CodeSegmentDescriber {
     size_t start;
     size_t end;
-    size_t size;
 };
 
 struct TraceArea {
@@ -25,7 +26,7 @@ public:
         this->tracer_config = config.getTracerConfig();
     }
 
-    void set_registers(std::vector <reg_id_t> work_registers, reg_id_t flag_register)
+    void set_registers(reg_id_t flag_register, std::vector <reg_id_t> work_registers)
     {
         /*
          * должно быть только так: eax, {ebx, ecx, edx, ...}
@@ -43,6 +44,7 @@ public:
         this->trace_area = {start, end, end-start};
     }
 
+protected:
     std::vector<instr_t *> construct_asm_code(  void *   drcontext, 
                                                 size_t current_location,
                                                 size_t trace_address)
@@ -106,6 +108,7 @@ public:
         }
     }
 
+public:
     void trace_instruction(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
         reg_id_t xcx = DR_REG_XCX, xdx = DR_REG_XDX, xax = DR_REG_XAX, xbx = DR_REG_XBX;
 

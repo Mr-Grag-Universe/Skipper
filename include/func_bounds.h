@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+#include "dr_tools.h"
+#include "drsyms.h"
+#include "drmgr.h"
 #include "find_pattern.h"
 #include "get_all_symbols.h"
 
@@ -31,7 +34,7 @@ std::pair<size_t, size_t> get_func_bounds(std::string module_name, std::string f
     drsym_init(NULL);
     drsym_error_t error;
     drsym_debug_kind_t kind;
-   
+
     error = drsym_get_module_debug_kind(module_name.c_str(), &kind);
     if (error != DRSYM_SUCCESS) {
         perror("error in drsym_get_module_debug_kind()\n");
@@ -74,7 +77,7 @@ std::pair<size_t, size_t> get_func_bounds(std::string module_name, std::string f
 #####################################################################
 */
 
-std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module_name, std::string func_name) {
+std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module_name, std::string module_path, std::string func_name) {
     if (module_name.empty()) {
         perror("empty module name has been passed!\n");
         throw std::runtime_error("empty module name has been passed!");
@@ -82,23 +85,28 @@ std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module
 
     module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
     if (module == NULL) {
-        fprintf(stderr, "cannot load module with name \"%s\"", module_name.c_str());
+        fprintf(stderr, "cannot load module with name \"%s\" : get_all_symbols\n", module_name.c_str());
+    } else {
+        dr_printf("module_path: %s\n", module->full_path);
     }
 
-    drsym_init(NULL);
+    if (drsym_init(NULL) != DRSYM_SUCCESS) {
+        dr_printf("init dr_sym error. exception throwen\n");
+        throw std::runtime_error("cannot init dr_mgr");
+    }
     drsym_error_t error;
     drsym_debug_kind_t kind;
    
-    error = drsym_get_module_debug_kind(module_name.c_str(), &kind);
+    error = drsym_get_module_debug_kind(module_path.c_str(), &kind);
     if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_get_module_debug_kind()\n");
+        perror("error in drsym_get_module_debug_kind() : get_all_symbols\n");
         fprintf(stderr, "ERROR: %d\n", error);
-        throw std::runtime_error("error in drsym_get_module_debug_kind()");
+        throw std::runtime_error("[EXEPTION]: error in drsym_get_module_debug_kind() : get_all_symbols");
     } else {
         // printf("kind: %d\n", kind);
     }
 
-    auto func_names = get_all_symbols("fuzz_app");
+    auto func_names = get_all_symbols(module_name.c_str(), module_path.c_str());
     std::vector<std::pair<generic_func_t, std::string>> funcs;
     for (auto & func_name : func_names) {
         funcs.push_back(std::make_pair(dr_get_proc_address(module->handle, func_name.c_str()), func_name));

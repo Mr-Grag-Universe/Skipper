@@ -3,3 +3,4 @@
 *.o
 DynamoRIO*/
 *bin/
+.cache/

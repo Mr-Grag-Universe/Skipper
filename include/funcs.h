@@ -67,14 +67,14 @@ bool print_module_data(module_data_t * m) {
     return true;
 }
 
-size_t get_symbol_offset(const char * module_name, const char * symbol_name) {
+size_t get_symbol_offset(std::string module_name, std::string module_path, std::string symbol_name) {
     drsym_init(NULL);
     drsym_error_t error;
     drsym_debug_kind_t kind;
     
-    error = drsym_get_module_debug_kind(module_name, &kind);
+    error = drsym_get_module_debug_kind(module_path.c_str(), &kind);
     if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_get_module_debug_kind()\n");
+        perror("error in drsym_get_module_debug_kind() : get_symbol_offset\n");
         fprintf(stderr, "ERROR: %d\n", error);
         return 0;
     } else {
@@ -82,12 +82,12 @@ size_t get_symbol_offset(const char * module_name, const char * symbol_name) {
     }
 
     size_t offset = 0;
-    error = drsym_lookup_symbol(module_name, 
-                                symbol_name,
+    error = drsym_lookup_symbol(module_path.c_str(), 
+                                symbol_name.c_str(),
                                 &offset,
                                 DRSYM_DEMANGLE_FULL);
     if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_lookup_symbol()\n");
+        perror("error in drsym_lookup_symbol() : get_symbol_offset\n");
         fprintf(stderr, "ERROR: %d\n", error);
         return 0;
     } else {
@@ -253,7 +253,7 @@ std::vector<std::string> get_functions_names(const char * module_name) {
 std::vector<sym_info_t> filter_symbols(const std::vector<sym_info_t> & symbols, const std::string module_name) {
     module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
     if (module == NULL) {
-        fprintf(stderr, "cannot load module with name \"%s\"", module_name);
+        fprintf(stderr, "cannot load module with name \"%s\"", module_name.c_str());
     }
 
     drsym_init(NULL);

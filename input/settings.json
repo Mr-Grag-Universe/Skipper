@@ -1,8 +1,31 @@
 {
-    "inspect_inline" : false,
-    "tracer_config" : {
+    "tracer" : {
         "start_location" : 0,
         "trace_size" : -1,
         "trace_area_name" : "__libfuzzer_extra_counters"
+    },
+    "fuzzing" : {
+        "log_symbols" : {
+            "enable" : true,
+            "path" : "/home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/out/symbols.txt"
+        },
+        "inspect_funcs" : [
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name" : "New_G1"
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name" : "main.New_G1"
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name" : "New_G2"
+            }
+        ],
+        "asm_auto_detection" : false
     }
 }

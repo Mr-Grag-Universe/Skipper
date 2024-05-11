@@ -9,4 +9,4 @@
 
 cd fuzz
 ./build.sh
-cp fuzz_app ../bin/fuzz_app
+cp bin/fuzz_app ../bin/fuzz_app

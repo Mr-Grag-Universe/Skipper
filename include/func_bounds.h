@@ -106,28 +106,69 @@ std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module
         // printf("kind: %d\n", kind);
     }
 
+    dr_printf("getting all symbols...\n");
     auto func_names = get_all_symbols(module_name.c_str(), module_path.c_str());
     std::vector<std::pair<generic_func_t, std::string>> funcs;
     for (auto & func_name : func_names) {
-        funcs.push_back(std::make_pair(dr_get_proc_address(module->handle, func_name.c_str()), func_name));
+        // if (func_name == "New_G1") {
+        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1"));
+        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1@plt"));
+        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1@Base"));
+        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "main.New_G1"));
+        //     size_t offset = 0;
+        //     drsym_lookup_symbol(module_path.c_str(), "New_G1", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("New_G1 address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "New_G1@plt", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("New_G1 address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "New_G1@Base", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("New_G1 address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "main.New_G1", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("New_G1 address: %zu\n", offset);
+        // }
+
+        auto gpa_res = dr_get_proc_address(module->handle, func_name.c_str());
+        if (gpa_res != 0) {
+            funcs.push_back(std::make_pair(gpa_res, func_name));
+        } else {
+            dr_export_info_t info;
+            auto err = dr_get_proc_address_ex(
+                module->handle,
+                func_name.c_str(),
+                &info,
+                sizeof(dr_export_info_t)
+            );
+            if (not err) {
+                // dr_printf("this is error! cannot find simbol\n");
+            } else {
+                funcs.push_back(std::make_pair(info.address, func_name));
+            }
+        }
     }
+    dr_printf("all symbols have gotten!\n");
+    dr_printf("%zu symbols overall\n", func_names.size());
 
     drsym_exit();
     dr_free_module_data(module);
 
     // сортируем полученные адреса и ищем среди них нашу функцию
+    dr_printf("func_name searching...\n");
     std::sort(funcs.begin(), funcs.end());
     auto iter = std::find_if(funcs.begin(), funcs.end(), [&func_name](const auto x){
         return func_name == std::string(x.second);
     });
+    dr_printf("searching complete!\n");
     if (iter == funcs.end()) {
+        dr_printf("cannot find such func_name =(\n");
         char message[1024];
-        sprintf(message, "there is not func name <%s> here", std::string(iter->second).c_str());
-        throw std::invalid_argument(message);
+        sprintf(message, "there is not func name <%s> here", func_name.c_str());
+        dr_printf("message: %s", message);
+        return std::make_pair((generic_func_t)0, (generic_func_t)0);
+        // throw std::invalid_argument(message);
     }
 
     if (iter + 1 != funcs.end()) {
         printf("find complete!\nnext_name: %s\n", (iter+1)->second.c_str());
+        dr_printf("%zu - %zu\n", iter->first, (iter+1)->first);
         return std::make_pair(iter->first, (iter+1)->first);
     }
 

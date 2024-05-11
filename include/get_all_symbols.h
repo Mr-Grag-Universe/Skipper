@@ -21,11 +21,12 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <set>
 
 bool get_all_symbols_callback(drsym_info_t *info, drsym_error_t status, void *data) {
-    std::vector<std::string> * d = (std::vector<std::string>*) data;
+    std::set<std::string> * d = (std::set<std::string>*) data;
     if (info->name) {
-        d->push_back(info->name);
+        d->insert(info->name);
     }
     return true;
 }
@@ -39,7 +40,7 @@ get_all_symbols(std::string module_name, std::string module_path) {
 
     module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
     if (module == NULL) {
-        fprintf(stderr, "cannot load module with name \"%s\" : get_all_symbols", module_name.c_str());
+        fprintf(stderr, "cannot load module with name \"%s\" : get_all_symbols\n", module_name.c_str());
     }
 
     drsym_init(NULL);
@@ -55,17 +56,34 @@ get_all_symbols(std::string module_name, std::string module_path) {
         // printf("kind: %d\n", kind);
     }
 
-    std::vector<std::string> data;
+    std::set<std::string> data;
     error = drsym_enumerate_symbols_ex( module_path.c_str(),
                                         get_all_symbols_callback,
                                         sizeof(drsym_info_t),
                                         &data,
                                         DRSYM_DEMANGLE_FULL);
 
+    auto iterator_ex = dr_symbol_export_iterator_start(module->handle);
+    do {
+        auto * symbol = dr_symbol_export_iterator_next(iterator_ex);
+        data.insert(std::string(symbol->name));
+    } while (dr_symbol_export_iterator_hasnext(iterator_ex));
+    dr_symbol_export_iterator_stop(iterator_ex);
+
+    auto iterator_im = dr_symbol_import_iterator_start(module->handle, NULL);
+    do {
+        auto * symbol = dr_symbol_import_iterator_next(iterator_im);
+        data.insert(std::string(symbol->name));
+    } while (dr_symbol_import_iterator_hasnext(iterator_im));
+    dr_symbol_import_iterator_stop(iterator_im);
+
     drsym_exit();
     dr_free_module_data(module);
 
-    return data;
+    dr_printf("set of symbols to vector transformation...\n");
+    std::vector<std::string> res(data.begin(), data.end());
+
+    return res;
 }
 
 #endif // GET_ALL_SYMBOLS_header

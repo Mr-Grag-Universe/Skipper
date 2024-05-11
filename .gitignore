@@ -4,3 +4,7 @@
 DynamoRIO*/
 *bin/
 .cache/
+*.a
+*.so
+*_old
+out/*

@@ -1,4 +1,5 @@
 #include <thread>
+#include <stdexcept>
 
 #define X86
 #include "dr_api.h"
@@ -14,8 +15,8 @@ using namespace std::chrono_literals;
 
 static Configurator config(std::string("input/settings.json"));
 static Tracer tracer(config);
-static std::vector<std::vector<std::string>> inspect_functions = {{"fuzz_app", "bin/fuzz_app", "_asm_sort"}};
-static std::string main_module = "fuzz_app";
+// static std::vector<std::vector<std::string>> inspect_functions = {{"fuzz_app", "bin/fuzz_app", "_asm_sort"}};
+// static std::string main_module = "fuzz_app";
 static std::vector <CodeSegmentDescriber> code_segment_describers;
 
 
@@ -41,6 +42,7 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
 
     if (address_in_code_segment(tag, code_segment_describers))
     {
+        // dr_printf("\n.\n.\nthis is insertion\n.\n.\n");
         tracer.trace_instruction(drcontext, tag, bb, instr);
     }
 
@@ -71,7 +73,6 @@ event_thread_exit(void *drcontext)
     // fclose((FILE *)(ptr_uint_t)drmgr_get_tls_field(drcontext, tls_log_ind));
 }
 
-
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
     if (!drmgr_init())
@@ -80,13 +81,62 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
     dr_printf("DR configured\n");
 
+    print_modules();
+
+    std::set<std::string> symbols;
+    std::ofstream log_symbols_stream;
+    if (config.logSymbolsEnabled()) {
+        auto path = config.getLogSymbolsPath();
+        log_symbols_stream.open(path);
+        if (log_symbols_stream.is_open()) {
+            dr_printf("[INFO] : log_symbols_stream opened successfuly!\n");
+        } else {
+            dr_printf("[ERROR] : log_symbols_stream cannot be opened successfuly!\n");
+            dr_abort();
+        }
+    }
+
+    std::vector<std::map<std::string, std::string>>
+    inspect_functions = config.getInspectionFunctions();
+
     for (auto & func : inspect_functions) {
-        dr_printf("func_name: %s\n", func[0].c_str());
-        auto bounds = get_func_bounds_gpa(func[0], func[1], func[2]);
+        dr_printf("func_name: %s\n", func["func_name"].c_str());
+
+        // если надо логигровать, то придётся читать отдельно
+        if (config.logSymbolsEnabled()) {
+            auto module_symbols = get_all_symbols(func["module_name"].c_str(), func["module_path"].c_str());
+            for (auto & symbol : module_symbols) {
+                symbols.insert(symbol);
+            }
+        }
+
+        std::pair<generic_func_t, generic_func_t> bounds = get_func_bounds_gpa(func["module_name"], func["module_path"], func["func_name"]);
+        if (!bounds.first && !bounds.second) {
+            dr_printf("there is not such symbol here\n");
+            continue;
+        }
         size_t func_start = (size_t) bounds.first;
         size_t func_stop = (size_t) bounds.second;
         dr_printf("func_bounds: %zu-%zu \n", func_start, func_stop);
         code_segment_describers.push_back({func_start, func_stop});
+    }
+    // предупреждаем, если совсем ничего не нашли
+    if (code_segment_describers.size() == 0) {
+        dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
+    }
+    // логируем символы, которые мы видели
+    if (config.logSymbolsEnabled()) {
+        for (auto & symbol : symbols) {
+            log_symbols_stream << symbol << std::endl;
+        }
+        log_symbols_stream.close();
+        if (!log_symbols_stream.is_open()) {
+            dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
+        } else {
+            dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
+            dr_abort();
+        }
+        dr_printf("[INFO] : symbols logged! log stream closed.\n");
     }
     dr_printf("DR segments readed successfully!\n");
     fflush(stdout);

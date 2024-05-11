@@ -1,5 +1,4 @@
 #!/bin/zsh
 
-nasm -f elf64 func.asm -o func.o
-clang -fsanitize=fuzzer-no-link -w -c -rdynamic fuzz.cpp -o fuzz.o 
-clang -g -O1 -fsanitize=fuzzer -lssl -lcrypto -rdynamic fuzz.o func.o -o fuzz_app 
+clang -g -O1 -fsanitize=fuzzer -rdynamic fuzz.cpp -o fuzz_app -Lbin -l:libbn256.a
+mv fuzz_app bin/fuzz_app

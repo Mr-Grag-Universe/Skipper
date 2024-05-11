@@ -297,4 +297,52 @@ std::vector<sym_info_t> filter_from_list(const std::vector<sym_info_t> & symbols
     return res;
 }
 
+
+struct ModuleInfo {
+    std::string name;
+    std::string path;
+};
+
+std::vector<ModuleInfo> get_all_modules() {
+    auto iterator = dr_module_iterator_start();
+    std::vector<ModuleInfo> modules;
+    while (dr_module_iterator_hasnext(iterator)) {
+        auto * module = dr_module_iterator_next(iterator);
+        modules.push_back({dr_module_preferred_name(module), module->full_path});
+        dr_free_module_data(module);
+    }
+    dr_module_iterator_stop(iterator);
+    return modules;
+}
+
+void print_all_imported_symbols() {
+    drsym_init(NULL);
+
+    auto modules = get_all_modules();
+    for (auto module_info : modules) {
+        auto module_name = module_info.name;
+        dr_printf("module_name: %s\n", module_name.c_str());
+        auto module = dr_lookup_module_by_name(module_name.c_str());
+        dr_get_proc_address(module->handle, "New_G1");
+
+        auto iterator_im = dr_symbol_import_iterator_start(module->handle, NULL);
+        do {
+            auto * symbol = dr_symbol_import_iterator_next(iterator_im);
+            dr_printf("symbol: %s\n", symbol->name);
+        } while (dr_symbol_import_iterator_hasnext(iterator_im));
+        dr_symbol_import_iterator_stop(iterator_im);
+    }
+
+    drsym_exit();
+}
+
+void print_modules() {
+    auto modules = get_all_modules();
+    dr_printf("modules:\n");
+    for (auto module : modules) {
+        dr_printf("\tmodule_name: %s; module_path: %s\n", module.name.c_str(), module.path.c_str());
+    }
+}
+
+
 #endif // FUNCS_DR_header

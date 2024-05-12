@@ -44,8 +44,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     std::cout << "experiment processing..." << std::endl;
     std::this_thread::sleep_for(0.5s);
     
+    PrintOC();
     int i = New_G1(3);
-    int j = New_G2(7);
+    PrintOC();
+    int j = New_G1(7);
+    PrintOC();
+    std::cout << i << " " << j << std::endl;
+
+    int sum_ind = Add_G1(-1, i, j);
 
     ClearAll();
 

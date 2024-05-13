@@ -10,6 +10,8 @@ type curvePoint struct {
 	x, y, z, t gfP
 }
 
+type FuzzCurvePoint = curvePoint
+
 var curveB = newGFp(3)
 
 // curveGen is the generator of G₁.

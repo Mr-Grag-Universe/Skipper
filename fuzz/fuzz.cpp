@@ -34,24 +34,52 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         std::cout << "null data has been provided" << std::endl;
         return 0;
     }
-    if (size % 200 == 0) {
-        size = 1;
-    }
-    size = size % 200;
+    
     std::cout << "len: " << size << std::endl;
     std::cout << "DATA: " << (size_t) data << std::endl;
+    if (size < 16) {
+        std::this_thread::sleep_for(1s);
+        return 0;
+    }
 
     std::cout << "experiment processing..." << std::endl;
     std::this_thread::sleep_for(0.5s);
     
+    size_t a_int = *((size_t*) (data));
+    size_t b_int = *((size_t*) (data+8));
+    int a = gfP_newGFP(a_int);
+    int b = gfP_newGFP(b_int);
+    std::cout << "a, b created" << std::endl;
     PrintOC();
-    int i = New_G1(3);
-    PrintOC();
-    int j = New_G1(7);
-    PrintOC();
-    std::cout << i << " " << j << std::endl;
 
-    int sum_ind = Add_G1(-1, i, j);
+    int a_sq  = gfP_newGFP(0);
+    int b_sq  = gfP_newGFP(0);
+
+    int a_m_b = gfP_newGFP(0);
+    int a_p_b = gfP_newGFP(0);
+
+    int X_1   = gfP_newGFP(0);
+    int X_2   = gfP_newGFP(0);
+
+    std::cout << "some intermediete result vars created" << std::endl;
+    PrintOC();
+
+    gfP_Add(a_p_b, a, b);
+    gfP_Sub(a_m_b, a, b);
+    gfP_Mul(X_1, a_m_b, a_p_b);
+    std::cout << "first calculation complete!" << std::endl;
+    PrintOC();
+
+    gfP_Mul(a_sq, a, a);
+    gfP_Mul(b_sq, b, b);
+    gfP_Sub(X_2, a_sq, b_sq);
+    std::cout << "second calculation complete!" << std::endl;
+    PrintOC();
+
+    if (not gfP_Equal(X_1, X_2)) {
+        std::cout << "gfP are not equal!" << std::endl;
+        throw std::runtime_error("gfP are not equal!");
+    }
 
     ClearAll();
 

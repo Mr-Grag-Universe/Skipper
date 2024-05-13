@@ -15,12 +15,16 @@ var hasBMI2 = cpu.X86.HasBMI2
 
 //go:noescape
 func gfpNeg(c, a *gfP)
+func Fuzz_gfpNeg(c, a *gfP) { gfpNeg(c, a) }
 
 //go:noescape
 func gfpAdd(c, a, b *gfP)
+func Fuzz_gfpAdd(c, a, b *gfP) { gfpAdd(c, a, b) }
 
 //go:noescape
 func gfpSub(c, a, b *gfP)
+func Fuzz_gfpSub(c, a, b *gfP) { gfpSub(c, a, b) }
 
 //go:noescape
 func gfpMul(c, a, b *gfP)
+func Fuzz_gfpMul(c, a, b *gfP) { gfpMul(c, a, b) }

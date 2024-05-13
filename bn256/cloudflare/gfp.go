@@ -7,6 +7,8 @@ import (
 
 type gfP [4]uint64
 
+type FuzzGFP = gfP
+
 func newGFp(x int64) (out *gfP) {
 	if x >= 0 {
 		out = &gfP{uint64(x)}
@@ -17,6 +19,9 @@ func newGFp(x int64) (out *gfP) {
 
 	montEncode(out, out)
 	return out
+}
+func Fuzz_newGFp(x int64) (out *gfP) {
+	return newGFp(x)
 }
 
 func (e *gfP) String() string {

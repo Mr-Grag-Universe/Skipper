@@ -21,6 +21,9 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 
 
+
+
+
 /* End of preamble from import "C" comments.  */
 
 
@@ -74,15 +77,37 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-
-// PairingCheck calculates the Optimal Ate pairing for a set of points.
-//
-extern GoUint8 PairingCheck(GoSlice a, GoSlice b);
 extern void PrintOC();
+extern void ClearAll();
+extern GoInt curvePoint_New();
+extern char* curvePoint_String(GoInt i);
+extern GoUint8 curvePoint_IsOnCurve(GoInt i);
+extern void curvePoint_SetInfinity(GoInt i);
+extern GoUint8 curvePoint_IsInfinity(GoInt i);
+extern void curvePoint_Add(GoInt c_ind, GoInt a_ind, GoInt b_ind);
+extern void curvePoint_Double(GoInt c_ind, GoInt a_ind);
+extern void curvePoint_Mul(GoInt c_ind, GoInt a_ind, GoInt scalar);
+extern void curvePoint_MakeAffine(GoInt c_ind);
+extern void curvePoint_Neg(GoInt c_ind, GoInt a_ind);
 extern GoInt New_G1(GoInt k);
 extern GoInt New_G2(GoInt k);
-extern void ClearAll();
 extern GoInt Add_G1(GoInt e_ind, GoInt i, GoInt j);
+extern GoInt Add_G2(GoInt e_ind, GoInt i, GoInt j);
+extern GoInt Neg_G1(GoInt e_ind, GoInt i);
+extern GoInt Neg_G2(GoInt e_ind, GoInt i);
+extern GoInt ScalarBaseMult_G1(GoInt e_ind, GoInt k);
+extern GoInt ScalarBaseMult_G2(GoInt e_ind, GoInt k);
+extern GoInt ScalarMult_G1(GoInt e_ind, GoInt i, GoInt k);
+extern GoInt ScalarMult_G2(GoInt e_ind, GoInt i, GoInt k);
+extern GoInt gfP_newGFP(GoInt64 x);
+extern char* gfP_String(GoInt i);
+extern void gfP_Set(GoInt dst_ind, GoInt src_ind);
+extern void gfP_Invert(GoInt dst_ind, GoInt src_ind);
+extern void gfP_Add(GoInt c_ind, GoInt a_ind, GoInt b_ind);
+extern void gfP_Neg(GoInt c_ind, GoInt a_ind);
+extern void gfP_Mul(GoInt c_ind, GoInt a_ind, GoInt b_ind);
+extern void gfP_Sub(GoInt c_ind, GoInt a_ind, GoInt b_ind);
+extern GoUint8 gfP_Equal(GoInt i, GoInt j);
 
 #ifdef __cplusplus
 }

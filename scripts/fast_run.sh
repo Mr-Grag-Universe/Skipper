@@ -4,4 +4,4 @@
 ./scripts/build_fuzz.sh
 clear
 # cd /home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/bin
-./DynamoRIO-Linux-10.0.19672/bin64/drrun -c ./bin/libclient.so -- ./bin/fuzz_app
+./DynamoRIO-Linux-10.0.19672/bin64/drrun -c ./bin/libclient.so -- ./bin/fuzz_app -max_len=16 -len_control

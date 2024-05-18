@@ -3,7 +3,10 @@ package main
 import (
 	"C"
 )
-import bn256cb "bn/cloudflare"
+import (
+	bn256cb "bn/cloudflare"
+	"fmt"
+)
 
 type gfP = bn256cb.FuzzGFP
 
@@ -81,11 +84,31 @@ func gfP_Equal(i, j int) bool {
 	return *p1 == *p2
 }
 
-// //export gfP_Marshal
-// func gfP_Marshal()
+//export gfP_Marshal
+func gfP_Marshal(e_ind int, out []byte) int {
+	if e_ind < 0 {
+		e_ind = gfP_newGFP(0)
+	}
+	e := GetHandler(e_ind).(Handler_gfP).Get()
+	e.Marshal(out)
 
-// //export gfP_Unmarshal
-// func gfP_Unmarshal()
+	return e_ind
+}
+
+//export gfP_Unmarshal
+func gfP_Unmarshal(e_ind int, in []byte) int {
+	if e_ind < 0 {
+		e_ind = gfP_newGFP(0)
+	}
+	e := GetHandler(e_ind).(Handler_gfP).Get()
+	err := e.Unmarshal(in)
+	if err != nil {
+		fmt.Println(err)
+		// panic(err)
+		return -1
+	}
+	return e_ind
+}
 
 // //export gfP_montEncode
 // func gfP_montEncode(c_ind, a_ind int) {

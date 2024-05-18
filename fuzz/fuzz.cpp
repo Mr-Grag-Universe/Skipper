@@ -17,7 +17,7 @@ using namespace std::chrono_literals;
 #ifdef __linux__
 __attribute__((section("__libfuzzer_extra_counters")))
 #endif
-uint8_t extra_counters[256];
+uint8_t extra_counters[256*128];
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     
@@ -37,18 +37,28 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     
     std::cout << "len: " << size << std::endl;
     std::cout << "DATA: " << (size_t) data << std::endl;
-    if (size < 16) {
-        std::this_thread::sleep_for(1s);
+    if (size < 32*2) {
+        // std::this_thread::sleep_for(1s);
         return 0;
     }
 
     std::cout << "experiment processing..." << std::endl;
     std::this_thread::sleep_for(0.5s);
     
-    size_t a_int = *((size_t*) (data));
-    size_t b_int = *((size_t*) (data+8));
-    int a = gfP_newGFP(a_int);
-    int b = gfP_newGFP(b_int);
+    // size_t a_int = *((size_t*) (data));
+    // size_t b_int = *((size_t*) (data+8));
+    // int a = gfP_newGFP(a_int);
+    // int b = gfP_newGFP(b_int);
+    int a = gfP_Unmarshal((GoInt) -1, {(void *) data, 32, 32});
+    if (a < 0) {
+        ClearAll();
+        return 0;
+    }
+    int b = gfP_Unmarshal((GoInt) -1, {(void *) (data+32), 32, 32});
+    if (b < 0) {
+        ClearAll();
+        return 0;
+    }
     std::cout << "a, b created" << std::endl;
     PrintOC();
 
@@ -87,7 +97,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     std::this_thread::sleep_for(1s);
 
     std::cout << "extra counters data: ";
-    for (size_t i = 0; i < 256; ++i) {
+    for (size_t i = 0; i < 256*128; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(extra_counters[i]);
     } std::cout << std::endl;
 

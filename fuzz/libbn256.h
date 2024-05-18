@@ -108,6 +108,8 @@ extern void gfP_Neg(GoInt c_ind, GoInt a_ind);
 extern void gfP_Mul(GoInt c_ind, GoInt a_ind, GoInt b_ind);
 extern void gfP_Sub(GoInt c_ind, GoInt a_ind, GoInt b_ind);
 extern GoUint8 gfP_Equal(GoInt i, GoInt j);
+extern GoInt gfP_Marshal(GoInt e_ind, GoSlice out);
+extern GoInt gfP_Unmarshal(GoInt e_ind, GoSlice in);
 
 #ifdef __cplusplus
 }

@@ -8,19 +8,22 @@
 #include <stdlib.h>
 #include <stddef.h>
 // #include <type_traits>
+#include <string.h>
+#include <libelf.h>
+#include <gelf.h>
+#include <unistd.h>
+#include <iostream>
+#include <sstream>
+#include <cstdlib>
+#include <vector>
+
 #include "dr_api.h"
 #include "drreg.h"
 #include "drsyms.h"
 #include "drmgr.h"
 #include "drx.h"
 #include "dr_modules.h"
-#include <string.h>
-#include <libelf.h>
-#include <gelf.h>
-#include <unistd.h>
-#include <iostream>
-#include <cstdlib>
-#include <vector>
+
 #include "types.h"
 
 
@@ -344,5 +347,11 @@ void print_modules() {
     }
 }
 
+std::string int_to_hex(int my_integer) {
+    std::stringstream sstream;
+    sstream << std::hex << my_integer;
+    std::string result = sstream.str();
+    return result;
+}
 
 #endif // FUNCS_DR_header

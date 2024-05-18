@@ -77,7 +77,11 @@ std::pair<size_t, size_t> get_func_bounds(std::string module_name, std::string f
 #####################################################################
 */
 
-std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module_name, std::string module_path, std::string func_name) {
+std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(  std::string module_name, 
+                                                                std::string module_path, 
+                                                                std::string func_name, 
+                                                                bool use_pattern=false,
+                                                                std::pair<size_t, size_t> default_address={0, 0}) {
     if (module_name.empty()) {
         perror("empty module name has been passed!\n");
         throw std::runtime_error("empty module name has been passed!");
@@ -109,38 +113,38 @@ std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module
     dr_printf("getting all symbols...\n");
     auto func_names = get_all_symbols(module_name.c_str(), module_path.c_str());
     std::vector<std::pair<generic_func_t, std::string>> funcs;
-    for (auto & func_name : func_names) {
-        // if (func_name == "New_G1") {
-        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1"));
-        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1@plt"));
-        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "New_G1@Base"));
-        //     dr_printf("New_G1 address: %zu\n", dr_get_proc_address(module->handle, "main.New_G1"));
+    for (auto & fn : func_names) {
+        // if (std::string("bn/cloudflare.gfpAdd.abi0").find(fn) != std::string::npos) {
+        //     dr_printf("gfpAdd address: %zu\n", dr_get_proc_address(module->handle, "gfpAdd"));
+        //     dr_printf("gfpAdd address: %zu\n", dr_get_proc_address(module->handle, "gfpAdd@plt"));
+        //     dr_printf("gfpAdd address: %zu\n", dr_get_proc_address(module->handle, "gfpAdd@Base"));
+        //     dr_printf("gfpAdd address: %zu\n", dr_get_proc_address(module->handle, "bn/cloudflare.gfpAdd.abi0"));
         //     size_t offset = 0;
-        //     drsym_lookup_symbol(module_path.c_str(), "New_G1", &offset, DRSYM_DEFAULT_FLAGS);
-        //     dr_printf("New_G1 address: %zu\n", offset);
-        //     drsym_lookup_symbol(module_path.c_str(), "New_G1@plt", &offset, DRSYM_DEFAULT_FLAGS);
-        //     dr_printf("New_G1 address: %zu\n", offset);
-        //     drsym_lookup_symbol(module_path.c_str(), "New_G1@Base", &offset, DRSYM_DEFAULT_FLAGS);
-        //     dr_printf("New_G1 address: %zu\n", offset);
-        //     drsym_lookup_symbol(module_path.c_str(), "main.New_G1", &offset, DRSYM_DEFAULT_FLAGS);
-        //     dr_printf("New_G1 address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "gfpAdd", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("gfpAdd address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "gfpAdd@plt", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("gfpAdd address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "gfpAdd@Base", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("gfpAdd address: %zu\n", offset);
+        //     drsym_lookup_symbol(module_path.c_str(), "bn/cloudflare.gfpAdd.abi0", &offset, DRSYM_DEFAULT_FLAGS);
+        //     dr_printf("gfpAdd address: %zu\n", offset);
         // }
 
-        auto gpa_res = dr_get_proc_address(module->handle, func_name.c_str());
+        auto gpa_res = dr_get_proc_address(module->handle, fn.c_str());
         if (gpa_res != 0) {
-            funcs.push_back(std::make_pair(gpa_res, func_name));
+            funcs.push_back(std::make_pair(gpa_res, fn));
         } else {
             dr_export_info_t info;
             auto err = dr_get_proc_address_ex(
                 module->handle,
-                func_name.c_str(),
+                fn.c_str(),
                 &info,
                 sizeof(dr_export_info_t)
             );
             if (not err) {
                 // dr_printf("this is error! cannot find simbol\n");
             } else {
-                funcs.push_back(std::make_pair(info.address, func_name));
+                funcs.push_back(std::make_pair(info.address, fn));
             }
         }
     }
@@ -156,14 +160,50 @@ std::pair<generic_func_t, generic_func_t> get_func_bounds_gpa(std::string module
     auto iter = std::find_if(funcs.begin(), funcs.end(), [&func_name](const auto x){
         return func_name == std::string(x.second);
     });
+    if ((iter == funcs.end()) && use_pattern) {
+        dr_printf("second try...\n");
+        iter = std::find_if(
+            funcs.begin(), funcs.end(), 
+            [&func_name](const auto x){
+                return std::string(x.second).find(func_name) != std::string::npos;
+            });
+    }
     dr_printf("searching complete!\n");
     if (iter == funcs.end()) {
         dr_printf("cannot find such func_name =(\n");
         char message[1024];
         sprintf(message, "there is not func name <%s> here", func_name.c_str());
-        dr_printf("message: %s", message);
-        return std::make_pair((generic_func_t)0, (generic_func_t)0);
-        // throw std::invalid_argument(message);
+        dr_printf("message: %s\n", message);
+
+        std::string answer;
+        size_t addr = 0;
+        if (default_address.first && default_address.first <= default_address.second) {
+            dr_printf("[CONTROLE] : do you want to use default_address?[y/n] ");
+            std::cin >> answer;
+            if (answer == "y" || answer == "yes") {
+                return std::make_pair((generic_func_t) default_address.first, (generic_func_t) default_address.second);
+                // addr = default_address;
+            }
+        }
+        {
+            dr_printf("[CONTROLE] : do you want to enter address?[y/n] ");
+            std::cin >> answer;
+            if (answer == "n" || answer == "no") {
+                return std::make_pair((generic_func_t)0, (generic_func_t)0);
+            }
+            size_t start{}, stop{};
+            dr_printf("[CONTROLE] : enter start address: ");
+            std::cin >> start;
+            dr_printf("[CONTROLE] : enter stop address: ");
+            std::cin >> stop;
+            return std::make_pair((generic_func_t)start, (generic_func_t)stop);
+            // throw std::invalid_argument(message);
+        }
+        // auto pair = std::make_pair((generic_func_t) addr, func_name);
+        // auto place = std::upper_bound(
+        //                     funcs.begin(), funcs.end(), 
+        //                     pair);
+        // iter = funcs.insert(place, pair);
     }
 
     if (iter + 1 != funcs.end()) {

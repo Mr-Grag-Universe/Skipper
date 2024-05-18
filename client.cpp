@@ -9,15 +9,15 @@
 #include "include/funcs.h"
 
 #include "Config.h"
+#include "Logger.h"
 #include "Tracer.h"
 
 using namespace std::chrono_literals;
 
 static Configurator config(std::string("input/settings.json"));
 static Tracer tracer(config);
-// static std::vector<std::vector<std::string>> inspect_functions = {{"fuzz_app", "bin/fuzz_app", "_asm_sort"}};
-// static std::string main_module = "fuzz_app";
 static std::vector <CodeSegmentDescriber> code_segment_describers;
+static Logger main_logger;
 
 
 bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments)
@@ -28,6 +28,7 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
 
     for (auto & segment : segments) {
         if (segment.start <= (size_t)bb_addr && (size_t)bb_addr <= segment.end) {
+            main_logger.log("ADDR", int_to_hex((size_t) tag) + " : " + int_to_hex(segment.start) + " - " + int_to_hex(segment.end));
             return true;
         }
     }
@@ -43,7 +44,17 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
     if (address_in_code_segment(tag, code_segment_describers))
     {
         // dr_printf("\n.\n.\nthis is insertion\n.\n.\n");
-        tracer.trace_instruction(drcontext, tag, bb, instr);
+        // tracer.trace_instruction(drcontext, tag, bb, instr);
+        int op = instr_get_opcode(instr);
+        if (op == OP_add) {
+            tracer.trace_add_instruction(drcontext, tag, bb, instr);
+        }
+
+        char buff[1024];
+        instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
+        main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
+        main_logger.log("INSTR", std::string(buff));
+        // free(buff);
     }
 
     return DR_EMIT_DEFAULT;
@@ -52,6 +63,7 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
 static void
 exit_event(void)
 {
+    main_logger.stop_logging();
     drmgr_exit();
 }
 static void
@@ -84,33 +96,43 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     print_modules();
 
     std::set<std::string> symbols;
-    std::ofstream log_symbols_stream;
+    Logger symbol_logger;
     if (config.logSymbolsEnabled()) {
         auto path = config.getLogSymbolsPath();
-        log_symbols_stream.open(path);
-        if (log_symbols_stream.is_open()) {
-            dr_printf("[INFO] : log_symbols_stream opened successfuly!\n");
-        } else {
-            dr_printf("[ERROR] : log_symbols_stream cannot be opened successfuly!\n");
-            dr_abort();
-        }
+        symbol_logger.set_log_file(path);
+    }
+    if (config.logFuzzingEnabled()) {
+        auto path = config.getLogFuzzingPath();
+        main_logger.set_log_file(path);
+        main_logger.start_logging();
     }
 
     std::vector<std::map<std::string, std::string>>
     inspect_functions = config.getInspectionFunctions();
 
-    for (auto & func : inspect_functions) {
+    for (size_t i = 0; i < inspect_functions.size(); ++i) {
+        auto func = inspect_functions[i];
         dr_printf("func_name: %s\n", func["func_name"].c_str());
 
         // если надо логигровать, то придётся читать отдельно
         if (config.logSymbolsEnabled()) {
             auto module_symbols = get_all_symbols(func["module_name"].c_str(), func["module_path"].c_str());
+            dr_printf("[LOGGING] : saving symbols...\n");
             for (auto & symbol : module_symbols) {
                 symbols.insert(symbol);
             }
+            dr_printf("[LOGGING] : symbols saved!\n");
         }
 
-        std::pair<generic_func_t, generic_func_t> bounds = get_func_bounds_gpa(func["module_name"], func["module_path"], func["func_name"]);
+        std::string d_start = func["default_start"];
+        std::string d_stop  = func["default_stop"];
+        dr_printf("d_addr: %s - %s\n", d_start.c_str(), d_stop.c_str());
+        std::pair<generic_func_t, generic_func_t> bounds = get_func_bounds_gpa(
+                                                                func["module_name"], 
+                                                                func["module_path"], 
+                                                                func["func_name"], 
+                                                                config.getFuzzConfig()["use_pattern"],
+                                                                std::make_pair(std::stoul(d_start, nullptr, 16), std::stoul(d_stop, nullptr, 16)));
         if (!bounds.first && !bounds.second) {
             dr_printf("there is not such symbol here\n");
             continue;
@@ -126,11 +148,18 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     }
     // логируем символы, которые мы видели
     if (config.logSymbolsEnabled()) {
-        for (auto & symbol : symbols) {
-            log_symbols_stream << symbol << std::endl;
+        symbol_logger.start_logging();
+        if (symbol_logger.is_open()) {
+            dr_printf("[INFO] : log_symbols_stream opened successfuly!\n");
+        } else {
+            dr_printf("[ERROR] : log_symbols_stream cannot be opened successfuly!\n");
+            dr_abort();
         }
-        log_symbols_stream.close();
-        if (!log_symbols_stream.is_open()) {
+        for (auto & symbol : symbols) {
+            symbol_logger.log("SYMBOL", symbol);
+        }
+        symbol_logger.stop_logging();
+        if (!symbol_logger.is_open()) {
             dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
         } else {
             dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");

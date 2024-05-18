@@ -1,0 +1,28 @@
+
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpNeg",
+                "default_address" : {
+                    "start" : "000000000050a440",
+                    "stop"  : "000000000050a4e0"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpAdd",
+                "default_address" : {
+                    "start" : "000000000050a4e0",
+                    "stop"  : "000000000050a580"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpSub",
+                "default_address" : {
+                    "start" : "000000000050a580",
+                    "stop"  : "000000000050a600"
+                }
+            },

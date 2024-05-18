@@ -16,10 +16,56 @@ struct TraceArea {
     size_t size;
 };
 
+int get_msb_ind(uint x) {
+    if (x == 0)
+        return -1; // Возвращает -1, если нет установленных битов
+
+    int msb_index = 0;
+    while (x >>= 1) {
+        msb_index++;
+    }
+    return msb_index;
+}
+
+int trace_add(uint32_t offset, uint32_t size, uint32_t ind) {
+    // offset - адрес памяти, куда писать
+    // size - размер памяти
+    // ind - индекс add
+    if (size < 64*4*(ind+1)) {
+        printf("memory is not enough for tracing\n");
+    }
+
+    // восстанавливаем контекст
+    dr_mcontext_t mc;
+    dr_get_mcontext(dr_get_current_drcontext(), &mc);
+
+    reg_t xax = reg_get_value(DR_REG_XAX, &mc);
+    reg_t xbx = reg_get_value(DR_REG_XBX, &mc);
+    reg_t xcx = reg_get_value(DR_REG_XCX, &mc);
+    reg_t xdx = reg_get_value(DR_REG_XDX, &mc);
+
+    reg_t regs[] = {xax, xbx, xcx, xdx};
+    int inds[] = {0, 0, 0, 0};
+    
+    for (size_t i = 0; i < 4; ++i) {
+        inds[i] = get_msb_ind((uint) regs[i]);
+    }
+
+    for (size_t i = 0; i < 4; ++i) {
+        if (inds[i] >= 0) {
+            dr_printf("XXXXXXX %d\n", inds[i]);
+            ((char *)offset)[(ind*64*4+i*64+inds[i]) % size]++;
+        }
+    }
+
+    return 0;
+}
+
 class Tracer {
     std::vector <reg_id_t> work_registers;
     reg_id_t flag_register;
     TraceArea trace_area;
+    std::map<app_pc, size_t> pc_ind_map;
 public:
     json tracer_config;
     Tracer(const Configurator & config) {
@@ -45,6 +91,40 @@ public:
     }
 
 protected:
+    std::vector<instr_t *> construct_asmtrace_add_overflow( void *   drcontext, 
+                                                            size_t current_location,
+                                                            size_t trace_address) 
+    {
+        /*
+         * предполагается, что мы сохранили n регистров к SLOT 1...n и теперь можем их dr_read_saved_reg()
+         * 
+         * поскольку номер SLOT надо вбивать вручную, сделать адекватный цикл не получится
+         * 
+         * reg_t reg = dr_read_saved_reg()
+         * offset = n*64*add_ind+i
+         * bit_ind = 
+        */
+        reg_id_t    xax = this->flag_register, 
+                    xbx = this->work_registers[0], 
+                    xcx = this->work_registers[1], 
+                    xdx = this->work_registers[2];
+
+
+        instr_t * instr_1 = XINST_CREATE_move(      drcontext, 
+                                                    opnd_create_reg(xcx),
+                                                    opnd_create_reg(xax));
+
+        // reg_t == uint
+        reg_t reg = dr_read_saved_reg(drcontext, SPILL_SLOT_1);
+
+
+
+        std::vector<instr_t*> instrlist;
+        instrlist.push_back(instr_1);
+
+        return instrlist;
+    }
+
     std::vector<instr_t *> construct_asm_code(  void *   drcontext, 
                                                 size_t current_location,
                                                 size_t trace_address)
@@ -113,7 +193,7 @@ public:
         reg_id_t xcx = DR_REG_XCX, xdx = DR_REG_XDX, xax = DR_REG_XAX, xbx = DR_REG_XBX;
 
         // сохраняем регистры и флаги
-        dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
+        dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_1); // по умолчанию кладёт в xax
         dr_save_reg(drcontext, bb, instr, xcx, SPILL_SLOT_2);
         dr_save_reg(drcontext, bb, instr, xdx, SPILL_SLOT_3);
         dr_save_reg(drcontext, bb, instr, xax, SPILL_SLOT_4);
@@ -136,6 +216,40 @@ public:
         dr_restore_reg(drcontext, bb, instr, xax, SPILL_SLOT_4);
         dr_restore_reg(drcontext, bb, instr, xdx, SPILL_SLOT_3);
         dr_restore_reg(drcontext, bb, instr, xcx, SPILL_SLOT_2);
+        dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
+    }
+
+    void trace_add_instruction(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
+        reg_id_t xax = DR_REG_XAX, xbx = DR_REG_XBX, xcx = DR_REG_XCX, xdx = DR_REG_XDX;
+
+        app_pc instr_pc = instr_get_app_pc(instr);
+        size_t ind = pc_ind_map.size();
+        pc_ind_map[instr_pc] = ind;
+
+        // сохраняем регистры и флаги
+        dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_1); // по умолчанию кладёт в xax
+        dr_save_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
+        dr_save_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
+        dr_save_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
+
+
+        auto * module = dr_get_main_module();
+        auto pc = module->start;
+        dr_free_module_data(module);
+        size_t start_size_t = (size_t) this->trace_area.start + (size_t) pc;
+
+        dr_insert_clean_call_ex(drcontext, 
+                                bb, instr, 
+                                (void *) trace_add, 
+                                DR_CLEANCALL_READS_APP_CONTEXT,
+                                3, 
+                                OPND_CREATE_INT32(start_size_t),
+                                OPND_CREATE_INT32(this->trace_area.size),
+                                OPND_CREATE_INT32(ind));
+
+        dr_restore_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
+        dr_restore_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
+        dr_restore_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
         dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
     }
 };

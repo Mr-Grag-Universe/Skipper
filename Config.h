@@ -89,9 +89,11 @@ public:
         f_names;
         for (auto f_info : f_info_json) {
             f_names.push_back({
-                                {"module_name", f_info["module_name"]}, 
-                                {"module_path", f_info["module_path"]}, 
-                                {"func_name",   f_info["func_name"]}
+                                {"module_name",     f_info["module_name"]}, 
+                                {"module_path",     f_info["module_path"]}, 
+                                {"func_name",       f_info["func_name"]},
+                                {"default_start",   f_info["default_address"]["start"]},
+                                {"default_stop",    f_info["default_address"]["stop"]}
                             });
         }
         std::cout << "functions collected successfuly!" << std::endl;
@@ -100,15 +102,28 @@ public:
 
     bool
     logSymbolsEnabled() const {
-        return this->_config["fuzzing"]["log_symbols"]["enable"];
+        return this->_config["logging"]["log_symbols"]["enable"];
     }
     std::string
     getLogSymbolsPath() const {
-        bool enable = this->_config["fuzzing"]["log_symbols"]["enable"];
+        bool enable = this->_config["logging"]["log_symbols"]["enable"];
         if (!enable) {
-            std::cout << "[WARNING] : logging is disabled" << std::endl;
+            std::cout << "[WARNING] : symbols logging is disabled" << std::endl;
         }
-        return this->_config["fuzzing"]["log_symbols"]["path"];
+        return this->_config["logging"]["log_symbols"]["path"];
+    }
+
+    bool
+    logFuzzingEnabled() const {
+        return this->_config["logging"]["log_fuzzing"]["enable"];
+    }
+    std::string
+    getLogFuzzingPath() const {
+        bool enable = this->_config["logging"]["log_fuzzing"]["enable"];
+        if (!enable) {
+            std::cout << "[WARNING] : fuzzing logging is disabled" << std::endl;
+        }
+        return this->_config["logging"]["log_fuzzing"]["path"];
     }
 };
 

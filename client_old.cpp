@@ -223,7 +223,7 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
     {
         reg_id_t xcx = DR_REG_XCX, xdx = DR_REG_XDX, xax = DR_REG_XAX, xbx = DR_REG_XBX;
 
-        // сохраняем регистры и флаги
+        // сохраняем регистры и 
         dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
         dr_save_reg(drcontext, bb, instr, xcx, SPILL_SLOT_2);
         dr_save_reg(drcontext, bb, instr, xdx, SPILL_SLOT_3);

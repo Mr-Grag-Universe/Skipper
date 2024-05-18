@@ -1,0 +1,32 @@
+lahf
+seto    al
+mov     gs:10h, rcx
+mov     gs:8, rdx
+mov     gs:0, rbx
+mov     rbx, gs:20h
+mov     [rbx+78h], rax
+mov     rbx, gs:0
+mov     large gs:0, rax
+mov     rax, large gs:20h
+mov     [rax+70h], rbx
+mov     rax, large gs:0
+mov     ecx, eax
+mov     eax, 22EEh
+mov     ebx, 0F8h
+xor     edx, edx
+div     ebx
+mov     eax, offset runtime_edata
+mov     ebx, [eax+13h]
+add     ecx, ebx
+mov     [eax+13h], ecx
+mov     rbx, gs:20h
+mov     rbx, [rbx+70h]
+mov     rax, large gs:20h
+mov     rax, [rax+78h]
+mov     rdx, gs:8
+mov     rcx, gs:10h
+add     al, 7Fh
+sahf
+mov     rax, large gs:18h
+mov     esi, [rsp+arg_10]
+mov     large gs:18h, rax

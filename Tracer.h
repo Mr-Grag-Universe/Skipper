@@ -31,7 +31,8 @@ int trace_add(uint32_t offset, uint32_t size, uint32_t ind) {
     // offset - адрес памяти, куда писать
     // size - размер памяти
     // ind - индекс add
-    if (size < 64*4*(ind+1)) {
+    size_t n = 5;
+    if (size < 64*n*(ind+1)) {
         printf("memory is not enough for tracing\n");
     }
 
@@ -39,22 +40,23 @@ int trace_add(uint32_t offset, uint32_t size, uint32_t ind) {
     dr_mcontext_t mc;
     dr_get_mcontext(dr_get_current_drcontext(), &mc);
 
+    reg_t xflags = mc.xflags;
     reg_t xax = reg_get_value(DR_REG_XAX, &mc);
     reg_t xbx = reg_get_value(DR_REG_XBX, &mc);
     reg_t xcx = reg_get_value(DR_REG_XCX, &mc);
     reg_t xdx = reg_get_value(DR_REG_XDX, &mc);
 
-    reg_t regs[] = {xax, xbx, xcx, xdx};
-    int inds[] = {0, 0, 0, 0};
+    reg_t regs[] = {xflags, xax, xbx, xcx, xdx};
+    int inds[n];
     
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         inds[i] = get_msb_ind((uint) regs[i]);
     }
 
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         if (inds[i] >= 0) {
             dr_printf("XXXXXXX %d\n", inds[i]);
-            ((char *)offset)[(ind*64*4+i*64+inds[i]) % size]++;
+            ((char *)offset)[(ind*64*n+i*64+inds[i]) % size]++;
         }
     }
 
@@ -227,7 +229,8 @@ public:
         pc_ind_map[instr_pc] = ind;
 
         // сохраняем регистры и флаги
-        dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_1); // по умолчанию кладёт в xax
+        dr_save_reg(drcontext, bb, instr, xax, SPILL_SLOT_1);
+        dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_5); // по умолчанию кладёт в xax
         dr_save_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
         dr_save_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
         dr_save_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
@@ -238,8 +241,9 @@ public:
         dr_free_module_data(module);
         size_t start_size_t = (size_t) this->trace_area.start + (size_t) pc;
 
+        instr_t *nxt = instr_get_next(instr);
         dr_insert_clean_call_ex(drcontext, 
-                                bb, instr, 
+                                bb, nxt, 
                                 (void *) trace_add, 
                                 DR_CLEANCALL_READS_APP_CONTEXT,
                                 3, 
@@ -250,7 +254,8 @@ public:
         dr_restore_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
         dr_restore_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
         dr_restore_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
-        dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
+        dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_5); // по умолчанию кладёт в xax
+        dr_restore_reg(drcontext, bb, instr, xax, SPILL_SLOT_1);
     }
 };
 

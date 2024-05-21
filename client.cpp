@@ -47,7 +47,7 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
         // tracer.trace_instruction(drcontext, tag, bb, instr);
         int op = instr_get_opcode(instr);
         if (op == OP_add) {
-            tracer.trace_add_instruction(drcontext, tag, bb, instr);
+            // tracer.trace_add_instruction(drcontext, tag, bb, instr);
         }
 
         char buff[1024];

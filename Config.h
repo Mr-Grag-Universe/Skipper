@@ -125,6 +125,11 @@ public:
         }
         return this->_config["logging"]["log_fuzzing"]["path"];
     }
+
+    std::string
+    getFuzzingCorpusPath() const {
+        return this->fuzzing_config["corpus_path"];
+    }
 };
 
 #endif // MY_CONFIG_header

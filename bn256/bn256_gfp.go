@@ -5,7 +5,6 @@ import (
 )
 import (
 	bn256cb "bn/cloudflare"
-	"fmt"
 )
 
 type gfP = bn256cb.FuzzGFP
@@ -103,7 +102,7 @@ func gfP_Unmarshal(e_ind int, in []byte) int {
 	e := GetHandler(e_ind).(Handler_gfP).Get()
 	err := e.Unmarshal(in)
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		// panic(err)
 		return -1
 	}

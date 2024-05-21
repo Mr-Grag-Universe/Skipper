@@ -10,14 +10,42 @@
             {
                 "module_name" : "fuzz_app", 
                 "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpNeg",
+                "default_address" : {
+                    "start" : "000000000050ba80",
+                    "stop"  : "000000000050bb20"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpAdd",
+                "default_address" : {
+                    "start" : "000000000050bb20",
+                    "stop"  : "000000000050bbc0"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpSub",
+                "default_address" : {
+                    "start" : "000000000050bbc0",
+                    "stop"  : "000000000050bc40"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
                 "func_name"   : "gfpMul",
                 "default_address" : {
-                    "start" : "000000000050a580",
-                    "stop"  : "000000000050ae80"
+                    "start" : "000000000050bc40",
+                    "stop"  : "000000000050c540"
                 }
             }
         ],
-        "asm_auto_detection" : false
+        "asm_auto_detection" : false,
+        "corpus_path" : "out/corpus"
     },
     "logging" : {
         "log_symbols" : {

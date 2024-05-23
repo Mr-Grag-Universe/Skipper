@@ -128,7 +128,13 @@ public:
 
     std::string
     getFuzzingCorpusPath() const {
-        return this->fuzzing_config["corpus_path"];
+        // return this->fuzzing_config["corpus_path"];
+        return this->_config["fuzzing"]["corpus_path"];
+    }
+
+    bool
+    use_default_bounds() const {
+        return this->_config["fuzzing"]["use_default"];
     }
 };
 

@@ -58,7 +58,45 @@
 	ADCQ BX, R13 \
 	MULXQ 24+rb, AX, BX \
 	ADCQ AX, R14 \
-	ADCQ BX, CX
+	ADCQ BX, CX \
+	\
+	PUSHQ R8 \
+	PUSHQ R9 \
+	MOVQ a0, R8 \
+	MOVQ $0x7FFFFEEEEEEEEEEE, R9 \
+	CMPQ R8, R9 \
+	JB 30(PC) \
+	MOVQ a0, R8 \
+	MOVQ $0x8000011111111111, R9 \
+	CMPQ R8, R9 \
+	JA 26(PC) \
+	MOVQ 0+rb, R8 \
+	ADDQ R8, R8 \
+	JNC 23(PC) \
+	MOVQ 8+rb, R8 \
+	ADDQ R8, R8 \
+	JC 20(PC) \
+	MOVQ 16+rb, R8 \
+	ADDQ R8, R8 \
+	JNC 17(PC) \
+	MOVQ 24+rb, R8 \
+	ADDQ R8, R8 \
+	JC 14(PC) \
+	MOVQ a0, R8 \
+	ADDQ R8, R8 \
+	JNC 11(PC) \
+	MOVQ a1, R8 \
+	ADDQ R8, R8 \
+	JC 8(PC) \
+	MOVQ a2, R8 \
+	ADDQ R8, R8 \
+	JNC 5(PC) \
+	MOVQ a3, R8 \
+	ADDQ R8, R8 \
+	JC 2(PC) \
+	XORQ $1, R12 \
+	POPQ R9 \
+	POPQ R8 \
 
 #define gfpReduceBMI2() \
 	\ // m = (T * N') mod R, store m in R8:R9:R10:R11

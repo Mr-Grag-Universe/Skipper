@@ -6,6 +6,7 @@
     },
     "fuzzing" : {
         "use_pattern" : true,
+        "use_default" : true,
         "inspect_funcs" : [
             {
                 "module_name" : "fuzz_app", 
@@ -40,7 +41,7 @@
                 "func_name"   : "gfpMul",
                 "default_address" : {
                     "start" : "000000000050bc40",
-                    "stop"  : "000000000050c540"
+                    "stop"  : "000000000050c640"
                 }
             }
         ],

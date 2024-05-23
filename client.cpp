@@ -46,8 +46,8 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
         // dr_printf("\n.\n.\nthis is insertion\n.\n.\n");
         // tracer.trace_instruction(drcontext, tag, bb, instr);
         int op = instr_get_opcode(instr);
-        if (op == OP_add) {
-            // tracer.trace_add_instruction(drcontext, tag, bb, instr);
+        if (op == OP_add || op == OP_adc || op == OP_sub || op == OP_sbb) {
+            tracer.trace_add_instruction(drcontext, tag, bb, instr);
         }
 
         char buff[1024];
@@ -127,12 +127,17 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         std::string d_start = func["default_start"];
         std::string d_stop  = func["default_stop"];
         dr_printf("d_addr: %s - %s\n", d_start.c_str(), d_stop.c_str());
-        std::pair<generic_func_t, generic_func_t> bounds = get_func_bounds_gpa(
-                                                                func["module_name"], 
-                                                                func["module_path"], 
-                                                                func["func_name"], 
-                                                                config.getFuzzConfig()["use_pattern"],
-                                                                std::make_pair(std::stoul(d_start, nullptr, 16), std::stoul(d_stop, nullptr, 16)));
+        std::pair<generic_func_t, generic_func_t> 
+        bounds = std::make_pair((generic_func_t)std::stoul(d_start, nullptr, 16), 
+                                (generic_func_t)std::stoul(d_stop, nullptr, 16));
+        if (!config.use_default_bounds()) {
+            bounds = get_func_bounds_gpa(
+                                            func["module_name"], 
+                                            func["module_path"], 
+                                            func["func_name"], 
+                                            config.getFuzzConfig()["use_pattern"],
+                                            std::make_pair((size_t)bounds.first, (size_t)bounds.second));
+        }
         if (!bounds.first && !bounds.second) {
             dr_printf("there is not such symbol here\n");
             continue;

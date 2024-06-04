@@ -1,3 +1,7 @@
+
+#ifndef MY_TYPES_header
+#define MY_TYPES_header
+
 #include <cstring>
 #include <ostream>
 #include <stdio.h>
@@ -74,3 +78,10 @@ struct sym_info_t {
     }
 };
 
+struct FuncConfig {
+    std::string module_name;
+    std::string module_path;
+    std::pair<size_t, size_t> default_address;
+};
+
+#endif // MY_TYPES_header

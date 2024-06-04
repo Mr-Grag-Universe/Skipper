@@ -8,8 +8,10 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
+#include "include/types.h"
 
 using json = nlohmann::json;
+
 
 
 class Configurator {
@@ -81,20 +83,21 @@ public:
     }
 
     // возвращаем имена функций, обязательные для фаззинга
-    std::vector<std::map<std::string, std::string>> 
+    std::map<std::string, FuncConfig> 
     getInspectionFunctions() const {
         std::cout << "inspection functions providing..." << std::endl;
         auto f_info_json = this->_config["fuzzing"]["inspect_funcs"];
-        std::vector<std::map<std::string, std::string>> 
+        std::map<std::string, FuncConfig> 
         f_names;
         for (auto f_info : f_info_json) {
-            f_names.push_back({
-                                {"module_name",     f_info["module_name"]}, 
-                                {"module_path",     f_info["module_path"]}, 
-                                {"func_name",       f_info["func_name"]},
-                                {"default_start",   f_info["default_address"]["start"]},
-                                {"default_stop",    f_info["default_address"]["stop"]}
-                            });
+            FuncConfig conf =   {
+                                    f_info["module_name"],
+                                    f_info["module_path"],
+                                    std::make_pair(
+                                        (size_t) std::stoull((std::string) f_info["default_address"]["start"], nullptr, 16), 
+                                        (size_t) std::stoull((std::string) f_info["default_address"]["start"], nullptr, 16))
+                                };
+            f_names[f_info["func_name"]] = conf;
         }
         std::cout << "functions collected successfuly!" << std::endl;
         return f_names;

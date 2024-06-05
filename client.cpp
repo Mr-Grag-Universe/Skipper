@@ -100,6 +100,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (config.logSymbolsEnabled()) {
         auto path = config.getLogSymbolsPath();
         symbol_logger.set_log_file(path);
+        symbol_logger.start_logging();
     }
     if (config.logFuzzingEnabled()) {
         auto path = config.getLogFuzzingPath();
@@ -117,86 +118,43 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     Logger debug_logger;
     debug_logger.set_log_file("out/logs/debug_logs.txt");
     debug_logger.start_logging();
-    for (auto & symbol : symbols_map) {
-        std::ostringstream oss;
-        oss << symbol.first << " : " << std::hex << (size_t) symbol.second;
-        debug_logger.log("DEBUG", oss.str());
-    }
-
-    auto func_bounds = get_func_bounds_optimized(inspect_functions, true);
-    for (auto & func : func_bounds) {
-        std::ostringstream oss;
-        oss << func.first << " : " << std::hex << (size_t) func.second.first << " - " << (size_t) func.second.second;
-        debug_logger.log("DEBUG", oss.str());
-    }
     debug_logger.stop_logging();
 
+    for (auto & symbol : symbols_map) {
+        if (config.logSymbolsEnabled()) {
+            std::ostringstream oss;
+            oss << symbol.first << " : " << std::hex << (size_t) symbol.second;
+            symbol_logger.log("DEBUG", oss.str());
+        }
+    }
 
-    for (size_t i = 0; i < inspect_functions.size(); ++i) {
-        // auto func = inspect_functions[i];
-        // dr_printf("func_name: %s\n", func["func_name"].c_str());
+    
+    auto func_bounds = get_func_bounds_optimized(inspect_functions, true, config.use_default_bounds());
+    for (auto & func : func_bounds) {
+        if (config.logSymbolsEnabled()) {
+            std::ostringstream oss;
+            oss << func.first << " : " << std::hex << (size_t) func.second.first << " - " << (size_t) func.second.second;
+            symbol_logger.log("DEBUG", oss.str());
+        }
 
-        // // если надо логигровать, то придётся читать отдельно
-        // if (config.logSymbolsEnabled()) {
-        //     auto module_symbols = get_all_symbols(func["module_name"].c_str(), func["module_path"].c_str());
-        //     dr_printf("[LOGGING] : saving symbols...\n");
-        //     for (auto & symbol : module_symbols) {
-        //         symbols.insert(symbol);
-        //     }
-        //     dr_printf("[LOGGING] : symbols saved!\n");
-        // }
-
-        // std::string d_start = func["default_start"];
-        // std::string d_stop  = func["default_stop"];
-        // dr_printf("d_addr: %s - %s\n", d_start.c_str(), d_stop.c_str());
-        // std::pair<generic_func_t, generic_func_t> 
-        // bounds = std::make_pair((generic_func_t)std::stoul(d_start, nullptr, 16), 
-        //                         (generic_func_t)std::stoul(d_stop, nullptr, 16));
-        // if (!config.use_default_bounds()) {
-        //     bounds = get_func_bounds_gpa(
-        //                                     func["module_name"], 
-        //                                     func["module_path"], 
-        //                                     func["func_name"], 
-        //                                     config.getFuzzConfig()["use_pattern"],
-        //                                     std::make_pair((size_t)bounds.first, (size_t)bounds.second));
-        // }
-        // if (!bounds.first && !bounds.second) {
-        //     dr_printf("there is not such symbol here\n");
-        //     continue;
-        // }
-        // size_t func_start = (size_t) bounds.first;
-        // size_t func_stop = (size_t) bounds.second;
-        // dr_printf("func_bounds: %zu-%zu \n", func_start, func_stop);
-        // code_segment_describers.push_back({func_start, func_stop});
+        code_segment_describers.push_back({(size_t) func.second.first, (size_t) func.second.second});
     }
     // предупреждаем, если совсем ничего не нашли
     if (code_segment_describers.size() == 0) {
         dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
     }
-    // логируем символы, которые мы видели
-    if (config.logSymbolsEnabled()) {
-        symbol_logger.start_logging();
-        if (symbol_logger.is_open()) {
-            dr_printf("[INFO] : log_symbols_stream opened successfuly!\n");
-        } else {
-            dr_printf("[ERROR] : log_symbols_stream cannot be opened successfuly!\n");
-            dr_abort();
-        }
-        for (auto & symbol : symbols) {
-            symbol_logger.log("SYMBOL", symbol);
-        }
-        symbol_logger.stop_logging();
-        if (!symbol_logger.is_open()) {
-            dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
-        } else {
-            dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
-            dr_abort();
-        }
-        dr_printf("[INFO] : symbols logged! log stream closed.\n");
+    symbol_logger.stop_logging();
+    if (!symbol_logger.is_open()) {
+        dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
+    } else {
+        dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
+        dr_abort();
     }
+
+    dr_printf("[INFO] : symbols logged! log stream closed.\n");
     dr_printf("DR segments readed successfully!\n");
     fflush(stdout);
-    std::this_thread::sleep_for(1s);
+    // std::this_thread::sleep_for(1s);
 
     size_t extra_counters_start = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__start___libfuzzer_extra_counters");
     size_t extra_counters_stop  = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__stop___libfuzzer_extra_counters");

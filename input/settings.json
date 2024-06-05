@@ -6,7 +6,7 @@
     },
     "fuzzing" : {
         "use_pattern" : true,
-        "use_default" : true,
+        "use_default" : false,
         "inspect_funcs" : [
             {
                 "module_name" : "fuzz_app", 
@@ -51,11 +51,11 @@
     "logging" : {
         "log_symbols" : {
             "enable" : true,
-            "path" : "/home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/out/symbols.txt"
+            "path" : "/home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/out/logs/symbols.txt"
         },
         "log_fuzzing" : {
             "enable" : true,
-            "path" : "/home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/out/log.txt"
+            "path" : "/home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/out/logs/log.txt"
         }
     }
 }

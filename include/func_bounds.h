@@ -297,7 +297,7 @@ get_all_symbols_with_offsets(
 }
 
 std::map<std::string, std::pair<generic_func_t, generic_func_t>> 
-get_func_bounds_optimized(std::map<std::string, FuncConfig> inspect_funcs, bool use_pattern) 
+get_func_bounds_optimized(std::map<std::string, FuncConfig> inspect_funcs, bool use_pattern, bool use_default_bounds) 
 {
     if (inspect_funcs.empty()) {
         dr_printf("[ERROR] : empty instr function map!");
@@ -357,13 +357,20 @@ get_func_bounds_optimized(std::map<std::string, FuncConfig> inspect_funcs, bool 
             size_t addr = 0;
             auto default_address = func.second.default_address;
             if (default_address.first && default_address.first <= default_address.second) {
-                dr_printf("[CONTROLE] : do you want to use default_address?[y/n] ");
-                std::cin >> answer;
-                if (answer == "y" || answer == "yes") {
+                if (use_default_bounds) {
                     res[func_name] = std::make_pair(
-                                                        (generic_func_t) default_address.first, 
-                                                        (generic_func_t) default_address.second);
+                                                    (generic_func_t) default_address.first, 
+                                                    (generic_func_t) default_address.second);
                     continue;
+                } else {
+                    dr_printf("[CONTROLE] : do you want to use default_address?[y/n] ");
+                    std::cin >> answer;
+                    if (answer == "y" || answer == "yes") {
+                        res[func_name] = std::make_pair(
+                                                            (generic_func_t) default_address.first, 
+                                                            (generic_func_t) default_address.second);
+                        continue;
+                    }
                 }
             }
             {

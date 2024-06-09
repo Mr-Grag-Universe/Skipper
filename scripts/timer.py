@@ -39,12 +39,8 @@ def main():
 
         execs = []
         for line in result.stderr.splitlines():
-            # print(line)
             match = exec_s_pattern.search(line)
-            # print(match)
             if match:
-                # execs.append(int(match.group(1)))
-                # print("match: ", match.group(0))
                 ex = int(match.group(1))
                 if ex != 0:
                     execs.append(ex)
@@ -59,32 +55,11 @@ def main():
     print(f"Total time for {n_iter} executions: {total_time:.6f} seconds")
     print(f"Average time per execution: {average_time:.6f} seconds")
 
-    # print(time_distribution)
-    # print(exec_s_distribution)
-
-    fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(15, 8))
-
-    ax1 = sns.kdeplot(time_distribution, fill=True, alpha=0.5, ax=axs[0])
-    sns.rugplot(time_distribution, color='black', ax=ax1)
-    axs[0].set_title('Execution Time')
-    axs[0].set_xlabel('time [s]')
-    axs[0].set_ylabel('KDE')
-
-    ax2 = sns.kdeplot(exec_s_distribution, fill=True, alpha=0.5, ax=axs[1])
-    # sns.rugplot(exec_s_distribution, color='black', ax=ax2)
-    axs[1].set_title('Executions per second')
-    axs[1].set_xlabel('execotions per second [exec/s]')
-    axs[1].set_ylabel('KDE')
-
-    fig.savefig('out/timing/density_plot.png')
-
     with open("out/timing/time.txt", "w") as f:
         f.write('\n'.join(list(map(str, time_distribution))))
     with open("out/timing/exec.txt", "w") as f:
         for l in exec_lists:
             f.write(','.join(list(map(str, l))) + "\n")
-
-    # plt.show()
 
 if __name__ == "__main__":
     main()

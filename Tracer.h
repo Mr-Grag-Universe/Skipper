@@ -27,46 +27,11 @@ int get_msb_ind(uint x) {
     return msb_index;
 }
 
-int trace_add_old(uint32_t offset, uint32_t size, uint32_t ind) {
+int trace_overflow(uint32_t offset, uint32_t size, uint32_t ind, uint32_t reg_id) {
     // offset - адрес памяти, куда писать
     // size - размер памяти
     // ind - индекс add
-    size_t n = 5;
-    if (size < 64*n*(ind+1)) {
-        printf("memory is not enough for tracing\n");
-    }
-
-    // восстанавливаем контекст
-    dr_mcontext_t mc;
-    dr_get_mcontext(dr_get_current_drcontext(), &mc);
-
-    reg_t xflags = mc.xflags;
-    reg_t xax = reg_get_value(DR_REG_XAX, &mc);
-    reg_t xbx = reg_get_value(DR_REG_XBX, &mc);
-    reg_t xcx = reg_get_value(DR_REG_XCX, &mc);
-    reg_t xdx = reg_get_value(DR_REG_XDX, &mc);
-
-    reg_t regs[] = {xflags, xax, xbx, xcx, xdx};
-    int inds[n];
-    
-    for (size_t i = 0; i < n; ++i) {
-        inds[i] = get_msb_ind((uint) regs[i]);
-    }
-
-    for (size_t i = 0; i < n; ++i) {
-        if (inds[i] >= 0) {
-            dr_printf("XXXXXXX %d\n", inds[i]);
-            ((char *)offset)[(ind*64*n+i*64+inds[i]) % size]++;
-        }
-    }
-
-    return 0;
-}
-
-int trace_add(uint32_t offset, uint32_t size, uint32_t ind, uint32_t reg_id, uint32_t reg_ind) {
-    // offset - адрес памяти, куда писать
-    // size - размер памяти
-    // ind - индекс add
+    // reg_id - индекс регистра в DynamoRIO
     reg_id_t dst_reg = (reg_id_t) reg_id;
     if (size < 65*(ind+1)) {
         printf("memory is not enough for tracing\n");
@@ -75,24 +40,18 @@ int trace_add(uint32_t offset, uint32_t size, uint32_t ind, uint32_t reg_id, uin
     // восстанавливаем контекст
     dr_mcontext_t mc = { sizeof(mc), DR_MC_ALL};
     dr_get_mcontext(dr_get_current_drcontext(), &mc);
+
+    // регистр флагов
     reg_t xflags = mc.xflags;
+    // регистр назначения
     reg_t reg = reg_get_value(dst_reg, &mc);
-    // dr_printf("reg : %d\t", reg);
-    int msb_ind_reg = -1; // get_msb_ind((uint) reg);
-    uint x = (uint) reg;
-    if (x != 0) {
-        msb_ind_reg = 0;
-        while (x >>= 1) {
-            msb_ind_reg++;
-        }
-    }
 
-    // ((char *)offset)[(ind*65*n+reg_ind*64+msb_ind_reg) % size]++;
-    // ((char *)offset)[(ind*65*n+reg_ind*65+64) % size] += xflags & EFLAGS_CF;
+    // находим индекс старшего бита
+    int msb_ind_reg = get_msb_ind((uint) reg);
 
+    // трейсим
     if (msb_ind_reg >= 0) {
         ((char *)offset)[(ind*65+msb_ind_reg) % size] += 1;
-        // dr_printf("XXX: %d\n", msb_ind_reg);
     }
     ((char *)offset)[(ind*65+64) % size] += xflags & EFLAGS_CF;
     
@@ -130,7 +89,7 @@ public:
     }
 
 protected:
-    std::vector<instr_t *> construct_asmtrace_add_overflow( void *   drcontext, 
+    std::vector<instr_t *> construct_asmtrace_overflow( void *   drcontext, 
                                                             size_t current_location,
                                                             size_t trace_address) 
     {
@@ -237,7 +196,7 @@ protected:
     }
 
 public:
-    void trace_instruction(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
+    void traceInstruction(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
         reg_id_t xcx = DR_REG_XCX, xdx = DR_REG_XDX, xax = DR_REG_XAX, xbx = DR_REG_XBX;
 
         // сохраняем регистры и флаги
@@ -267,7 +226,7 @@ public:
         dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_1);
     }
 
-    void trace_add_instruction(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
+    void traceOverflow(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
         opnd_t dst = instr_get_dst(instr, 0);
         if (!opnd_is_reg(dst)) {
             return;
@@ -275,22 +234,12 @@ public:
         reg_id_t dst_reg = opnd_get_reg(dst);
         int reg_ind = this->get_reg_id(dst_reg);
 
-        reg_id_t xax = DR_REG_XAX, xbx = DR_REG_XBX, xcx = DR_REG_XCX, xdx = DR_REG_XDX;
-
         app_pc instr_pc = instr_get_app_pc(instr);
+        // если эту инструкцию ещё не встречали - выдаём ей номер
         if (this->pc_ind_map.find(instr_pc) == this->pc_ind_map.end()) {
             this->pc_ind_map[instr_pc] = this->pc_ind_map.size();
         }
         size_t ind = this->pc_ind_map[instr_pc];
-
-        // сохраняем регистры и флаги
-        // dr_save_reg(drcontext, bb, instr, xax, SPILL_SLOT_1);
-        // dr_save_arith_flags(drcontext, bb, instr, SPILL_SLOT_5); // по умолчанию кладёт в xax
-        // dr_save_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
-        // dr_save_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
-        // dr_save_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
-        // drreg_reserve_
-
 
         auto * module = dr_get_main_module();
         auto pc = module->start;
@@ -300,24 +249,17 @@ public:
         instr_t *nxt = instr_get_next(instr);
         dr_insert_clean_call_ex(drcontext, 
                                 bb, nxt, 
-                                (void *) trace_add, 
+                                (void *) trace_overflow, 
                                 (dr_cleancall_save_t) (DR_CLEANCALL_READS_APP_CONTEXT | DR_CLEANCALL_MULTIPATH),
-                                5, 
+                                4, 
                                 OPND_CREATE_INT32(start_size_t),
                                 OPND_CREATE_INT32(this->trace_area.size),
                                 OPND_CREATE_INT32(ind),
-                                OPND_CREATE_INT32(dst_reg),
-                                OPND_CREATE_INT32(reg_ind));
+                                OPND_CREATE_INT32(dst_reg));
         
         // проверка
         dr_printf("add index: %d\n", ind);
         dr_printf("add number: %d\n", this->pc_ind_map.size());
-
-        // dr_restore_reg(drcontext, bb, instr, xdx, SPILL_SLOT_4);
-        // dr_restore_reg(drcontext, bb, instr, xcx, SPILL_SLOT_3);
-        // dr_restore_reg(drcontext, bb, instr, xbx, SPILL_SLOT_2);
-        // dr_restore_arith_flags(drcontext, bb, instr, SPILL_SLOT_5); // по умолчанию кладёт в xax
-        // dr_restore_reg(drcontext, bb, instr, xax, SPILL_SLOT_1);
     }
 };
 

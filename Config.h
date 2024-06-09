@@ -17,17 +17,6 @@ using json = nlohmann::json;
 class Configurator {
 private:
     void config_with_json(json config_data) {
-        
-        // имена инспетируемых функций
-        // auto inspect_functions = config_data["inspect_functions"];
-        // if (this->inspect_functions.empty()) {
-        //     this->inspect_functions = std::set<std::string>();
-        // }
-        // for (json::iterator iter = inspect_functions.begin(); iter != inspect_functions.end(); ++iter) {
-        //     std::cout << *iter << std::endl;
-        //     // this->inspect_functions.insert(iter)
-        // }
-
         // настройки инспектирования asm-вставок
         // TODO
 
@@ -49,7 +38,6 @@ public:
         f >> config_data;
 
         std::cout << "assigning..." << std::endl;
-        // this->config_with_json(config_data);
         this->_config = config_data;
 
         std::cout << "configured" << std::endl;
@@ -59,16 +47,13 @@ public:
         std::ifstream f(config_file_name);
         json config_data = json::parse(f);
         this->_config = config_data;
-        // this->config_with_json(config_data);
     }
 
     void config(json config_data) {
         this->_config = config_data;
-        // this->config_with_json(config_data);
     }
     void config(std::string config_string) {
         json config_data = json::parse(config_string);
-        // this->config_with_json(config_data);
         this->_config = config_data;
     }
 
@@ -131,7 +116,6 @@ public:
 
     std::string
     getFuzzingCorpusPath() const {
-        // return this->fuzzing_config["corpus_path"];
         return this->_config["fuzzing"]["corpus_path"];
     }
 

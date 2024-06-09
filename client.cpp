@@ -43,18 +43,16 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
 
     if (address_in_code_segment(tag, code_segment_describers))
     {
-        // dr_printf("\n.\n.\nthis is insertion\n.\n.\n");
-        // tracer.trace_instruction(drcontext, tag, bb, instr);
         int op = instr_get_opcode(instr);
         if (op == OP_add || op == OP_adc || op == OP_sub || op == OP_sbb) {
-            tracer.trace_add_instruction(drcontext, tag, bb, instr);
+            tracer.traceOverflow(drcontext, tag, bb, instr);
         }
 
+        // логируем
         char buff[1024];
         instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
         main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
         main_logger.log("INSTR", std::string(buff));
-        // free(buff);
     }
 
     return DR_EMIT_DEFAULT;
@@ -70,19 +68,11 @@ static void
 event_thread_init(void *drcontext)
 {
     dr_printf("<<<<< new thread init >>>>>\n");
-
-    // для логов
-    // FILE *log_file = fopen("DynamoRIO_log_file.txt", "w+");
-    // fseek(log_file, 0, SEEK_SET);
-    // drmgr_set_tls_field(drcontext, tls_log_ind, (void *)(ptr_uint_t)log_file);
 }
 static void
 event_thread_exit(void *drcontext)
 {
     dr_printf("<<<<< thread exit >>>>>\n");
-    
-    // закрываем логи
-    // fclose((FILE *)(ptr_uint_t)drmgr_get_tls_field(drcontext, tls_log_ind));
 }
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
@@ -154,8 +144,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     dr_printf("[INFO] : symbols logged! log stream closed.\n");
     dr_printf("DR segments readed successfully!\n");
     fflush(stdout);
-    // std::this_thread::sleep_for(1s);
-
+    
     size_t extra_counters_start = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__start___libfuzzer_extra_counters");
     size_t extra_counters_stop  = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__stop___libfuzzer_extra_counters");
     

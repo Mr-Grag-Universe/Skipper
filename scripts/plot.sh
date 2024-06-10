@@ -16,10 +16,10 @@ shift
 for n in "$@"
 do
     # Запуск команды с подстановкой параметра n
-    python plot_scripts/plot_dist.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt --save_path=./out/timing/"$n"/"$type"/img/dist.png
-    python plot_scripts/plot_kde.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt,./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/origin/img/kde2.png
-    python plot_scripts/plot_hist.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt,./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/origin/img/hist.png
-    python plot_scripts/plot_func.py --n_std=0.5 --data_path=./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/"$type"/img/func.png
+    python plot_scripts/plot_dist.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt --save_path=./out/timing/"$n"/"$type"/img/dist.png --show=0
+    python plot_scripts/plot_func.py --n_std=0.5 --data_path=./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/"$type"/img/func.png --show=0
+    python plot_scripts/plot_kde.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt,./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/"$type"/img/kde2.png --show=0
+    python plot_scripts/plot_hist.py --data_path=./out/timing/"$n"/"$type"/data/exec.txt,./out/timing/"$n"/"$type"/data/time.txt --save_path=./out/timing/"$n"/"$type"/img/hist.png --show=0
 
     # Здесь можно добавить дополнительные команды, аналогичные приведенной выше
     # python plot_scripts/plot_another.py --data_path=./out/timing/"$n"/instr/data/another.txt --save_path=./out/timing/"$n"/instr/img/another.png

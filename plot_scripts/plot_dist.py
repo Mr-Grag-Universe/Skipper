@@ -3,12 +3,15 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import argparse
+import os
 
 
 parser = argparse.ArgumentParser(description='Построение графиков зависимости чисел от времени.')
 parser.add_argument('--data_path', type=str, help='Имя файла с числами.')
 parser.add_argument('--save_path', type=str, help='Путь для сохранения графика')
+parser.add_argument('--show', type=int, help='0 / 1 - Делаем show или нет')
 args = parser.parse_args()
+print(args)
 
 # Чтение данных из файла
 execs = []
@@ -63,7 +66,9 @@ if x_max <= 10:
     axs[1].set_xticks(range(1, x_max+1))
 
 # Сохранение графиков в файл
+os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
 plt.savefig(args.save_path)
 
 # Показ графиков
-plt.show()
+if args.show:
+    plt.show()

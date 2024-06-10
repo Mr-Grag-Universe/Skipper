@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import argparse
-from sklearn.linear_model import LinearRegression
+import os
 
 def read_time(filename):
     """Считывает числа из файла, каждое число с новой строки."""
@@ -43,6 +43,7 @@ def main():
     parser = argparse.ArgumentParser(description='Построение kde.')
     parser.add_argument('--data_path', type=str, help='Пути к файлам с exec и time.')
     parser.add_argument('--save_path', type=str, help='Путь для сохранения графика')
+    parser.add_argument('--show', type=int, help='0 / 1 - Делаем show или нет')
     args = parser.parse_args()
     print(args)
 
@@ -56,9 +57,11 @@ def main():
     plot_execs(execs, axs[0])
     plot_times(times, axs[1])
 
+    os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
     plt.savefig(args.save_path)
 
-    plt.show()
+    if args.show:
+        plt.show()
 
 
 if __name__ == '__main__':

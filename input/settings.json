@@ -45,6 +45,7 @@
                 }
             }
         ],
+        "inspect_opcodes" : ["add", "adc"],
         "asm_auto_detection" : false,
         "corpus_path" : "out/corpus"
     },

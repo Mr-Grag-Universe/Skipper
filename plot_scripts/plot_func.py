@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 from sklearn.linear_model import LinearRegression
+import os
 
 def read_numbers_from_file(filename):
     """Считывает числа из файла, каждое число с новой строки."""
@@ -28,7 +29,7 @@ def remove_outliers(x, y, threshold=5):
     
     return x[inliers], y[inliers]
 
-def plot_numbers(numbers, n_std=5, save_path="combined_plot.png"):
+def plot_numbers(numbers, n_std=5, save_path="combined_plot.png", show=1):
     """Строит два графика: линейный и scatter plot с устранением выбросов."""
     # Индексы времени
     time = np.arange(len(numbers))
@@ -54,21 +55,24 @@ def plot_numbers(numbers, n_std=5, save_path="combined_plot.png"):
     axs[1].grid(True)
     
     # Сохранение графиков в файл
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path)
     
     # Показ графиков
-    plt.show()
+    if show:
+        plt.show()
 
 def main():
     parser = argparse.ArgumentParser(description='Построение графиков зависимости чисел от времени.')
     parser.add_argument('--data_path', type=str, help='Имя файла с числами.')
     parser.add_argument('--n_std', type=float, help='Число отклонений для того чтобы посчитать выбросом.')
     parser.add_argument('--save_path', type=str, help='Путь для сохранения графика')
+    parser.add_argument('--show', type=int, help='0 / 1 - Делаем show или нет')
     args = parser.parse_args()
     print(args)
 
     numbers = read_numbers_from_file(args.data_path)
-    plot_numbers(numbers, args.n_std, args.save_path)
+    plot_numbers(numbers, args.n_std, args.save_path, args.show)
 
 if __name__ == '__main__':
     main()

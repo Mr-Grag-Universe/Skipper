@@ -18,6 +18,7 @@ static Configurator config(std::string("input/settings.json"));
 static Tracer tracer(config);
 static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
+static std::set<int> opcodes;
 
 
 bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments)
@@ -36,7 +37,14 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
 }
 
 static dr_emit_flags_t
-bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr, bool for_trace, bool translating, void *user_data)
+bb_instrumentation_event_handler(
+                                    void *drcontext, 
+                                    void *tag, 
+                                    instrlist_t *bb, 
+                                    instr_t *instr, 
+                                    bool for_trace, 
+                                    bool translating, 
+                                    void *user_data)
 {
     app_pc bb_addr_1 = dr_fragment_app_pc(tag);
     app_pc bb_addr_2 = dr_app_pc_for_decoding(bb_addr_1);
@@ -44,7 +52,7 @@ bb_instrumentation_event_handler(void *drcontext, void *tag, instrlist_t *bb, in
     if (address_in_code_segment(tag, code_segment_describers))
     {
         int op = instr_get_opcode(instr);
-        if (op == OP_add || op == OP_adc || op == OP_sub || op == OP_sbb) {
+        if (opcodes.find(op) != opcodes.end()) {
             tracer.traceOverflow(drcontext, tag, bb, instr);
         }
 
@@ -81,6 +89,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         throw std::runtime_error("cannot init dr_mgr");
 
     tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
+    opcodes = config.getInspectOpcodes();
     dr_printf("DR configured\n");
 
     print_modules();
@@ -144,7 +153,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     dr_printf("[INFO] : symbols logged! log stream closed.\n");
     dr_printf("DR segments readed successfully!\n");
     fflush(stdout);
-    
+
     size_t extra_counters_start = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__start___libfuzzer_extra_counters");
     size_t extra_counters_stop  = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__stop___libfuzzer_extra_counters");
     

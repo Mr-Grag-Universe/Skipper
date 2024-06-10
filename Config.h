@@ -24,6 +24,20 @@ private:
         this->tracer_config = config_data["tracer_config"];
     }
 
+    int get_opcode(std::string op_s) const {
+        if (op_s == "add") {
+            return OP_add;
+        } else if (op_s == "adc") {
+            return OP_adc;
+        } else if (op_s == "sub") {
+            return OP_sub;
+        } else if (op_s == "sbb") {
+            return OP_sbb;
+        } else {
+            throw std::runtime_error("we do not know this opcode's name!");
+            return -1;
+        }
+    }
 public:
     json tracer_config;
     json fuzzing_config;
@@ -122,6 +136,14 @@ public:
     bool
     use_default_bounds() const {
         return this->_config["fuzzing"]["use_default"];
+    }
+
+    std::set<int> getInspectOpcodes() const {
+        std::set<int> ops;
+        for (auto op : this->_config["fuzzing"]["inspect_opcodes"]) {
+            ops.insert(this->get_opcode((std::string) op));
+        }
+        return ops;
     }
 };
 

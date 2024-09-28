@@ -9,8 +9,8 @@
 #include <stddef.h>
 // #include <type_traits>
 #include <string.h>
-#include <libelf.h>
-#include <gelf.h>
+// #include <libelf.h>
+// #include <gelf.h>
 #include <unistd.h>
 #include <iostream>
 #include <sstream>

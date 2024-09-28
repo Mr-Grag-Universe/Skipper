@@ -17,8 +17,8 @@
 #include "drx.h"
 #include "dr_modules.h"
 #include <string.h>
-#include <libelf.h>
-#include <gelf.h>
+// #include <libelf.h>
+// #include <gelf.h>
 #include <unistd.h>
 #include <iostream>
 #include <cstdlib>

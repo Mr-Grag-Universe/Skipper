@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-cd /home/stepan/Desktop/fedora_files/fuzzing/Skipper/Skipper_1.0/bn256
+cd ./bn256
 go build -buildmode=c-shared -o libbn256.so -v -x -work \
 bn256_fast.go bn256_handlers.go bn256_curve_point.go bn256_G.go bn256_gfp.go
 go build -buildmode=c-archive -o libbn256.a -v -x -work \

@@ -8,3 +8,4 @@ DynamoRIO*/
 *.so
 *_old
 out/*
+*glibc*

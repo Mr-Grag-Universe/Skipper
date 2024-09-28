@@ -5,7 +5,7 @@ EXPERIMENTS=8
 MODES=("origin" "instr")
 N_ITER=100
 ORIGIN_COMMAND="./bin/fuzz_app -max_len=64 -len_control=0"
-INSTR_COMMAND="./DynamoRIO-Linux-10.0.19672/bin64/drrun -c ./bin/libclient.so -- $ORIGIN_COMMAND"
+INSTR_COMMAND="./DynamoRIO-Linux/bin64/drrun -c ./bin/libclient.so -- $ORIGIN_COMMAND"
 SCRIPT_PATH=./scripts/timer.py
 
 # Functions

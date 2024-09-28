@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.7)
 
+# Укажите стандарт C++
+set(CMAKE_CXX_STANDARD 17)           # Замените 11 на нужную вам версию (14, 17, 20 и т.д.)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)   # Обязательное использование указанного стандарта
+
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
   set(DEBUG ON)
 endif ("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
@@ -98,11 +102,11 @@ endif (DEBUG)
 # by disabling libc via "set(DynamoRIO_USE_LIBC OFF)".
 
 if (NOT DEFINED DynamoRIO_DIR)
-  set(DynamoRIO_DIR "${PROJECT_SOURCE_DIR}/DynamoRIO-Linux-10.0.19672/cmake" CACHE PATH
+  set(DynamoRIO_DIR "${PROJECT_SOURCE_DIR}/DynamoRIO_Linux_10/cmake" CACHE PATH
     "DynamoRIO installation's cmake directory")
 endif (NOT DEFINED DynamoRIO_DIR)
 
-set(CMAKE_PREFIX_PATH "./DynamoRIO-Linux-10.0.19672/cmake")
+set(CMAKE_PREFIX_PATH "./DynamoRIO_Linux_10/cmake")
 
 find_package(DynamoRIO 10.0)
 if (NOT DynamoRIO_FOUND)

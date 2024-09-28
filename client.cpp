@@ -53,7 +53,7 @@ bb_instrumentation_event_handler(
     {
         int op = instr_get_opcode(instr);
         if (opcodes.find(op) != opcodes.end()) {
-            tracer.traceOverflow(drcontext, tag, bb, instr);
+            // tracer.traceOverflow(drcontext, tag, bb, instr);
         }
 
         // логируем
@@ -85,6 +85,7 @@ event_thread_exit(void *drcontext)
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
+    dr_printf("hellow world!\n");
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 

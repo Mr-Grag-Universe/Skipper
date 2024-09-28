@@ -139,6 +139,7 @@ public:
     }
 
     std::set<int> getInspectOpcodes() const {
+        dr_printf("getting opcodes to inspect...");
         std::set<int> ops;
         for (auto op : this->_config["fuzzing"]["inspect_opcodes"]) {
             ops.insert(this->get_opcode((std::string) op));

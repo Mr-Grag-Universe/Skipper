@@ -4,6 +4,7 @@
 #define X86
 #include "dr_api.h"
 #include "dr_tools.h"
+#include "dr_events.h"
 
 #include "include/func_bounds.h"
 #include "include/funcs.h"
@@ -20,6 +21,15 @@ static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
 static std::set<int> opcodes;
 
+static int tls_key;
+
+void init_tls() {
+    tls_key = drmgr_register_tls_field();
+    if (tls_key == -1) {
+        throw std::runtime_error("cannot allocate tls!");
+    }
+    dr_printf("thread tls inited!\n");
+}
 
 bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments)
 { 
@@ -66,21 +76,58 @@ bb_instrumentation_event_handler(
     return DR_EMIT_DEFAULT;
 }
 
-static void
-exit_event(void)
-{
-    main_logger.stop_logging();
-    drmgr_exit();
+std::string create_log_file_name(std::thread::id id) {
+    std::ostringstream oss;
+    oss << "./out/logs/log-" << std::hash<std::thread::id>()(id) << ".txt";
+    return oss.str();
 }
+
 static void
 event_thread_init(void *drcontext)
 {
     dr_printf("<<<<< new thread init >>>>>\n");
+    init_tls();
+    std::thread::id thread_id = std::this_thread::get_id();
+    dr_printf("thread_id: %u\n", thread_id);
+    Logger* logger = new Logger(create_log_file_name(thread_id));
+    drmgr_set_tls_field(drcontext, tls_key, logger);
+}
+static void
+exit_event(void)
+{
+    dr_printf(">>>>> exit event <<<<<\n");
+    if (!drmgr_unregister_thread_init_event(event_thread_init) || !drmgr_unregister_bb_instrumentation_event((drmgr_analysis_cb_t) bb_instrumentation_event_handler)) {
+            // DR_ASSERT(false);
+            dr_printf("STOOOOOOP!!!!!\n");
+    }
+
+    main_logger.stop_logging();
+    drmgr_exit();
+    // мб надо обернуть в try
+    drsym_exit();
+
+    dr_printf("abording!!!\n");
+    dr_abort_with_code(111);
 }
 static void
 event_thread_exit(void *drcontext)
 {
     dr_printf("<<<<< thread exit >>>>>\n");
+    // dr_app_cleanup();
+    // dr_app_stop_and_cleanup();
+
+    dr_printf("thread tls clearing...\n");
+    Logger* logger = static_cast<Logger*>(drmgr_get_tls_field(drcontext, tls_key));
+    if (logger != NULL) {
+        delete logger; // Освобождение ресурсов логгера
+        drmgr_set_tls_field(drcontext, tls_key, NULL); // Удаление из TLS
+    }
+}
+
+static void
+fork_init_event(void *drcontext)
+{
+    dr_printf("<<<<< fork init >>>>>\n");
 }
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
@@ -89,6 +136,17 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 
+    //  проверка, что мы в той программе
+    // если это не программа с искомым модулем - не исполняемся дальше
+    auto analized_modules_names = config.get_modules_names();
+    auto current_modules_names = get_modules_names();
+    std::set <std::string> cmn_set(current_modules_names.begin(), current_modules_names.end());
+    if (!std::includes( cmn_set.begin(), cmn_set.end(), 
+                        analized_modules_names.begin(), analized_modules_names.end())) {
+                            dr_printf("[INFO] : there is not modules in current process!\n");
+                            return;
+                        }
+    
     tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
     opcodes = config.getInspectOpcodes();
     dr_printf("DR configured\n");
@@ -172,5 +230,11 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         throw std::runtime_error("thread init | exit events handlers error!\n");
     }
 
+    dr_register_fork_init_event((void (*)(void *)) fork_init_event);
+
     drmgr_register_bb_instrumentation_event(NULL, bb_instrumentation_event_handler, NULL);
+
+
+    dr_printf("[SYS] : sleeping!\n");
+    std::this_thread::sleep_for(5s);
 }

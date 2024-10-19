@@ -9,3 +9,5 @@ DynamoRIO*/
 *_old
 out/*
 *glibc*
+*crash-*
+*.log

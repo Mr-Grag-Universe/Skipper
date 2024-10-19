@@ -179,13 +179,23 @@ configure_DynamoRIO_global(OFF ON)
 
 # include_directories("~/Desktop/fedora_files/fuzzing/Skipper_0.0/")
 
-include(FetchContent)
-FetchContent_Declare(json
-    GIT_REPOSITORY https://github.com/nlohmann/json
-    GIT_TAG v3.11.3
-)
-FetchContent_MakeAvailable(json)
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+# include(FetchContent)
+# include(ExternalProject)
+# ExternalProject_Add(json
+#     GIT_REPOSITORY https://github.com/nlohmann/json
+#     GIT_TAG v3.11.3
+#     SOURCE_DIR        "${CMAKE_BINARY_DIR}/json-src"
+#     BINARY_DIR        "${CMAKE_BINARY_DIR}/json-build"
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND     ""
+#     INSTALL_COMMAND   ""
+#     TEST_COMMAND      ""
+# )
+# FetchContent_MakeAvailable(json)
+# ExternalProject_Get_Property(json)
+# set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(json)
+# find_package(nlohmann_json 3.11.3 REQUIRED)
 
 add_sample_client(client       "client.cpp"         "drmgr;drreg;drx;drsyms")
 target_link_libraries(client nlohmann_json::nlohmann_json)

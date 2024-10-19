@@ -146,6 +146,16 @@ public:
         }
         return ops;
     }
+
+    std::set <std::string> get_modules_names() const {
+        dr_printf("getting modules names...\n");
+        std::set <std::string> module_names;
+        for (auto mn : this->_config["fuzzing"]["inspect_funcs"]) {
+            std::string name = mn["module_name"];
+            module_names.insert((std::string) name);
+        }
+        return module_names;
+    }
 };
 
 #endif // MY_CONFIG_header

@@ -347,6 +347,16 @@ void print_modules() {
     }
 }
 
+std::vector <std::string> get_modules_names() {
+    auto modules = get_all_modules();
+    std::vector <std::string> modules_names;
+    for (auto module : modules) {
+        auto mn = module.name;
+        modules_names.push_back(mn);
+    }
+    return modules_names;
+}
+
 std::string int_to_hex(int my_integer) {
     std::stringstream sstream;
     sstream << std::hex << my_integer;

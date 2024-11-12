@@ -71,6 +71,31 @@ void saveBytesToFile(const uint8_t * data, size_t size, std::string path) {
     outFile.close();
 }
 
+#include <iostream>
+
+extern "C" unsigned long long my_export_asm_factorial(int n);
+
+unsigned long long my_asm_factorial(int n) {
+    unsigned long long result;
+    __asm__ (
+        // "mov %1, %%rdi;"      // Загружаем n в регистр rdi
+        // "mov $1, %%rax;"      // Инициализируем результат (rax) как 1
+        // "cmp $1, %%rdi;"      // Сравниваем n с 1
+        // "jle end;"             // Если n <= 1, переходим к end"
+        "loop_start:"          // Начало цикла"
+        "mul %%rdi;"           // Умножаем rax на rdi"
+        "dec %%rdi;"           // Уменьшаем rdi на 1"
+        // "cmp $1, %%rdi;"       // Сравниваем n с 1"
+        "jg loop_start;"       // Если n > 1, продолжаем цикл"
+        "end:"                 // Конец"
+        "mov %%rax, %0;"      // Сохраняем результат в переменную result
+        : "=r" (result)       // Выходные операнды
+        : "r" (n)             // Входные операнды
+        : "%rax", "%rdi"     // Изменяемые регистры
+    );
+    return result;
+}
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     
     // std::cout << "###############################################" << std::endl;
@@ -81,6 +106,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // std::cout << "extra counters offset: " << (size_t) extra_counters << std::endl;
     // extra_counters[Data[0]] = 1;
     // fuzz_des(len, Data);
+
+    my_export_asm_factorial(1);
 
     if (data == NULL) {
         std::cout << "null data has been provided" << std::endl;

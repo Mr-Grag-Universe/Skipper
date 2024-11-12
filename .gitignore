@@ -11,3 +11,4 @@ out/*
 *glibc*
 *crash-*
 *.log
+json/*

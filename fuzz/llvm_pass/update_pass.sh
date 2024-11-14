@@ -7,4 +7,9 @@
 #   #include "llvm/Transforms/Utils/Skipper.h" в llvm/lib/Passes/PassBuilder.cpp    #
 #####################################################################################
 
+PROJECT_ROOT_PATH="/workspaces/Skipper/"
+LLVM_ROOT_PATH="${PROJECT_ROOT_PATH}llvm-project/"
+CUSTOM_LLVM_PATH_DIR="${PROJECT_ROOT_PATH}fuzz/llvm_pass/"
 
+cp ${CUSTOM_LLVM_PATH_DIR}Skipper.cpp ${LLVM_ROOT_PATH}llvm/lib/Transforms/Utils/Skipper.cpp
+cp ${CUSTOM_LLVM_PATH_DIR}Skipper.h   ${LLVM_ROOT_PATH}llvm/include/llvm/Transforms/Utils/Skipper.h

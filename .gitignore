@@ -2,6 +2,7 @@
 *build/
 *.o
 DynamoRIO*/
+dynamorio
 *bin/
 .cache/
 *.a
@@ -12,3 +13,4 @@ out/*
 *crash-*
 *.log
 json/*
+llvm-project

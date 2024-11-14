@@ -10,8 +10,7 @@ echo "################################################################"
 
 echo "################################################################"
 echo "CMake configuration..."
-cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
--DLLVM_PARALLEL_COMPILE_JOBS=4 -DLLVM_PARALLEL_LINK_JOBS=4 -DLLVM_PARALLEL_TABLEGEN_JOBS=4
+cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_PARALLEL_COMPILE_JOBS=4 -DLLVM_PARALLEL_LINK_JOBS=4 -DLLVM_PARALLEL_TABLEGEN_JOBS=4
 echo "[COMPLETE]"
 echo "################################################################"
 

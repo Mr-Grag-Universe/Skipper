@@ -102,13 +102,13 @@ endif (DEBUG)
 # by disabling libc via "set(DynamoRIO_USE_LIBC OFF)".
 
 if (NOT DEFINED DynamoRIO_DIR)
-  set(DynamoRIO_DIR "${PROJECT_SOURCE_DIR}/DynamoRIO_Linux_10/cmake" CACHE PATH
+  set(DynamoRIO_DIR "${PROJECT_SOURCE_DIR}/dynamorio/cmake" CACHE PATH
     "DynamoRIO installation's cmake directory")
 endif (NOT DEFINED DynamoRIO_DIR)
 
-set(CMAKE_PREFIX_PATH "./DynamoRIO_Linux_10/cmake")
+set(CMAKE_PREFIX_PATH "./dynamorio/cmake")
 
-find_package(DynamoRIO 10.0)
+find_package(DynamoRIO) # 11.0)
 if (NOT DynamoRIO_FOUND)
   message(FATAL_ERROR "DynamoRIO package required to build")
 endif(NOT DynamoRIO_FOUND)
@@ -194,7 +194,12 @@ configure_DynamoRIO_global(OFF ON)
 # FetchContent_MakeAvailable(json)
 # ExternalProject_Get_Property(json)
 # set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(json)
+# add_subdirectory(json)
+
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 # find_package(nlohmann_json 3.11.3 REQUIRED)
 
 add_sample_client(client       "client.cpp"         "drmgr;drreg;drx;drsyms")

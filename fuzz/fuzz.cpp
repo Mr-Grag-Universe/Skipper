@@ -11,7 +11,7 @@
 #include <thread>
 #include <chrono>
 #include <filesystem>
-#include "libbn256.h"
+// #include "libbn256.h"
 
 using namespace std::chrono_literals;
 
@@ -73,7 +73,7 @@ void saveBytesToFile(const uint8_t * data, size_t size, std::string path) {
 
 #include <iostream>
 
-extern "C" unsigned long long my_export_asm_factorial(int n);
+// extern "C" unsigned long long my_export_asm_factorial(int n);
 
 unsigned long long my_asm_factorial(int n) {
     unsigned long long result;
@@ -107,7 +107,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // extra_counters[Data[0]] = 1;
     // fuzz_des(len, Data);
 
-    my_export_asm_factorial(1);
+    // my_export_asm_factorial(1);
 
     if (data == NULL) {
         std::cout << "null data has been provided" << std::endl;
@@ -124,52 +124,52 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     // std::cout << "experiment processing..." << std::endl;
     // std::this_thread::sleep_for(0.5s);
     
-    int a = gfP_Unmarshal((GoInt) -1, {(void *) data, 32, 32});
-    if (a < 0) {
-        ClearAll();
-        return 0;
-    }
-    int b = gfP_Unmarshal((GoInt) -1, {(void *) (data+32), 32, 32});
-    if (b < 0) {
-        ClearAll();
-        return 0;
-    }
+    // int a = gfP_Unmarshal((GoInt) -1, {(void *) data, 32, 32});
+    // if (a < 0) {
+    //     ClearAll();
+    //     return 0;
+    // }
+    // int b = gfP_Unmarshal((GoInt) -1, {(void *) (data+32), 32, 32});
+    // if (b < 0) {
+    //     ClearAll();
+    //     return 0;
+    // }
     // std::cout << "a, b created" << std::endl;
     // PrintOC();
 
     // saveBytesToFile(data, 32*2, "out/corpus");
     // std::cout << "data saved!" << std::endl;
 
-    int a_sq  = gfP_newGFP(0);
-    int b_sq  = gfP_newGFP(0);
+    // int a_sq  = gfP_newGFP(0);
+    // int b_sq  = gfP_newGFP(0);
 
-    int a_m_b = gfP_newGFP(0);
-    int a_p_b = gfP_newGFP(0);
+    // int a_m_b = gfP_newGFP(0);
+    // int a_p_b = gfP_newGFP(0);
 
-    int X_1   = gfP_newGFP(0);
-    int X_2   = gfP_newGFP(0);
+    // int X_1   = gfP_newGFP(0);
+    // int X_2   = gfP_newGFP(0);
 
     // std::cout << "some intermediete result vars created" << std::endl;
     // PrintOC();
 
-    gfP_Add(a_p_b, a, b);
-    gfP_Sub(a_m_b, a, b);
-    gfP_Mul(X_1, a_m_b, a_p_b);
+    // gfP_Add(a_p_b, a, b);
+    // gfP_Sub(a_m_b, a, b);
+    // gfP_Mul(X_1, a_m_b, a_p_b);
     // std::cout << "first calculation complete!" << std::endl;
     // PrintOC();
 
-    gfP_Mul(a_sq, a, a);
-    gfP_Mul(b_sq, b, b);
-    gfP_Sub(X_2, a_sq, b_sq);
+    // gfP_Mul(a_sq, a, a);
+    // gfP_Mul(b_sq, b, b);
+    // gfP_Sub(X_2, a_sq, b_sq);
     // std::cout << "second calculation complete!" << std::endl;
     // PrintOC();
 
-    if (not gfP_Equal(X_1, X_2)) {
-        std::cout << "gfP are not equal!" << std::endl;
-        throw std::runtime_error("gfP are not equal!");
-    }
+    // if (not gfP_Equal(X_1, X_2)) {
+    //     std::cout << "gfP are not equal!" << std::endl;
+    //     throw std::runtime_error("gfP are not equal!");
+    // }
 
-    ClearAll();
+    // ClearAll();
 
     // std::cout << "experiment finished" << std::endl;
     // std::this_thread::sleep_for(1s);

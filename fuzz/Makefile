@@ -18,7 +18,7 @@ D_DIR = $(BUILD_DIR)/disasm
 CLANG_FLAGS = -g -O1 -std=c++17
 NASM_FLAGS = -f elf64
 # Параметры линковки
-LINK_FLAGS = -rdynamic -L../bin/ -l:libbn256.a
+LINK_FLAGS = -rdynamic # -L../bin/ -l:libbn256.a
 
 # Проверка аргумента pack
 ifeq ($(pack), 1)

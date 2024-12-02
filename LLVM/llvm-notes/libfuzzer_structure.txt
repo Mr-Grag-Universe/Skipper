@@ -1,0 +1,75 @@
+class Fuzzer {
+    void Loop
+        - засекает время
+        - -> MutateAndTestOne - вызвает мутации и передаёт на запуск
+    
+    void MutateAndTestOne
+        - выбирает мутации из предложенных??
+        - for i < options.mutate_depth
+        ---- применяем мутацию
+        ---- -> RunOne() - запускаем тестируемую программу
+        ---- сохраняем новое покрытие
+    
+    bool RunOne
+        - -> execute_callback()
+
+    bool ExecuteCallback 
+        - подготавливает память для санитайзинга
+        - -> CB - запускает программу - объект типа UserCallback
+        - замеряет время
+}
+
+FuzzerDriver {
+    - анализирет и составляет опции фаззинга
+    - запускает фаззинг в том или ином режиме
+    - -> if (Flags.workers > 0 && Flags.jobs > 0) { return RunInMultipleProcesses(Args, Flags.workers, Flags.jobs); }
+}
+
+int RunInMultipleProcesses {
+    - запускает в цикле по числу работников WorkerTread с командой cmd 
+}
+
+// для fork
+void WorkerThread(JobQueue *FuzzQ, JobQueue *MergeQ) {
+    while (auto Job = FuzzQ->Pop()) {
+        // Printf("WorkerThread: job %p\n", Job);
+        Job->ExitCode = ExecuteCommand(Job->Cmd);
+        MergeQ->Push(Job);
+    }
+}
+
+// обычный
+static void WorkerThread(const Command &BaseCmd, std::atomic<unsigned> *Counter,
+                         unsigned NumJobs, std::atomic<bool> *HasErrors) {
+  while (true) {
+    unsigned C = (*Counter)++;
+    if (C >= NumJobs) break;
+    std::string Log = "fuzz-" + std::to_string(C) + ".log";
+    Command Cmd(BaseCmd);
+    Cmd.setOutputFile(Log);
+    Cmd.combineOutAndErr();
+    if (Flags.verbosity) {
+      std::string CommandLine = Cmd.toString();
+      Printf("%s\n", CommandLine.c_str());
+    }
+--> int ExitCode = ExecuteCommand(Cmd);
+    if (ExitCode != 0)
+      *HasErrors = true;
+    std::lock_guard<std::mutex> Lock(Mu);
+    Printf("================== Job %u exited with exit code %d ============\n",
+           C, ExitCode);
+    fuzzer::CopyFileToErr(Log);
+  }
+}
+
+// linux
+int ExecuteCommand(const Command &Cmd) {
+    std::string CmdLine = Cmd.toString();
+--> int exit_code = system(CmdLine.c_str());
+    if (WIFEXITED(exit_code))
+        return WEXITSTATUS(exit_code);
+    if (WIFSIGNALED(exit_code) && WTERMSIG(exit_code) == SIGINT)
+        return Fuzzer::InterruptExitCode();
+    return exit_code;
+}
+

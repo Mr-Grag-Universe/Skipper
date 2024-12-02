@@ -1,0 +1,69 @@
+45:
+    ...                                           ; preds = %34
+    call void @gfP_Add(i64 %53, i64 %55, i64 %57), !dbg !4552
+    ...
+...
+declare !dbg !4584 dso_local void @gfP_Add(i64, i64, i64) local_unnamed_addr #1
+...
+
+!123 = !{}
+
+!2642 = !DIFile(filename: "cgo-gcc-export-header-prolog", 
+                directory: "/workspaces/Skipper/fuzz")
+
+!4584 = !DISubprogram(name: "gfP_Add", 
+                      scope: !2642, 
+                      file: !2642, 
+                      line: 75, 
+                      type: !4585, 
+                      flags: DIFlagPrototyped, 
+                      spFlags: DISPFlagOptimized, 
+                      retainedNodes: !123)
+
+
+unsigned long long my_asm_factorial(int n) {
+    unsigned long long result;
+    __asm__ (
+        "mov %1, %%rax;"      // Загружаем n в регистр rax
+        "mov $1, %%rbx;"      // Инициализируем результат (rbx) как 1
+        "cmp $1, %%rax;"      // Сравниваем n с 1
+        "jle end;             // Если n <= 1, переходим к end"
+        "loop_start:          // Начало цикла"
+        "mul %%rax;           // Умножаем rbx на rax"
+        "dec %%rax;           // Уменьшаем rax на 1"
+        "cmp $1, %%rax;       // Сравниваем n с 1"
+        "jg loop_start;       // Если n > 1, продолжаем цикл"
+        "end:                 // Конец"
+        "mov %%rbx, %0;"      // Сохраняем результат в переменную result
+        : "=r" (result)       // Выходные операнды
+        : "r" (n)             // Входные операнды
+        : "%rax", "%rbx"     // Изменяемые регистры
+    );
+    return result;
+}
+Функция my_asm_factorial имеет вид в ir:
+
+; Function Attrs: nounwind readnone uwtable
+define dso_local i64 @_Z16my_asm_factoriali(i32 %0) local_unnamed_addr #9 !dbg !4394 {
+  call void @llvm.dbg.value(metadata i32 %0, metadata !4398, metadata !DIExpression()), !dbg !4400
+  %2 = call i64 asm 
+   "mov $1, %rax;
+    mov $$1, %rbx;
+    cmp $$1, %rax;
+    jle end;             // \D0\95\D1\81\D0\BB\D0\B8 n <= 1, \D0\BF\D0\B5\D1\80\D0\B5\D1\85\D0\BE\D0\B4\D0\B8\D0\BC \D0\BA 
+    endloop_start:          // \D0\9D\D0\B0\D1\87\D0\B0\D0\BB\D0\BE \D1\86\D0\B8\D0\BA\D0\BB\D0\B0
+    mul %rax;           // \D0\A3\D0\BC\D0\BD\D0\BE\D0\B6\D0\B0\D0\B5\D0\BC rbx \D0\BD\D0\B0 rax
+    dec %rax;           // \D0\A3\D0\BC\D0\B5\D0\BD\D1\8C\D1\88\D0\B0\D0\B5\D0\BC rax \D0\BD\D0\B0 1
+    cmp $$1, %rax;       // \D0\A1\D1\80\D0\B0\D0\B2\D0\BD\D0\B8\D0\B2\D0\B0\D0\B5\D0\BC n \D1\81 1
+    jg loop_start;       // \D0\95\D1\81\D0\BB\D0\B8 n > 1, \D0\BF\D1\80\D0\BE\D0\B4\D0\BE\D0\BB\D0\B6\D0\B0\D0\B5\D0\BC \D1\86\D0\B8\D0\BA\D0\BB
+    end:                 // \D0\9A\D0\BE\D0\BD\D0\B5\D1\86
+    mov %rbx, $0;", 
+    "=r,r,~{rax},~{rbx},~{dirflag},~{fpsr},~{flags}"
+    (i32 %0) #18, !dbg !4401, !srcloc !4402
+
+  call void @llvm.dbg.value(metadata i64 %2, metadata !4399, metadata !DIExpression()), !dbg !4400
+  ret i64 %2, !dbg !4403
+}
+
+все asm inline вставки помечаются `asm` в llvm-ir
+

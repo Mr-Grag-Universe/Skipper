@@ -202,6 +202,6 @@ FetchContent_MakeAvailable(json)
 
 # find_package(nlohmann_json 3.11.3 REQUIRED)
 
-add_sample_client(client       "client.cpp"         "drmgr;drreg;drx;drsyms")
+add_sample_client(client       "./src/client.cpp"         "drmgr;drreg;drx;drsyms")
 target_link_libraries(client nlohmann_json::nlohmann_json)
 

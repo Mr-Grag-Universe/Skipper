@@ -326,7 +326,7 @@ void print_all_imported_symbols() {
         auto module_name = module_info.name;
         dr_printf("module_name: %s\n", module_name.c_str());
         auto module = dr_lookup_module_by_name(module_name.c_str());
-        dr_get_proc_address(module->handle, "New_G1");
+        // dr_get_proc_address(module->handle, "New_G1");
 
         auto iterator_im = dr_symbol_import_iterator_start(module->handle, NULL);
         do {

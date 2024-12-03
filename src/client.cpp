@@ -21,6 +21,9 @@ static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
 static std::set<int> opcodes;
 
+static std::map<std::string, std::vector <long long int>> global_guards_open;
+static std::map<std::string, std::vector <long long int>> global_guards_close;
+
 static int tls_key;
 
 void init_tls() {
@@ -42,6 +45,84 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
             main_logger.log("ADDR", int_to_hex((size_t) tag) + " : " + int_to_hex(segment.start) + " - " + int_to_hex(segment.end));
             return true;
         }
+    }
+    return false;
+}
+
+void print_instruction(void *drcontext, instr_t *instr) {
+    char instr_str[256];
+    instr_disassemble_to_buffer(drcontext, instr, instr_str, sizeof(instr_str));
+    dr_printf("Instruction: %s\n", instr_str);
+}
+
+
+bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, instr_t * c_instr) {
+    bool guards_opened = false;
+    for (auto instr = instrlist_first(bb); instr != NULL; instr = instr_get_next(instr)) {
+        if (instr == c_instr) {
+            return guards_opened;
+        }
+
+        int opcode = instr_get_opcode(instr);
+        if (opcode == (int) OP_lea) {
+            opnd_t src = instr_get_src(instr, 0);
+            auto mem_addr = opnd_get_addr(src);
+            if (std::find(  global_guards_open["fuzz_app"].begin(), 
+                            global_guards_open["fuzz_app"].end(), 
+                            (long long) mem_addr) != global_guards_open["fuzz_app"].end()) {
+                dr_printf("open the gates!\n");
+                guards_opened = true;
+            } else if (std::find(  global_guards_close["fuzz_app"].begin(), 
+                            global_guards_close["fuzz_app"].end(), 
+                            (long long) mem_addr) != global_guards_close["fuzz_app"].end()) {
+                dr_printf("close the gates!\n");
+                guards_opened = false;
+            }
+
+            // try {
+            // // if (instr_writes_memory(instr)){ 140078363961276
+            //     // dr_printf("[new mem write instr]: ");
+            //     print_instruction(drcontext, instr);
+
+            //     opnd_t dst = instr_get_dst(instr, 0);
+            //     opnd_t src = instr_get_src(instr, 0);
+            //     dr_printf("src: %ld, dst: %ld\n", (long long) src.black_box_uint, (long) dst.black_box_uint);
+
+            //     reg_id_t base_reg = opnd_get_reg(dst);
+            //     dr_mcontext_t mc = { sizeof(mc), DR_MC_ALL};
+            //     dr_get_mcontext(drcontext, &mc);
+            //     reg_t base_addr = reg_get_value(base_reg, &mc);
+            //     int offset = opnd_get_disp(dst);
+            //     dr_printf("reg: %d, ba: %ld, offset: %ld\n", (int) base_reg, (long long) base_addr, offset);
+
+            //     // if (opnd_is_memory_reference(dst)) {
+            //         // -> работает в обратную сторону - достаёт второй аргумент instr_get_dst
+            //         // auto disp = opnd_get_mem_instr_disp(dst);
+            //         // dr_printf("disp: %d\n", (int) disp);
+
+            //         auto instr_addr = instr_get_app_pc(instr); // opnd_get_addr(dst);
+            //         instr_addr = dr_app_pc_for_decoding(instr_addr);
+            //         auto bb_addr = dr_fragment_app_pc(tag);
+            //         bb_addr = dr_app_pc_for_decoding(bb_addr);
+
+            //         auto mem_address_1 = opnd_get_addr(dst);
+            //         auto mem_address_2 = opnd_get_addr(src);
+
+            //         dr_printf("mem_address: %ld, %ld\n", (long long) mem_address_1, (long long) mem_address_2);
+            //         // if (global_guards_open["fuzz_app"][0] == ((long long) mem_address - (long long) bb_addr)) {
+            //             dr_printf("addr: %ld | base_addr: %ld -> %ld\n", instr_addr, bb_addr, (long long)instr_addr - (long long)bb_addr);
+                    // }
+                // }
+            // }
+            // } catch (...) {
+            //     // is not storing instr
+            //     // 140417460856764, base: 140417450172416
+            //     // 140417450749383 | 140417450749360
+            // }
+        }
+    }
+    if (guards_opened) {
+        dr_abort_with_code(777);
     }
     return false;
 }
@@ -71,7 +152,14 @@ bb_instrumentation_event_handler(
         instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
         main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
         main_logger.log("INSTR", std::string(buff));
+
+        address_in_global_guard(drcontext, bb, tag, instr);
     }
+
+    // проверяем на то, что есть global guard
+    // if (address_in_global_guard(drcontext, bb, tag, instr)) {
+    //     dr_printf("global guard has been found!\n");
+    // }
 
     return DR_EMIT_DEFAULT;
 }
@@ -166,11 +254,13 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
         module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
         if (module) {
-            auto global_var_addr = dr_get_proc_address(module->handle, "instr_global");
+            long long global_var_addr = (long long) dr_get_proc_address(module->handle, "instr_global");
+            // global_var_addr -= (long long) module->start; // получаем относительный адрес
             if (global_var_addr == NULL) {
                 dr_printf("[INFO]: global guard var in module <%s> was not found! =(\n", module_name.c_str());
             } else {
-                dr_printf("[INFO]: global guard var in module <%s>: %d\n", module_name.c_str(), global_var_addr);
+                dr_printf("[INFO]: global guard var in module <%s>: %ld, base: %ld\n", module_name.c_str(), (long long) global_var_addr, (long long) module->start);
+                global_guards_open[module_name].push_back((long long int) global_var_addr);
             }
             dr_free_module_data(module);
         } else {
@@ -202,52 +292,58 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     std::map<std::string, FuncConfig>
     inspect_functions = config.getInspectionFunctions();
 
-    auto symbols_map = get_all_symbols_with_offsets(
-                                    (*inspect_functions.begin()).second.module_name, 
-                                    (*inspect_functions.begin()).second.module_path, 
-                                    config.getFuzzConfig()["use_pattern"]);
-    Logger debug_logger;
-    debug_logger.set_log_file("out/logs/debug_logs.txt");
-    debug_logger.start_logging();
-    debug_logger.stop_logging();
+    if (!inspect_functions.empty()) {
+        auto symbols_map = get_all_symbols_with_offsets(
+                                        (*inspect_functions.begin()).second.module_name, 
+                                        (*inspect_functions.begin()).second.module_path, 
+                                        config.getFuzzConfig()["use_pattern"]);
+        Logger debug_logger;
+        debug_logger.set_log_file("out/logs/debug_logs.txt");
+        debug_logger.start_logging();
+        debug_logger.stop_logging();
 
-    for (auto & symbol : symbols_map) {
-        if (config.logSymbolsEnabled()) {
-            std::ostringstream oss;
-            oss << symbol.first << " : " << std::hex << (size_t) symbol.second;
-            symbol_logger.log("DEBUG", oss.str());
-        }
-    }
-
-    
-    auto func_bounds = get_func_bounds_optimized(inspect_functions, true, config.use_default_bounds());
-    for (auto & func : func_bounds) {
-        if (config.logSymbolsEnabled()) {
-            std::ostringstream oss;
-            oss << func.first << " : " << std::hex << (size_t) func.second.first << " - " << (size_t) func.second.second;
-            symbol_logger.log("DEBUG", oss.str());
+        for (auto & symbol : symbols_map) {
+            if (config.logSymbolsEnabled()) {
+                std::ostringstream oss;
+                oss << symbol.first << " : " << std::hex << (size_t) symbol.second;
+                symbol_logger.log("DEBUG", oss.str());
+            }
         }
 
-        code_segment_describers.push_back({(size_t) func.second.first, (size_t) func.second.second});
+        
+        auto func_bounds = get_func_bounds_optimized(inspect_functions, true, config.use_default_bounds());
+        for (auto & func : func_bounds) {
+            if (config.logSymbolsEnabled()) {
+                std::ostringstream oss;
+                oss << func.first << " : " << std::hex << (size_t) func.second.first << " - " << (size_t) func.second.second;
+                symbol_logger.log("DEBUG", oss.str());
+            }
+
+            code_segment_describers.push_back({(size_t) func.second.first, (size_t) func.second.second});
+        }
+        symbol_logger.stop_logging();
+        if (!symbol_logger.is_open()) {
+            dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
+        } else {
+            dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
+            dr_abort();
+        }
+        dr_printf("[INFO] : symbols logged! log stream closed.\n");
     }
     // предупреждаем, если совсем ничего не нашли
     if (code_segment_describers.size() == 0) {
         dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
     }
-    symbol_logger.stop_logging();
-    if (!symbol_logger.is_open()) {
-        dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
-    } else {
-        dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
-        dr_abort();
-    }
-
-    dr_printf("[INFO] : symbols logged! log stream closed.\n");
     dr_printf("DR segments readed successfully!\n");
     fflush(stdout);
 
-    size_t extra_counters_start = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__start___libfuzzer_extra_counters");
-    size_t extra_counters_stop  = get_symbol_offset("fuzz_app", "bin/fuzz_app", "__stop___libfuzzer_extra_counters");
+    // достаём адрес для доп покрытия
+    size_t extra_counters_start = get_symbol_offset("fuzz_app", 
+                                                    "experimental_stands/fuzz/fuzz_app", 
+                                                    "__start___libfuzzer_extra_counters");
+    size_t extra_counters_stop  = get_symbol_offset("fuzz_app", 
+                                                    "experimental_stands/fuzz/fuzz_app", 
+                                                    "__stop___libfuzzer_extra_counters");
     
     tracer.set_trace_area(extra_counters_start, extra_counters_stop);
 
@@ -269,5 +365,5 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
 
     dr_printf("[SYS] : sleeping!\n");
-    std::this_thread::sleep_for(5s);
+    std::this_thread::sleep_for(2s);
 }

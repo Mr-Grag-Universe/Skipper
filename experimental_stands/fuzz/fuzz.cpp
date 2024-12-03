@@ -75,23 +75,37 @@ void saveBytesToFile(const uint8_t * data, size_t size, std::string path) {
 
 // extern "C" unsigned long long my_export_asm_factorial(int n);
 
-unsigned long long my_asm_factorial(int n) {
-    unsigned long long result;
+unsigned int my_asm_factorial(int a, int b) {
+    // unsigned long long result;
+    // __asm__ (
+    //     // "mov %1, %%rdi;"      // Загружаем n в регистр rdi
+    //     // "mov $1, %%rax;"      // Инициализируем результат (rax) как 1
+    //     // "cmp $1, %%rdi;"      // Сравниваем n с 1
+    //     // "jle end;"             // Если n <= 1, переходим к end"
+    //     "loop_start:"          // Начало цикла"
+    //     "mul %%rdi;"           // Умножаем rax на rdi"
+    //     "dec %%rdi;"           // Уменьшаем rdi на 1"
+    //     // "cmp $1, %%rdi;"       // Сравниваем n с 1"
+    //     "jg loop_start;"       // Если n > 1, продолжаем цикл"
+    //     "end:"                 // Конец"
+    //     "mov %%rax, %0;"      // Сохраняем результат в переменную result
+    //     : "=r" (result)       // Выходные операнды
+    //     : "r" (n)             // Входные операнды
+    //     : "%rax", "%rdi"     // Изменяемые регистры
+    // );
+    int result;
+    // Используем встроенный ассемблер
     __asm__ (
-        // "mov %1, %%rdi;"      // Загружаем n в регистр rdi
-        // "mov $1, %%rax;"      // Инициализируем результат (rax) как 1
-        // "cmp $1, %%rdi;"      // Сравниваем n с 1
-        // "jle end;"             // Если n <= 1, переходим к end"
-        "loop_start:"          // Начало цикла"
-        "mul %%rdi;"           // Умножаем rax на rdi"
-        "dec %%rdi;"           // Уменьшаем rdi на 1"
-        // "cmp $1, %%rdi;"       // Сравниваем n с 1"
-        "jg loop_start;"       // Если n > 1, продолжаем цикл"
-        "end:"                 // Конец"
-        "mov %%rax, %0;"      // Сохраняем результат в переменную result
-        : "=r" (result)       // Выходные операнды
-        : "r" (n)             // Входные операнды
-        : "%rax", "%rdi"     // Изменяемые регистры
+        "cmp %[a], 10\n"      // Сравниваем a с 10
+        "jle end\n"          // Если a <= 10, переходим к метке end
+        "add %[b], %[a]\n"    // Складываем a и b
+        "mov %[a], %[result]\n" // Сохраняем результат в переменную result
+        "jmp finish\n"        // Переходим к метке finish
+        "end:\n"
+        "mov %[a], %[result]\n" // Если a <= 10, просто сохраняем a в result
+        "finish:\n"
+        : [result] "=r" (result) // Выходной аргумент
+        : [a] "r" (a), [b] "r" (b) // Входные аргументы
     );
     return result;
 }
@@ -121,9 +135,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
 
-    // std::cout << "experiment processing..." << std::endl;
-    // std::this_thread::sleep_for(0.5s);
-    
+    std::cout << "experiment processing..." << std::endl;
+    std::this_thread::sleep_for(0.5s);
+    my_asm_factorial(100, 23);
+
     // int a = gfP_Unmarshal((GoInt) -1, {(void *) data, 32, 32});
     // if (a < 0) {
     //     ClearAll();

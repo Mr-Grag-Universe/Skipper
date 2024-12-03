@@ -14,3 +14,9 @@ mv fuzz_app bin/fuzz_app
 
 # clang -std=c++17 -O3 -funroll-loops -Wall -D_FORTIFY_SOURCE=2 -g -Wno-pointer-sign -fPIC -c Skipper.cpp -o SkipperPass.o \
 # -I/usr/include/llvm-11/ -I/usr/include/llvm-c-11
+
+
+LLVM/llvm-project/build/bin/clang -S -emit-llvm experimental_stands/fuzz/fuzz.cpp
+LLVM/llvm-project/build/bin/opt -passes=skipper -S fuzz.ll -o fuzz_new.ll
+LLVM/llvm-project/build/bin/clang -c fuzz_new.ll -o fuzz.o
+LLVM/llvm-project/build/bin/clang -fsanitize=fuzzer fuzz.o -g -std=c++17 -O1 -rdynamic -o experimental_stands/fuzz/fuzz_app

@@ -1,0 +1,62 @@
+{
+    "tracer" : {
+        "start_location" : 0,
+        "trace_size" : -1,
+        "trace_area_name" : "__libfuzzer_extra_counters"
+    },
+    "fuzzing" : {
+        "use_pattern" : true,
+        "use_default" : false,
+        "inspect_funcs" : [
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpNeg",
+                "default_address" : {
+                    "start" : "000000000050ba80",
+                    "stop"  : "000000000050bb20"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpAdd",
+                "default_address" : {
+                    "start" : "000000000050bb20",
+                    "stop"  : "000000000050bbc0"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpSub",
+                "default_address" : {
+                    "start" : "000000000050bbc0",
+                    "stop"  : "000000000050bc40"
+                }
+            },
+            {
+                "module_name" : "fuzz_app", 
+                "module_path" : "bin/fuzz_app", 
+                "func_name"   : "gfpMul",
+                "default_address" : {
+                    "start" : "000000000050bc40",
+                    "stop"  : "000000000050c640"
+                }
+            }
+        ],
+        "inspect_opcodes" : ["add", "adc"],
+        "asm_auto_detection" : false,
+        "corpus_path" : "out/corpus"
+    },
+    "logging" : {
+        "log_symbols" : {
+            "enable" : true,
+            "path" : "out/logs/symbols.txt"
+        },
+        "log_fuzzing" : {
+            "enable" : true,
+            "path" : "out/logs/log.txt"
+        }
+    }
+}

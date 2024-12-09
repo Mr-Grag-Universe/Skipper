@@ -75,7 +75,7 @@ void saveBytesToFile(const uint8_t * data, size_t size, std::string path) {
 
 // extern "C" unsigned long long my_export_asm_factorial(int n);
 
-unsigned int my_asm_factorial(int a, int b) {
+void my_asm_factorial(int a, int b, int *result) {
     // unsigned long long result;
     // __asm__ (
     //     // "mov %1, %%rdi;"      // Загружаем n в регистр rdi
@@ -93,21 +93,38 @@ unsigned int my_asm_factorial(int a, int b) {
     //     : "r" (n)             // Входные операнды
     //     : "%rax", "%rdi"     // Изменяемые регистры
     // );
-    int result;
+    // int result;
     // Используем встроенный ассемблер
-    __asm__ (
-        "cmp %[a], 10\n"      // Сравниваем a с 10
-        "jle end\n"          // Если a <= 10, переходим к метке end
-        "add %[b], %[a]\n"    // Складываем a и b
-        "mov %[a], %[result]\n" // Сохраняем результат в переменную result
-        "jmp finish\n"        // Переходим к метке finish
+    __asm__(
+        "push %%rax;"
+        "mov $5, %%eax;"
+        "cmp %1, %%eax;"      // Сравниваем a с 10
+        "pop %%rax;"
+
+        "jle end;"          // Если a <= 10, переходим к метке end
+        "add %2, %1;"    // Складываем a и b
+        "mov %1, %0;" // Сохраняем результат в переменную result
+        "jmp finish;"        // Переходим к метке finish
         "end:\n"
-        "mov %[a], %[result]\n" // Если a <= 10, просто сохраняем a в result
+        "mov %1, %0;" // Если a <= 10, просто сохраняем a в result
         "finish:\n"
-        : [result] "=r" (result) // Выходной аргумент
-        : [a] "r" (a), [b] "r" (b) // Входные аргументы
+        : "=r" (*result) // Выходной аргумент
+        : "r" (a), "r" (b) // Входные аргументы
     );
-    return result;
+
+    // __asm__ __volatile__ ( "movl %1, %%eax;"
+    //                       "movl %2, %%ebx;"
+    //                       "CONTD: cmpl $0, %%ebx;"
+    //                       "je DONE;"
+    //                       "xorl %%edx, %%edx;"
+    //                       "idivl %%ebx;"
+    //                       "movl %%ebx, %%eax;"
+    //                       "movl %%edx, %%ebx;"
+    //                       "jmp CONTD;"
+    //                       "DONE: movl %%eax, %0;" : "=g" (result) : "g" (a), "g" (b)
+    // );
+
+    // return result;
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -137,7 +154,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     std::cout << "experiment processing..." << std::endl;
     std::this_thread::sleep_for(0.5s);
-    my_asm_factorial(100, 23);
+    int res;
+    my_asm_factorial(100, 23, &res);
 
     // int a = gfP_Unmarshal((GoInt) -1, {(void *) data, 32, 32});
     // if (a < 0) {

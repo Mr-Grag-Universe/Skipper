@@ -227,6 +227,11 @@ public:
     }
 
     void traceOverflow(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
+        if (!instr_writes_memory(instr)) {
+            dr_printf("cannot instrument this!\n");
+            return;
+        }
+
         opnd_t dst = instr_get_dst(instr, 0);
         if (!opnd_is_reg(dst)) {
             return;

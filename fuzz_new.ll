@@ -840,19 +840,21 @@ declare void @_ZNSt14basic_ofstreamIcSt11char_traitsIcEE5closeEv(ptr noundef non
 declare void @_ZNSt14basic_ofstreamIcSt11char_traitsIcEED1Ev(ptr noundef nonnull align 8 dereferenceable(248)) unnamed_addr #2
 
 ; Function Attrs: mustprogress noinline nounwind optnone uwtable
-define dso_local noundef i32 @_Z16my_asm_factorialii(i32 noundef %0, i32 noundef %1) #5 {
-  %3 = alloca i32, align 4
+define dso_local void @_Z16my_asm_factorialiiPi(i32 noundef %0, i32 noundef %1, ptr noundef %2) #5 {
   %4 = alloca i32, align 4
   %5 = alloca i32, align 4
-  store i32 %0, ptr %3, align 4
-  store i32 %1, ptr %4, align 4
-  %6 = load i32, ptr %3, align 4
-  %7 = load i32, ptr %4, align 4
-  store i32 1, ptr @instr_global, align 4
-  %8 = call i32 asm "cmp $1, 10\0Ajle end\0Aadd $2, $1\0Amov $1, $0\0Ajmp finish\0Aend:\0Amov $1, $0\0Afinish:\0A", "=r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %6, i32 %7) #9, !srcloc !9
-  store i32 %8, ptr %5, align 4
+  %6 = alloca ptr, align 8
+  store i32 %0, ptr %4, align 4
+  store i32 %1, ptr %5, align 4
+  store ptr %2, ptr %6, align 8
+  %7 = load ptr, ptr %6, align 8
+  %8 = load i32, ptr %4, align 4
   %9 = load i32, ptr %5, align 4
-  ret i32 %9
+  store i32 1, ptr @instr_global, align 4
+  %10 = call i32 asm "push %rax;mov $$5, %eax;cmp $1, %eax;pop %rax;jle end;add $2, $1;mov $1, $0;jmp finish;end:\0Amov $1, $0;finish:\0A", "=r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %8, i32 %9) #9, !srcloc !9
+  store i32 0, ptr @instr_global, align 4
+  store i32 %10, ptr %7, align 4
+  ret void
 }
 
 ; Function Attrs: mustprogress noinline optnone uwtable
@@ -861,38 +863,39 @@ define dso_local i32 @LLVMFuzzerTestOneInput(ptr noundef %0, i64 noundef %1) #4 
   %4 = alloca ptr, align 8
   %5 = alloca i64, align 8
   %6 = alloca %"struct.std::chrono::duration", align 16
+  %7 = alloca i32, align 4
   store ptr %0, ptr %4, align 8
   store i64 %1, ptr %5, align 8
-  %7 = load ptr, ptr %4, align 8
-  %8 = icmp eq ptr %7, null
-  br i1 %8, label %9, label %12
+  %8 = load ptr, ptr %4, align 8
+  %9 = icmp eq ptr %8, null
+  br i1 %9, label %10, label %13
 
-9:                                                ; preds = %2
-  %10 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str.2)
-  %11 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %10, ptr noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
+10:                                               ; preds = %2
+  %11 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str.2)
+  %12 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %11, ptr noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
   store i32 0, ptr %3, align 4
   br label %21
 
-12:                                               ; preds = %2
-  %13 = load i64, ptr %5, align 8
-  %14 = icmp ult i64 %13, 64
-  br i1 %14, label %15, label %16
+13:                                               ; preds = %2
+  %14 = load i64, ptr %5, align 8
+  %15 = icmp ult i64 %14, 64
+  br i1 %15, label %16, label %17
 
-15:                                               ; preds = %12
+16:                                               ; preds = %13
   store i32 0, ptr %3, align 4
   br label %21
 
-16:                                               ; preds = %12
-  %17 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str.3)
-  %18 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %17, ptr noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
-  %19 = call x86_fp80 @_ZNSt8literals15chrono_literalsli1sEe(x86_fp80 noundef 0xK3FFE8000000000000000)
-  store x86_fp80 %19, ptr %6, align 16
+17:                                               ; preds = %13
+  %18 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc(ptr noundef nonnull align 8 dereferenceable(8) @_ZSt4cout, ptr noundef @.str.3)
+  %19 = call noundef nonnull align 8 dereferenceable(8) ptr @_ZNSolsEPFRSoS_E(ptr noundef nonnull align 8 dereferenceable(8) %18, ptr noundef @_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_)
+  %20 = call x86_fp80 @_ZNSt8literals15chrono_literalsli1sEe(x86_fp80 noundef 0xK3FFE8000000000000000)
+  store x86_fp80 %20, ptr %6, align 16
   call void @_ZNSt11this_thread9sleep_forIeSt5ratioILl1ELl1EEEEvRKNSt6chrono8durationIT_T0_EE(ptr noundef nonnull align 16 dereferenceable(16) %6)
-  %20 = call noundef i32 @_Z16my_asm_factorialii(i32 noundef 100, i32 noundef 23)
+  call void @_Z16my_asm_factorialiiPi(i32 noundef 100, i32 noundef 23, ptr noundef %7)
   store i32 0, ptr %3, align 4
   br label %21
 
-21:                                               ; preds = %16, %15, %9
+21:                                               ; preds = %17, %16, %10
   %22 = load i32, ptr %3, align 4
   ret i32 %22
 }
@@ -1666,5 +1669,5 @@ attributes #11 = { noreturn nounwind }
 !6 = distinct !{!6, !7}
 !7 = !{!"llvm.loop.mustprogress"}
 !8 = distinct !{!8, !7}
-!9 = !{i64 3696, i64 3759, i64 3846, i64 3907, i64 4011, i64 4084, i64 4101, i64 4198}
+!9 = !{i64 3703, i64 4160}
 !10 = distinct !{!10, !7}

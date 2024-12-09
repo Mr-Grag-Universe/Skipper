@@ -108,7 +108,11 @@ void storeInstructionAsGlobal(Module &M, Instruction *I, GlobalVariable * GV) {
 
     // Store the instruction address (casted to i8*) in the global variable
     // auto Addr = Builder.CreateBitCast(I, PtrType);
-    Builder.CreateStore(ConstantInt::get(Type::getInt32Ty(ctx), 1), GV);
+
+    IRBuilder<> Builder_1(I);
+    Builder_1.CreateStore(ConstantInt::get(Type::getInt32Ty(ctx), 1), GV);
+    IRBuilder<> Builder_2(I->getNextNode());
+    Builder_2.CreateStore(ConstantInt::get(Type::getInt32Ty(ctx), 0), GV);
 
     // if (I->getType()->isPointerTy()) {
     //     outs() << "I is pointer\n";

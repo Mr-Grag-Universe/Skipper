@@ -364,4 +364,10 @@ std::string int_to_hex(int my_integer) {
     return result;
 }
 
+void print_instruction(void *drcontext, instr_t *instr) {
+    char instr_str[256];
+    instr_disassemble_to_buffer(drcontext, instr, instr_str, sizeof(instr_str));
+    dr_printf("Instruction: %s\n", instr_str);
+}
+
 #endif // FUNCS_DR_header

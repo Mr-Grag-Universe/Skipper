@@ -12,6 +12,7 @@
 #include "include/Config.h"
 #include "include/Logger.h"
 #include "include/Tracer.h"
+#include "include/Guarder.h"
 
 using namespace std::chrono_literals;
 
@@ -20,9 +21,9 @@ static Tracer tracer(config);
 static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
 static std::set<int> opcodes;
+static Guarder guarder;
 
-static std::map<std::string, std::vector <long long int>> global_guards_open;
-static std::map<std::string, std::vector <long long int>> global_guards_close;
+static std::map<std::string, std::vector <long long int>> global_guards;
 
 static int tls_key;
 
@@ -49,34 +50,27 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
     return false;
 }
 
-void print_instruction(void *drcontext, instr_t *instr) {
-    char instr_str[256];
-    instr_disassemble_to_buffer(drcontext, instr, instr_str, sizeof(instr_str));
-    dr_printf("Instruction: %s\n", instr_str);
-}
-
 
 bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, instr_t * c_instr) {
     bool guards_opened = false;
+    bool good_lea_found = false;
     for (auto instr = instrlist_first(bb); instr != NULL; instr = instr_get_next(instr)) {
         if (instr == c_instr) {
             return guards_opened;
         }
+        print_instruction(drcontext, instr);
 
         int opcode = instr_get_opcode(instr);
         if (opcode == (int) OP_lea) {
             opnd_t src = instr_get_src(instr, 0);
             auto mem_addr = opnd_get_addr(src);
-            if (std::find(  global_guards_open["fuzz_app"].begin(), 
-                            global_guards_open["fuzz_app"].end(), 
-                            (long long) mem_addr) != global_guards_open["fuzz_app"].end()) {
-                dr_printf("open the gates!\n");
-                guards_opened = true;
-            } else if (std::find(  global_guards_close["fuzz_app"].begin(), 
-                            global_guards_close["fuzz_app"].end(), 
-                            (long long) mem_addr) != global_guards_close["fuzz_app"].end()) {
-                dr_printf("close the gates!\n");
-                guards_opened = false;
+            dr_printf("mem_addr: %ld\n", (long) mem_addr);
+
+            if (std::find(  global_guards["fuzz_app"].begin(), 
+                            global_guards["fuzz_app"].end(), 
+                            (long long) mem_addr) != global_guards["fuzz_app"].end()) {
+                good_lea_found = true;
+                continue;
             }
 
             // try {
@@ -119,12 +113,23 @@ bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, inst
             //     // 140417460856764, base: 140417450172416
             //     // 140417450749383 | 140417450749360
             // }
+        } else if (good_lea_found && instr_writes_memory(instr)) {
+            print_instruction(drcontext, instr);
+            opnd_t src = instr_get_src(instr, 0);
+            if (opnd_is_immed_int(src)) {
+                int val = opnd_get_immed_int(src);
+                dr_printf("move opnd value is <%d>\n", val);
+                guards_opened = (val == 1);
+
+                if (guards_opened)
+                    dr_printf("open the gates!\n");
+                else
+                    dr_printf("close the gates!\n");
+            }
         }
+        good_lea_found = false;
     }
-    if (guards_opened) {
-        dr_abort_with_code(777);
-    }
-    return false;
+    return guards_opened;
 }
 
 static dr_emit_flags_t
@@ -144,7 +149,11 @@ bb_instrumentation_event_handler(
     {
         int op = instr_get_opcode(instr);
         if (opcodes.find(op) != opcodes.end()) {
-            // tracer.traceOverflow(drcontext, tag, bb, instr);
+            if (guarder.throw_instr(instr)) { // address_in_global_guard(drcontext, bb, tag, instr)) {
+                print_instruction(drcontext, instr);
+                dr_printf("instrument instr!\n");
+                tracer.traceOverflow(drcontext, tag, bb, instr);
+            }
         }
 
         // логируем
@@ -153,7 +162,6 @@ bb_instrumentation_event_handler(
         main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
         main_logger.log("INSTR", std::string(buff));
 
-        address_in_global_guard(drcontext, bb, tag, instr);
     }
 
     // проверяем на то, что есть global guard
@@ -260,7 +268,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
                 dr_printf("[INFO]: global guard var in module <%s> was not found! =(\n", module_name.c_str());
             } else {
                 dr_printf("[INFO]: global guard var in module <%s>: %ld, base: %ld\n", module_name.c_str(), (long long) global_var_addr, (long long) module->start);
-                global_guards_open[module_name].push_back((long long int) global_var_addr);
+                global_guards[module_name].push_back((long long int) global_var_addr);
             }
             dr_free_module_data(module);
         } else {
@@ -269,6 +277,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         }
     }
     dr_printf("[INFO]: global guard vars collected!\n");
+    guarder.set_global_guards(global_guards);
     
     tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
     opcodes = config.getInspectOpcodes();

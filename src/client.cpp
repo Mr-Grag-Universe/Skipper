@@ -145,29 +145,25 @@ bb_instrumentation_event_handler(
     app_pc bb_addr_1 = dr_fragment_app_pc(tag);
     app_pc bb_addr_2 = dr_app_pc_for_decoding(bb_addr_1);
 
-    if (address_in_code_segment(tag, code_segment_describers))
-    {
-        int op = instr_get_opcode(instr);
-        if (opcodes.find(op) != opcodes.end()) {
-            if (guarder.throw_instr(instr)) { // address_in_global_guard(drcontext, bb, tag, instr)) {
-                print_instruction(drcontext, instr);
-                dr_printf("instrument instr!\n");
-                tracer.traceOverflow(drcontext, tag, bb, instr);
-            }
+    int op = instr_get_opcode(instr);
+    if (opcodes.find(op) != opcodes.end()) {
+        if (address_in_code_segment(tag, code_segment_describers)) {
+            // dr_printf("HELLO WORLD!!!\n");
+            print_instruction(drcontext, instr);
+            // dr_printf("instrument instr!\n");
+            tracer.traceOverflow(drcontext, tag, bb, instr);
+
+            // логируем
+            char buff[1024];
+            instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
+            main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
+            main_logger.log("INSTR", std::string(buff));
+        } else if (guarder.guards_opened) {
+            print_instruction(drcontext, instr);
+            tracer.traceOverflow(drcontext, tag, bb, instr);
         }
-
-        // логируем
-        char buff[1024];
-        instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
-        main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
-        main_logger.log("INSTR", std::string(buff));
-
     }
-
-    // проверяем на то, что есть global guard
-    // if (address_in_global_guard(drcontext, bb, tag, instr)) {
-    //     dr_printf("global guard has been found!\n");
-    // }
+    guarder.throw_instr(instr);
 
     return DR_EMIT_DEFAULT;
 }
@@ -264,7 +260,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         if (module) {
             long long global_var_addr = (long long) dr_get_proc_address(module->handle, "instr_global");
             // global_var_addr -= (long long) module->start; // получаем относительный адрес
-            if (global_var_addr == NULL) {
+            if (global_var_addr == 0) {
                 dr_printf("[INFO]: global guard var in module <%s> was not found! =(\n", module_name.c_str());
             } else {
                 dr_printf("[INFO]: global guard var in module <%s>: %ld, base: %ld\n", module_name.c_str(), (long long) global_var_addr, (long long) module->start);

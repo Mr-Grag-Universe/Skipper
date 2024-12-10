@@ -25,13 +25,18 @@ public:
     }
 
     bool throw_instr(instr_t * instr) {
+        app_pc addr = instr_get_app_pc(instr);
+        module_data_t *mod = dr_lookup_module(addr);
+        auto module_name = std::string(dr_module_preferred_name(mod));
+        dr_free_module_data(mod);
+
         int opcode = instr_get_opcode(instr);
         if (opcode == (int) OP_lea) {
             opnd_t src = instr_get_src(instr, 0);
             auto mem_addr = opnd_get_addr(src);
-            if (std::find(  this->global_guards["fuzz_app"].begin(), 
-                            this->global_guards["fuzz_app"].end(), 
-                            (long long) mem_addr) != this->global_guards["fuzz_app"].end()) {
+            if (std::find(  this->global_guards[module_name].begin(), 
+                            this->global_guards[module_name].end(), 
+                            (long long) mem_addr) != this->global_guards[module_name].end()) {
                 this->good_lea_met = true;
             }
         } else if (this->good_lea_met && instr_writes_memory(instr)) {
@@ -54,4 +59,4 @@ public:
     }
 };
 
-#endif MY_GUARDER_H
+#endif // MY_GUARDER_H

@@ -9,9 +9,9 @@
         "use_default" : true,
         "inspect_funcs" : [
             {
-                "module_name" : "bignum", 
-                "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
-                "func_name"   : "bn_mul_mont",
+                "module_name" : "fuzz_app", 
+                "module_path" : "experimental_stands/fuzz/fuzz_app", 
+                "func_name"   : "my_asm_factorial",
                 "default_address" : {
                     "start" : "0000000000000000",
                     "stop"  : "0000000000000000"

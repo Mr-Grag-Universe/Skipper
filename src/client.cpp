@@ -1,7 +1,7 @@
 #include <thread>
 #include <stdexcept>
 
-#define X86
+#define X86_64
 #include "dr_api.h"
 #include "dr_tools.h"
 #include "dr_events.h"
@@ -63,7 +63,18 @@ bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, inst
         int opcode = instr_get_opcode(instr);
         if (opcode == (int) OP_lea) {
             opnd_t src = instr_get_src(instr, 0);
-            auto mem_addr = opnd_get_addr(src);
+            if (!opnd_is_memory_reference(src)) {
+            }
+
+
+            void* mem_addr;
+            try {
+                dr_printf("1 opnd get addr\n");
+                mem_addr = opnd_get_addr(src);
+            } catch (...) {
+                good_lea_found = false;
+                continue;
+            }
             dr_printf("mem_addr: %ld\n", (long) mem_addr);
 
             if (std::find(  global_guards["fuzz_app"].begin(), 
@@ -146,10 +157,11 @@ bb_instrumentation_event_handler(
     app_pc bb_addr_2 = dr_app_pc_for_decoding(bb_addr_1);
 
     int op = instr_get_opcode(instr);
+    // print_instruction(drcontext, instr);
     if (opcodes.find(op) != opcodes.end()) {
         if (address_in_code_segment(tag, code_segment_describers)) {
+            // print_instruction(drcontext, instr);
             // dr_printf("HELLO WORLD!!!\n");
-            print_instruction(drcontext, instr);
             // dr_printf("instrument instr!\n");
             tracer.traceOverflow(drcontext, tag, bb, instr);
 
@@ -159,11 +171,12 @@ bb_instrumentation_event_handler(
             main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
             main_logger.log("INSTR", std::string(buff));
         } else if (guarder.guards_opened) {
-            print_instruction(drcontext, instr);
+            // print_instruction(drcontext, instr);
             tracer.traceOverflow(drcontext, tag, bb, instr);
         }
     }
     guarder.throw_instr(instr);
+    // dr_printf("guard passed!\n");
 
     return DR_EMIT_DEFAULT;
 }
@@ -343,14 +356,21 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     fflush(stdout);
 
     // достаём адрес для доп покрытия
-    size_t extra_counters_start = get_symbol_offset("fuzz_app", 
-                                                    "experimental_stands/fuzz/fuzz_app", 
-                                                    "__start___libfuzzer_extra_counters");
-    size_t extra_counters_stop  = get_symbol_offset("fuzz_app", 
-                                                    "experimental_stands/fuzz/fuzz_app", 
-                                                    "__stop___libfuzzer_extra_counters");
-    
-    tracer.set_trace_area(extra_counters_start, extra_counters_stop);
+    for (auto & p : config.get_modules_info()) {
+        auto module_name = p.first;
+        auto module_path = p.second;
+        size_t extra_counters_start = get_symbol_offset(module_name, 
+                                                        module_path, 
+                                                        "__start___libfuzzer_extra_counters");
+        size_t extra_counters_stop  = get_symbol_offset(module_name, 
+                                                        module_path, 
+                                                        "__stop___libfuzzer_extra_counters");
+
+        if (extra_counters_start && extra_counters_stop) {
+            tracer.set_trace_area(extra_counters_start, extra_counters_stop);
+            break;
+        }
+    }
 
     /*
      * ######################## Устанавливаем обработчики ########################3

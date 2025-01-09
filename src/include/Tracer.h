@@ -27,11 +27,13 @@ int get_msb_ind(uint x) {
     return msb_index;
 }
 
-int trace_overflow(uint32_t offset, uint32_t size, uint32_t ind, uint32_t reg_id) {
+int trace_overflow(int* offset_int_ptr, uint32_t size, uint32_t ind, uint32_t reg_id) {
     // offset - адрес памяти, куда писать
     // size - размер памяти
     // ind - индекс add
     // reg_id - индекс регистра в DynamoRIO
+
+    char* offset = (char*) offset_int_ptr; // (char*) ((((size_t) high) << 32) | (size_t) low);
     reg_id_t dst_reg = (reg_id_t) reg_id;
     if (size < 65*(ind+1)) {
         printf("memory is not enough for tracing\n");
@@ -49,8 +51,10 @@ int trace_overflow(uint32_t offset, uint32_t size, uint32_t ind, uint32_t reg_id
     // находим индекс старшего бита
     int msb_ind_reg = get_msb_ind((uint) reg);
 
+    // return 0;
     // трейсим
     if (msb_ind_reg >= 0) {
+        // printf("address: %p + %d\n", offset, ind*65+msb_ind_reg);
         ((char *)offset)[(ind*65+msb_ind_reg) % size] += 1;
     }
     ((char *)offset)[(ind*65+64) % size] += xflags & EFLAGS_CF;
@@ -227,17 +231,24 @@ public:
     }
 
     void traceOverflow(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
-        if (!instr_writes_memory(instr)) {
-            dr_printf("cannot instrument this!\n");
+        // if (!instr_writes_memory(instr)) {
+        if (!instr_num_dsts(instr)) {
+            dr_printf("<1> cannot instrument this!\n");
             return;
         }
+        dr_printf("1 passed\n");
 
         opnd_t dst = instr_get_dst(instr, 0);
         if (!opnd_is_reg(dst)) {
+            dr_printf("<2> cannot instrument this!\n");
             return;
         }
+        dr_printf("2 passed\n");
+
         reg_id_t dst_reg = opnd_get_reg(dst);
+        dr_printf("3 passed\n");
         int reg_ind = this->get_reg_id(dst_reg);
+        dr_printf("4 passed\n");
 
         app_pc instr_pc = instr_get_app_pc(instr);
         // если эту инструкцию ещё не встречали - выдаём ей номер
@@ -251,13 +262,17 @@ public:
         dr_free_module_data(module);
         size_t start_size_t = (size_t) this->trace_area.start + (size_t) pc;
 
+        uint32_t high = (uint32_t)(start_size_t >> 32); // Старшая часть
+        uint32_t low = (uint32_t)(start_size_t & 0xFFFFFFFF); // Младшая часть
+
+        // return;
         instr_t *nxt = instr_get_next(instr);
         dr_insert_clean_call_ex(drcontext, 
                                 bb, nxt, 
                                 (void *) trace_overflow, 
                                 (dr_cleancall_save_t) (DR_CLEANCALL_READS_APP_CONTEXT | DR_CLEANCALL_MULTIPATH),
                                 4, 
-                                OPND_CREATE_INT32(start_size_t),
+                                OPND_CREATE_INTPTR(start_size_t),
                                 OPND_CREATE_INT32(this->trace_area.size),
                                 OPND_CREATE_INT32(ind),
                                 OPND_CREATE_INT32(dst_reg));

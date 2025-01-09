@@ -1,0 +1,34 @@
+"make" depend && "make" _build_sw
+make[1]: Entering directory '/home/debian/Skipper/experimental_stands/openssl/openssl'
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_TIME = "ru_RU.UTF-8",
+	LC_MONETARY = "ru_RU.UTF-8",
+	LC_ADDRESS = "ru_RU.UTF-8",
+	LC_TELEPHONE = "ru_RU.UTF-8",
+	LC_NAME = "ru_RU.UTF-8",
+	LC_MEASUREMENT = "ru_RU.UTF-8",
+	LC_IDENTIFICATION = "ru_RU.UTF-8",
+	LC_NUMERIC = "ru_RU.UTF-8",
+	LC_PAPER = "ru_RU.UTF-8",
+	LANG = "C"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+make[1]: Leaving directory '/home/debian/Skipper/experimental_stands/openssl/openssl'
+make[1]: Entering directory '/home/debian/Skipper/experimental_stands/openssl/openssl'
+clang  -Iinclude -I../../../LLVM/llvm-project/build/lib/clang/20/lib/x86_64-unknown-linux-gnu  -pthread -m64 -fsanitize=address -fno-omit-frame-pointer -g -Wa,--noexecstack -Qunused-arguments -Wall -O0 -g -fsanitize=fuzzer-no-link -fno-sanitize=alignment -DOPENSSL_BUILDING_OPENSSL -DPEDANTIC -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -MMD -MF fuzz/bignum-bin-bignum.d.tmp -c -o fuzz/bignum-bin-bignum.o fuzz/bignum.c
+clang  -Iinclude  -pthread -m64 -fsanitize=address -fno-omit-frame-pointer -g -Wa,--noexecstack -Qunused-arguments -Wall -O0 -g -fsanitize=fuzzer-no-link -fno-sanitize=alignment -DOPENSSL_BUILDING_OPENSSL -DPEDANTIC -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -MMD -MF fuzz/bignum-test-bin-bignum.d.tmp -c -o fuzz/bignum-test-bin-bignum.o fuzz/bignum.c
+rm -f fuzz/bignum-test
+rm -f fuzz/bignum
+${LDCMD:-clang} -pthread -m64 -fsanitize=address -fno-omit-frame-pointer -g -Wa,--noexecstack -Qunused-arguments -Wall -O0 -g -fsanitize=fuzzer-no-link -fno-sanitize=alignment -L.   \
+	-o fuzz/bignum-test \
+	fuzz/bignum-test-bin-bignum.o \
+	fuzz/bignum-test-bin-test-corpus.o \
+	-lcrypto -ldl -pthread -lstdc++
+${LDCMD:-clang} -pthread -m64 -fsanitize=address -fno-omit-frame-pointer -g -Wa,--noexecstack -Qunused-arguments -Wall -O0 -g -fsanitize=fuzzer-no-link -fno-sanitize=alignment -L.   \
+	-o fuzz/bignum \
+	fuzz/bignum-bin-bignum.o fuzz/bignum-bin-driver.o \
+	../../../LLVM/llvm-project/build/lib/clang/20/lib/x86_64-unknown-linux-gnu/libclang_rt.fuzzer.a -lcrypto -ldl -pthread -lstdc++
+make[1]: Leaving directory '/home/debian/Skipper/experimental_stands/openssl/openssl'

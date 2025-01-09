@@ -156,6 +156,17 @@ public:
         }
         return module_names;
     }
+
+    std::set <std::pair<std::string, std::string>> get_modules_info() const {
+        dr_printf("getting modules names...\n");
+        std::set <std::pair<std::string, std::string>> modules_info;
+        for (auto mn : this->_config["fuzzing"]["inspect_funcs"]) {
+            std::string name = mn["module_name"];
+            std::string path = mn["module_path"];
+            modules_info.insert(std::make_pair(name, path));
+        }
+        return modules_info;
+    }
 };
 
 #endif // MY_CONFIG_header

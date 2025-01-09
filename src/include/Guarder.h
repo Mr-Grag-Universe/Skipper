@@ -31,28 +31,40 @@ public:
         dr_free_module_data(mod);
 
         int opcode = instr_get_opcode(instr);
-        if (opcode == (int) OP_lea) {
+        if (instr_num_srcs(instr)) {
             opnd_t src = instr_get_src(instr, 0);
-            auto mem_addr = opnd_get_addr(src);
-            if (std::find(  this->global_guards[module_name].begin(), 
-                            this->global_guards[module_name].end(), 
-                            (long long) mem_addr) != this->global_guards[module_name].end()) {
-                this->good_lea_met = true;
-            }
-        } else if (this->good_lea_met && instr_writes_memory(instr)) {
-            opnd_t src = instr_get_src(instr, 0);
-            if (opnd_is_immed_int(src)) {
-                int val = opnd_get_immed_int(src);
-                dr_printf("move opnd value is <%d>\n", val);
-                this->guards_opened = (val == 1);
+            if (opcode == (int) OP_lea && (opnd_is_far_memory_reference(src) || opnd_is_near_memory_reference(src)) && opnd_is_abs_addr(src)) {
+                dr_printf("2 opnd get addr\n");
+                auto mem_addr = opnd_get_addr(src);
+                dr_printf("addr has been gotten\n");
 
-                if (this->guards_opened)
-                    dr_printf("open the gates!\n");
-                else
-                    dr_printf("close the gates!\n");
+                if (std::find(  this->global_guards[module_name].begin(), 
+                                this->global_guards[module_name].end(), 
+                                (long long) mem_addr) != this->global_guards[module_name].end()) {
+                    // lea инструкция хорошая
+                    this->good_lea_met = true;
+                } else {
+                    this->good_lea_met = false;
+                }
+            } else {
+                if (this->good_lea_met && instr_writes_memory(instr)) { 
+                    if (false) {
+                        if (opnd_is_immed_int64(src)) {
+                            long val = opnd_get_immed_int64(src);
+                            dr_printf("move opnd value is <%ld>\n", val);
+                            this->guards_opened = (val == 1);
+
+                            if (this->guards_opened)
+                                dr_printf("open the gates!\n");
+                            else
+                                dr_printf("close the gates!\n");
+                        }
+                    }
+                }
+                this->good_lea_met = false;
             }
-            this->good_lea_met = false;
         } else {
+            // если инструкция без src -> это не move и не lea -> плохая
             this->good_lea_met = false;
         }
         return this->guards_opened;

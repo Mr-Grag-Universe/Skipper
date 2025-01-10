@@ -27,6 +27,18 @@ int get_msb_ind(uint x) {
     return msb_index;
 }
 
+void get_msb_ind_cc(uint x, int * res) {
+    if (x == 0)
+        return; // Возвращает -1, если нет установленных битов
+
+    int msb_index = 0;
+    while (x >>= 1) {
+        msb_index++;
+    }
+    // return msb_index;
+    *res = msb_index;
+}
+
 int trace_overflow(int* offset_int_ptr, uint32_t size, uint32_t ind, uint32_t reg_id) {
     // offset - адрес памяти, куда писать
     // size - размер памяти
@@ -60,6 +72,272 @@ int trace_overflow(int* offset_int_ptr, uint32_t size, uint32_t ind, uint32_t re
     ((char *)offset)[(ind*65+64) % size] += xflags & EFLAGS_CF;
     
     return 0;
+}
+
+void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where, 
+                char* offset, uint32_t size, uint32_t ind, uint32_t reg_id) {
+    auto xax = DR_REG_XAX;
+    auto xbx = DR_REG_XBX;
+    auto xcx = DR_REG_XCX;
+    auto xdx = DR_REG_XDX;
+    auto xdi = DR_REG_XDI;
+    auto xsi = DR_REG_XSI;
+
+    // сохраняем регистры и флаги
+    dr_save_arith_flags(drcontext, bb, where, SPILL_SLOT_2); // по умолчанию кладёт в xax
+    dr_save_reg(drcontext, bb, where, xax, SPILL_SLOT_3);
+    dr_save_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
+    dr_save_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
+    dr_save_reg(drcontext, bb, where, xdx, SPILL_SLOT_6);
+    dr_save_reg(drcontext, bb, where, xdi, SPILL_SLOT_7);
+    dr_save_reg(drcontext, bb, where, xsi, SPILL_SLOT_8);
+    
+    
+    instr_t * instr;
+
+    // сохраняем значение исследуемого регистра в RCX
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        opnd_create_reg(reg_id)
+    );
+
+    // ====================================================================
+    // проверка на то, что памяти хватит
+    /*
+    instr = INSTR_CREATE_add(
+        drcontext,
+        opnd_create_reg(DR_REG_EDX),
+        OPND_CREATE_INT32(1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = XINST_CREATE_move(
+        drcontext,
+        opnd_create_reg(DR_REG_EDX),
+        opnd_create_reg(DR_REG_EBX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_shl(
+        drcontext,
+        opnd_create_reg(DR_REG_EBX),
+        opnd_create_immed_int(6, OPSZ_1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_add(
+        drcontext,
+        opnd_create_reg(DR_REG_EBX),
+        opnd_create_reg(DR_REG_EDX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    */
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_EBX),
+        OPND_CREATE_INT32(65*(ind+1))
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_ESI),
+        OPND_CREATE_INT32(size)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_cmp(
+        drcontext,
+        opnd_create_reg(DR_REG_EBX),
+        opnd_create_reg(DR_REG_ESI)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr_t * finish = INSTR_CREATE_label(drcontext);
+    opnd_t opnd1 = opnd_create_instr(finish);
+    instr = INSTR_CREATE_jcc(
+        drcontext,
+        OP_jb,
+        opnd1
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // checked
+
+    // =========================================================================
+    // get_msb_ind
+    // RCX - исследуемый регистр хранится
+    // RAX - возвращаемый результат
+    // создаём метки mgb_loop, msb_finish, msb_ret_minus_1
+    instr_t * msb_finish      = INSTR_CREATE_label(drcontext);
+    instr_t * msb_loop        = INSTR_CREATE_label(drcontext);
+    instr_t * msb_ret_minus_1 = INSTR_CREATE_label(drcontext);
+    // if (x == 0) return -1; 
+    instr = INSTR_CREATE_test(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        opnd_create_reg(DR_REG_RCX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_jcc(
+        drcontext,
+        OP_je,
+        opnd_create_instr(msb_ret_minus_1) // get_msb_ind continue
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_xor(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        opnd_create_reg(DR_REG_RAX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_shr(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        opnd_create_immed_int(1, OPSZ_1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_jcc(
+        drcontext,
+        OP_je,
+        opnd_create_instr(msb_finish) // get_msb_ind continue
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instrlist_meta_preinsert(bb, where, msb_loop);
+    instr = INSTR_CREATE_add(
+        drcontext,
+        opnd_create_reg(DR_REG_EAX),
+        OPND_CREATE_INT32(1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_shr(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        opnd_create_immed_int(1, OPSZ_1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_jcc(
+        drcontext,
+        OP_jne,
+        opnd_create_instr(msb_loop) // loop
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_jmp(
+        drcontext,
+        opnd_create_instr(msb_finish) // msb finish
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instrlist_meta_preinsert(bb, where, msb_ret_minus_1);
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        OPND_CREATE_INT64(-1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instrlist_meta_preinsert(bb, where, msb_finish);
+    
+    // ==============================================================================
+    // теперь результат функции помещаем в RCX и инкрементаируем соответствующий байт
+    
+    instr = XINST_CREATE_move(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        opnd_create_reg(DR_REG_RAX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // ответ в RCX
+    // записываем адрес в RAX
+    auto pos = ind*65;
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        OPND_CREATE_INT64(offset+pos)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_add(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        opnd_create_reg(DR_REG_RCX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    
+    // делать %size не обязательно, т.к. ранее я произвёл проверку
+    // instr = INSTR_CREATE_div_4(
+    //     drcontext,
+    //     OPND_CREATE_
+    // );
+    // instrlist_meta_preinsert(bb, where, instr);
+    // читаем, что лежит по адресу данного байта
+
+    instr = INSTR_CREATE_mov_ld(
+        drcontext,
+        opnd_create_reg(DR_REG_DL),
+        OPND_CREATE_MEM8(DR_REG_RAX, 0)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // прибавляем 1
+    instr = INSTR_CREATE_inc(
+        drcontext,
+        opnd_create_reg(DR_REG_DL)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // кладём новое значение по адресу
+    instr = XINST_CREATE_store(
+        drcontext,
+        OPND_CREATE_MEM8(DR_REG_RAX, 0),
+        opnd_create_reg(DR_REG_DL)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+
+    // =========================================================================
+    // заняты RAX под адрес, RCX под флаги, RDX - вспомогательный
+    // берём сохранённые флаги и кладём в reg RCX
+    dr_restore_reg(
+        drcontext, bb, where, (reg_id_t) DR_REG_RCX, SPILL_SLOT_2
+    );
+    // по идее их всего 6 и должно прокатить, если я использую eax вместо rax
+    instr = INSTR_CREATE_and(
+        drcontext,
+        opnd_create_reg(DR_REG_ECX),
+        OPND_CREATE_INT32((uint32_t) EFLAGS_CF)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // сохраняем в памяти флаг
+    auto i = (ind*65+64) % size;
+    // формируем адрес
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        OPND_CREATE_INT64(offset)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // читаем, что лежит по адресу данного байта
+    instr = INSTR_CREATE_mov_ld(
+        drcontext,
+        opnd_create_reg(DR_REG_DL),
+        OPND_CREATE_MEM8(DR_REG_RAX, i)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // прибавляем бит CF регистра флагов
+    instr = INSTR_CREATE_add(
+        drcontext,
+        opnd_create_reg(DR_REG_DL),
+        opnd_create_reg(DR_REG_CL)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    // кладём новое значение по адресу
+    instr = XINST_CREATE_store(
+        drcontext,
+        OPND_CREATE_MEM8(DR_REG_RAX, i),
+        opnd_create_reg(DR_REG_DL)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+
+    // конец вставки
+    instrlist_meta_preinsert(bb, where, finish);
+
+    // возвращаем регистры и флаги на место
+    dr_restore_reg(drcontext, bb, where, xsi, SPILL_SLOT_8);
+    dr_restore_reg(drcontext, bb, where, xdi, SPILL_SLOT_7);
+    dr_restore_reg(drcontext, bb, where, xdx, SPILL_SLOT_6);
+    dr_restore_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
+    dr_restore_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
+    dr_restore_reg(drcontext, bb, where, xax, SPILL_SLOT_3);
+    dr_restore_arith_flags(drcontext, bb, where, SPILL_SLOT_2);
 }
 
 class Tracer {
@@ -267,6 +545,8 @@ public:
 
         // return;
         instr_t *nxt = instr_get_next(instr);
+        // instrument(drcontext, tag, bb, nxt, 
+        //            (char*) start_size_t, this->trace_area.size, ind, dst_reg);
         dr_insert_clean_call_ex(drcontext, 
                                 bb, nxt, 
                                 (void *) trace_overflow, 

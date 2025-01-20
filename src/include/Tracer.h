@@ -155,7 +155,7 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         OP_jb,
         opnd1
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     // checked
 
     // =========================================================================
@@ -172,13 +172,13 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         opnd_create_reg(DR_REG_RCX),
         opnd_create_reg(DR_REG_RCX)
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_jcc(
         drcontext,
         OP_je,
         opnd_create_instr(msb_ret_minus_1) // get_msb_ind continue
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_xor(
         drcontext,
         opnd_create_reg(DR_REG_RAX),
@@ -190,46 +190,66 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         opnd_create_reg(DR_REG_RCX),
         opnd_create_immed_int(1, OPSZ_1)
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_jcc(
         drcontext,
         OP_je,
         opnd_create_instr(msb_finish) // get_msb_ind continue
     );
-    instrlist_meta_preinsert(bb, where, instr);
-    instrlist_meta_preinsert(bb, where, msb_loop);
+    // instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, msb_loop);
     instr = INSTR_CREATE_add(
         drcontext,
         opnd_create_reg(DR_REG_EAX),
         OPND_CREATE_INT32(1)
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_shr(
         drcontext,
         opnd_create_reg(DR_REG_RCX),
         opnd_create_immed_int(1, OPSZ_1)
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_jcc(
         drcontext,
         OP_jne,
         opnd_create_instr(msb_loop) // loop
     );
-    instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_jmp(
         drcontext,
         opnd_create_instr(msb_finish) // msb finish
     );
-    instrlist_meta_preinsert(bb, where, instr);
-    instrlist_meta_preinsert(bb, where, msb_ret_minus_1);
+    // instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, msb_ret_minus_1);
     instr = INSTR_CREATE_mov_imm(
         drcontext,
         opnd_create_reg(DR_REG_RAX),
         OPND_CREATE_INT64(-1)
     );
-    instrlist_meta_preinsert(bb, where, instr);
-    instrlist_meta_preinsert(bb, where, msb_finish);
+    // instrlist_meta_preinsert(bb, where, instr);
+    // instrlist_meta_preinsert(bb, where, msb_finish);
     
+    instr = INSTR_CREATE_bsr(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        opnd_create_reg(DR_REG_RCX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_mov_imm(
+        drcontext,
+        opnd_create_reg(DR_REG_RCX),
+        OPND_CREATE_INT64(128-1)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+    instr = INSTR_CREATE_and(
+        drcontext,
+        opnd_create_reg(DR_REG_RAX),
+        opnd_create_reg(DR_REG_RCX)
+    );
+    instrlist_meta_preinsert(bb, where, instr);
+
+
     // ==============================================================================
     // теперь результат функции помещаем в RCX и инкрементаируем соответствующий байт
     
@@ -514,19 +534,15 @@ public:
             dr_printf("<1> cannot instrument this!\n");
             return;
         }
-        dr_printf("1 passed\n");
 
         opnd_t dst = instr_get_dst(instr, 0);
         if (!opnd_is_reg(dst)) {
             dr_printf("<2> cannot instrument this!\n");
             return;
         }
-        dr_printf("2 passed\n");
 
         reg_id_t dst_reg = opnd_get_reg(dst);
-        dr_printf("3 passed\n");
         int reg_ind = this->get_reg_id(dst_reg);
-        dr_printf("4 passed\n");
 
         app_pc instr_pc = instr_get_app_pc(instr);
         // если эту инструкцию ещё не встречали - выдаём ей номер
@@ -545,21 +561,27 @@ public:
 
         // return;
         instr_t *nxt = instr_get_next(instr);
-        // instrument(drcontext, tag, bb, nxt, 
-        //            (char*) start_size_t, this->trace_area.size, ind, dst_reg);
-        dr_insert_clean_call_ex(drcontext, 
-                                bb, nxt, 
-                                (void *) trace_overflow, 
-                                (dr_cleancall_save_t) (DR_CLEANCALL_READS_APP_CONTEXT | DR_CLEANCALL_MULTIPATH),
-                                4, 
-                                OPND_CREATE_INTPTR(start_size_t),
-                                OPND_CREATE_INT32(this->trace_area.size),
-                                OPND_CREATE_INT32(ind),
-                                OPND_CREATE_INT32(dst_reg));
+        std::cout << this->tracer_config["use_asm"] << std::endl;
+        if (this->tracer_config["use_asm"]) {
+            dr_printf("using inline-asm instrumentation!\n");
+            instrument(drcontext, tag, bb, nxt, 
+                       (char*) start_size_t, this->trace_area.size, ind, dst_reg);
+        } else {
+            dr_printf("using clean_call instrumentation!\n");
+            dr_insert_clean_call_ex(drcontext, 
+                                    bb, nxt, 
+                                    (void *) trace_overflow, 
+                                    (dr_cleancall_save_t) (DR_CLEANCALL_READS_APP_CONTEXT | DR_CLEANCALL_MULTIPATH),
+                                    4, 
+                                    OPND_CREATE_INTPTR(start_size_t),
+                                    OPND_CREATE_INT32(this->trace_area.size),
+                                    OPND_CREATE_INT32(ind),
+                                    OPND_CREATE_INT32(dst_reg));
+        }
         
         // проверка
-        dr_printf("add index: %d\n", ind);
-        dr_printf("add number: %d\n", this->pc_ind_map.size());
+        dr_printf("add number: %d | add index: %d | thread id: %s\n", 
+                    this->pc_ind_map.size(), ind, get_thread_id().c_str());
     }
 };
 

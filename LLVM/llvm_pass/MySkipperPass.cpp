@@ -106,29 +106,10 @@ void storeInstructionAsGlobal(Module &M, Instruction *I, GlobalVariable * GV) {
     Type* int8Ty = Type::getInt8Ty(ctx);
     Type* PtrType = int8Ty->getPointerTo();
 
-    // Store the instruction address (casted to i8*) in the global variable
-    // auto Addr = Builder.CreateBitCast(I, PtrType);
-
     IRBuilder<> Builder_1(I);
     Builder_1.CreateStore(ConstantInt::get(Type::getInt32Ty(ctx), 1), GV);
     IRBuilder<> Builder_2(I->getNextNode());
     Builder_2.CreateStore(ConstantInt::get(Type::getInt32Ty(ctx), 0), GV);
-
-    // if (I->getType()->isPointerTy()) {
-    //     outs() << "I is pointer\n";
-    //     // Если I уже указатель, просто выполняем bitcast
-    //     auto Addr = Builder.CreateBitCast(I, PtrType);
-    //     Builder.CreateStore(Addr, GV);
-    // } else {
-    //     outs() << "I is not pointer\n";
-    //     // Если I не указатель, создаем временную переменную
-    //     AllocaInst *tempVar = Builder.CreateAlloca(I->getType(), nullptr, "temp_var");
-    //     Builder.CreateStore(I, tempVar); // Сохраняем значение в временной переменной
-
-    //     // Получаем адрес временной переменной и выполняем bitcast
-    //     auto Addr = Builder.CreateBitCast(tempVar, PtrType);
-    //     Builder.CreateStore(Addr, GV);
-    // }
 }
 
 PreservedAnalyses SkipperPass::run(Module &M, ModuleAnalysisManager &AM) {

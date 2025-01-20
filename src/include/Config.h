@@ -33,6 +33,14 @@ private:
             return OP_sub;
         } else if (op_s == "sbb") {
             return OP_sbb;
+        } else if (op_s == "adcx") {
+            return OP_adcx;
+        } else if (op_s == "adox") {
+            return OP_adox;
+        } else if (op_s == "cmp") {
+            return OP_cmp;
+        } else if (op_s == "movq") {
+            return OP_movq;
         } else {
             throw std::runtime_error("we do not know this opcode's name!");
             return -1;

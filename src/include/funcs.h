@@ -370,4 +370,10 @@ void print_instruction(void *drcontext, instr_t *instr) {
     dr_printf("Instruction: %s\n", instr_str);
 }
 
+std::string get_thread_id() {
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    return ss.str();
+}
+
 #endif // FUNCS_DR_header

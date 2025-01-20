@@ -33,6 +33,8 @@ def main():
         start_time = time.time()
         result = subprocess.run(command, cwd=working_directory, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         end_time = time.time()
+        # удалим crash-* файл
+        subprocess.run("rm crash-*", cwd=working_directory, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         delta = end_time - start_time
         total_time += delta
         time_distribution.append(delta)

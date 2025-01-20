@@ -32,7 +32,7 @@ void init_tls() {
     if (tls_key == -1) {
         throw std::runtime_error("cannot allocate tls!");
     }
-    dr_printf("thread tls inited!\n");
+    dr_printf("thread <%s> tls inited!\n", get_thread_id().c_str());
 }
 
 bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments)
@@ -159,6 +159,7 @@ bb_instrumentation_event_handler(
     int op = instr_get_opcode(instr);
     // print_instruction(drcontext, instr);
     if (opcodes.find(op) != opcodes.end()) {
+        // print_instruction(drcontext, instr);
         if (address_in_code_segment(tag, code_segment_describers)) {
             // print_instruction(drcontext, instr);
             // dr_printf("HELLO WORLD!!!\n");
@@ -193,7 +194,7 @@ event_thread_init(void *drcontext)
     dr_printf("<<<<< new thread init >>>>>\n");
     init_tls();
     std::thread::id thread_id = std::this_thread::get_id();
-    dr_printf("thread_id: %u\n", thread_id);
+    dr_printf("thread_id: %s\n", get_thread_id().c_str());
     Logger* logger = new Logger(create_log_file_name(thread_id));
     drmgr_set_tls_field(drcontext, tls_key, logger);
 }
@@ -201,6 +202,7 @@ static void
 exit_event(void)
 {
     dr_printf(">>>>> exit event <<<<<\n");
+    dr_printf("thread_id: %s\n", get_thread_id().c_str());
     if (!drmgr_unregister_thread_init_event(event_thread_init) || !drmgr_unregister_bb_instrumentation_event((drmgr_analysis_cb_t) bb_instrumentation_event_handler)) {
             // DR_ASSERT(false);
             dr_printf("STOOOOOOP!!!!!\n");
@@ -218,6 +220,7 @@ static void
 event_thread_exit(void *drcontext)
 {
     dr_printf("<<<<< thread exit >>>>>\n");
+    dr_printf("thread_id: %s\n", get_thread_id().c_str());
     // dr_app_cleanup();
     // dr_app_stop_and_cleanup();
 
@@ -233,6 +236,7 @@ static void
 fork_init_event(void *drcontext)
 {
     dr_printf("<<<<< fork init >>>>>\n");
+    dr_printf("thread_id: %s\n", get_thread_id().c_str());
 }
 
 static void 
@@ -243,7 +247,8 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
-    dr_printf("hellow world!\n");
+    auto tid = get_thread_id();
+    dr_printf("================================================================\nhellow world!\n");
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 
@@ -251,17 +256,17 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     // если это не программа с искомым модулем - не исполняемся дальше
     auto analized_modules_names = config.get_modules_names();
     auto current_modules_names = get_modules_names();
-    // for (auto & m: analized_modules_names) {
-    //     dr_printf("module_name_1: %s\n", m.c_str());
-    // }
-    // for (auto & m: current_modules_names) {
-    //     dr_printf("module_name_2: %s\n", m.c_str());
-    // }
+    for (auto & m: analized_modules_names) {
+        dr_printf("[INFO] : %s : module_name_1: %s\n", tid.c_str(), m.c_str());
+    }
+    for (auto & m: current_modules_names) {
+        dr_printf("[INFO] : %s : module_name_2: %s\n", tid.c_str(), m.c_str());
+    }
 
     std::set <std::string> cmn_set(current_modules_names.begin(), current_modules_names.end());
     if (!std::includes( cmn_set.begin(), cmn_set.end(), 
                         analized_modules_names.begin(), analized_modules_names.end())) {
-                            dr_printf("[INFO] : there is not modules in current process!\n");
+                            dr_printf("[INFO] : %s : there is not modules in current process!\n", tid.c_str());
                             return;
                         }
 
@@ -274,9 +279,9 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
             long long global_var_addr = (long long) dr_get_proc_address(module->handle, "instr_global");
             // global_var_addr -= (long long) module->start; // получаем относительный адрес
             if (global_var_addr == 0) {
-                dr_printf("[INFO]: global guard var in module <%s> was not found! =(\n", module_name.c_str());
+                dr_printf("[INFO] : %s : global guard var in module <%s> was not found! =(\n", tid.c_str(), module_name.c_str());
             } else {
-                dr_printf("[INFO]: global guard var in module <%s>: %ld, base: %ld\n", module_name.c_str(), (long long) global_var_addr, (long long) module->start);
+                dr_printf("[INFO] : %s : global guard var in module <%s>: %ld, base: %ld\n", tid.c_str(), module_name.c_str(), (long long) global_var_addr, (long long) module->start);
                 global_guards[module_name].push_back((long long int) global_var_addr);
             }
             dr_free_module_data(module);
@@ -285,12 +290,12 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
             exit(1);
         }
     }
-    dr_printf("[INFO]: global guard vars collected!\n");
+    dr_printf("[INFO] : %s : global guard vars collected!\n", tid.c_str());
     guarder.set_global_guards(global_guards);
     
     tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
     opcodes = config.getInspectOpcodes();
-    dr_printf("DR configured\n");
+    dr_printf("%s : DR configured\n", tid.c_str());
 
     print_modules();
 
@@ -352,7 +357,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (code_segment_describers.size() == 0) {
         dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
     }
-    dr_printf("DR segments readed successfully!\n");
+    dr_printf("%s : DR segments readed successfully!\n", tid.c_str());
     fflush(stdout);
 
     // достаём адрес для доп покрытия
@@ -389,6 +394,6 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     drmgr_register_bb_instrumentation_event(NULL, bb_instrumentation_event_handler, NULL);
 
 
-    dr_printf("[SYS] : sleeping!\n");
-    std::this_thread::sleep_for(2s);
+    dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
+    // std::this_thread::sleep_for(2s);
 }

@@ -2,7 +2,8 @@
     "tracer" : {
         "start_location" : 0,
         "trace_size" : -1,
-        "trace_area_name" : "__libfuzzer_extra_counters"
+        "trace_area_name" : "__libfuzzer_extra_counters",
+        "use_asm" : false
     },
     "fuzzing" : {
         "use_pattern" : true,
@@ -11,14 +12,50 @@
             {
                 "module_name" : "bignum", 
                 "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
-                "func_name"   : "bn_mul_mont",
+                "func_name"   : "bn_mulx4x_mont",
+                "default_address" : {
+                    "start" : "0000000000000000",
+                    "stop"  : "0000000000000000"
+                }
+            },
+            {
+                "module_name" : "bignum", 
+                "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
+                "func_name"   : "bn_sqr8x_mont",
+                "default_address" : {
+                    "start" : "0000000000000000",
+                    "stop"  : "0000000000000000"
+                }
+            },
+            {
+                "module_name" : "bignum", 
+                "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
+                "func_name"   : "bn_mul4x_mont",
+                "default_address" : {
+                    "start" : "0000000000000000",
+                    "stop"  : "0000000000000000"
+                }
+            },
+            {
+                "module_name" : "bignum", 
+                "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
+                "func_name"   : "bn_sqrx8x_internal",
+                "default_address" : {
+                    "start" : "0000000000000000",
+                    "stop"  : "0000000000000000"
+                }
+            },
+            {
+                "module_name" : "bignum", 
+                "module_path" : "experimental_stands/openssl/openssl/fuzz/bignum", 
+                "func_name"   : "bn_sqr8x_internal",
                 "default_address" : {
                     "start" : "0000000000000000",
                     "stop"  : "0000000000000000"
                 }
             }
         ],
-        "inspect_opcodes" : ["add", "adc"],
+        "inspect_opcodes" : ["add", "movq", "cmp", "adcx", "adox"],
         "asm_auto_detection" : false,
         "corpus_path" : "out/corpus"
     },

@@ -5,6 +5,7 @@
 #include "dr_api.h"
 #include "dr_tools.h"
 #include "dr_events.h"
+#include "dr_os_utils.h"
 
 #include "include/func_bounds.h"
 #include "include/funcs.h"
@@ -157,13 +158,8 @@ bb_instrumentation_event_handler(
     app_pc bb_addr_2 = dr_app_pc_for_decoding(bb_addr_1);
 
     int op = instr_get_opcode(instr);
-    // print_instruction(drcontext, instr);
     if (opcodes.find(op) != opcodes.end()) {
-        // print_instruction(drcontext, instr);
         if (address_in_code_segment(tag, code_segment_describers)) {
-            // print_instruction(drcontext, instr);
-            // dr_printf("HELLO WORLD!!!\n");
-            // dr_printf("instrument instr!\n");
             tracer.traceOverflow(drcontext, tag, bb, instr);
 
             // логируем
@@ -172,12 +168,10 @@ bb_instrumentation_event_handler(
             main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
             main_logger.log("INSTR", std::string(buff));
         } else if (guarder.guards_opened) {
-            // print_instruction(drcontext, instr);
             tracer.traceOverflow(drcontext, tag, bb, instr);
         }
     }
     guarder.throw_instr(instr);
-    // dr_printf("guard passed!\n");
 
     return DR_EMIT_DEFAULT;
 }
@@ -221,8 +215,6 @@ event_thread_exit(void *drcontext)
 {
     dr_printf("<<<<< thread exit >>>>>\n");
     dr_printf("thread_id: %s\n", get_thread_id().c_str());
-    // dr_app_cleanup();
-    // dr_app_stop_and_cleanup();
 
     dr_printf("thread tls clearing...\n");
     Logger* logger = static_cast<Logger*>(drmgr_get_tls_field(drcontext, tls_key));
@@ -249,6 +241,19 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
     auto tid = get_thread_id();
     dr_printf("================================================================\nhellow world!\n");
+    dr_printf("app_name: %s\n", dr_get_application_name());
+    int num_args = dr_num_app_args();
+    dr_printf("num_args: %d\n", num_args);
+    dr_app_arg_t args_array[100];
+    int err = dr_get_app_args(args_array, num_args);
+    if (err == -1) {
+        dr_printf("cannot get app args\n");
+        throw std::runtime_error("cannot get app args");
+    }
+    char buff[1000];
+    for (int i = 0; i < num_args; ++i)
+        dr_printf("arg-%d: %s\n", i, dr_app_arg_as_cstring(&(args_array[i]), buff, sizeof(dr_app_arg_t)*10));
+    dr_printf("================================================================\n");
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 
@@ -272,12 +277,9 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
     // регистрируем обработчики на каждый модуль
     for (auto & module_name : cmn_set) {
-        // drmgr_register_module_load_event(event_module_load);
-
         module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
         if (module) {
             long long global_var_addr = (long long) dr_get_proc_address(module->handle, "instr_global");
-            // global_var_addr -= (long long) module->start; // получаем относительный адрес
             if (global_var_addr == 0) {
                 dr_printf("[INFO] : %s : global guard var in module <%s> was not found! =(\n", tid.c_str(), module_name.c_str());
             } else {
@@ -395,5 +397,4 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
 
     dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
-    // std::this_thread::sleep_for(2s);
 }

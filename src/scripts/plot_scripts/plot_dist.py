@@ -54,17 +54,23 @@ axs[0].set_xlabel('Iteration')
 axs[0].set_ylabel('Parameter [execs/s]')
 axs[0].set_xlim(x_min, x_max)
 
+print("one is ready")
+print(df.groupby('iteration').agg('mean'))
+
 # График линий уровня с настройками для улучшения отображения
-sns.kdeplot(data=df, x='iteration', y='f', cmap='viridis', fill=True, thresh=0, levels=100, ax=axs[1], alpha=0.5)
+sns.kdeplot(data=df.astype(float), x='iteration', y='f', cmap='viridis', fill=True, thresh=0, levels=100, ax=axs[1], alpha=0.5)
 axs[1].set_title('KDE Plot of [execs/s] Across Iterations')
 axs[1].set_xlabel('Iteration')
 axs[1].set_ylabel('Parameter [execs/s]')
 axs[1].set_xlim(x_min, x_max)
 
+print("two are ready")
+
 if x_max <= 10:
     axs[0].set_xticks(range(1, x_max+1))
     axs[1].set_xticks(range(1, x_max+1))
 
+print("making dirs and saving image")
 # Сохранение графиков в файл
 os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
 plt.savefig(args.save_path)

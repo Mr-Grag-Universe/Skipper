@@ -48,17 +48,15 @@ public:
                 }
             } else {
                 if (this->good_lea_met && instr_writes_memory(instr)) { 
-                    if (false) {
-                        if (opnd_is_immed_int64(src)) {
-                            long val = opnd_get_immed_int64(src);
-                            dr_printf("move opnd value is <%ld>\n", val);
-                            this->guards_opened = (val == 1);
+                    if (opnd_is_immed_int64(src)) {
+                        long val = opnd_get_immed_int64(src);
+                        dr_printf("move opnd value is <%ld>\n", val);
+                        this->guards_opened = (val == 1);
 
-                            if (this->guards_opened)
-                                dr_printf("open the gates!\n");
-                            else
-                                dr_printf("close the gates!\n");
-                        }
+                        if (this->guards_opened)
+                            dr_printf("open the gates!\n");
+                        else
+                            dr_printf("close the gates!\n");
                     }
                 }
                 this->good_lea_met = false;

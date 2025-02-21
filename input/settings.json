@@ -3,7 +3,7 @@
         "start_location" : 0,
         "trace_size" : -1,
         "trace_area_name" : "__libfuzzer_extra_counters",
-        "use_asm" : false
+        "use_asm" : true
     },
     "fuzzing" : {
         "use_pattern" : true,

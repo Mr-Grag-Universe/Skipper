@@ -80,8 +80,6 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     auto xbx = DR_REG_XBX;
     auto xcx = DR_REG_XCX;
     auto xdx = DR_REG_XDX;
-    auto xdi = DR_REG_XDI;
-    auto xsi = DR_REG_XSI;
 
     // сохраняем регистры и флаги
     dr_save_arith_flags(drcontext, bb, where, SPILL_SLOT_2); // по умолчанию кладёт в xax
@@ -89,147 +87,29 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     dr_save_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
     dr_save_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
     dr_save_reg(drcontext, bb, where, xdx, SPILL_SLOT_6);
-    dr_save_reg(drcontext, bb, where, xdi, SPILL_SLOT_7);
-    dr_save_reg(drcontext, bb, where, xsi, SPILL_SLOT_8);
-    
     
     instr_t * instr;
 
     // сохраняем значение исследуемого регистра в RCX
-    instr = INSTR_CREATE_mov_imm(
+    instr = XINST_CREATE_move(
         drcontext,
         opnd_create_reg(DR_REG_RCX),
         opnd_create_reg(reg_id)
     );
-
-    // ====================================================================
-    // проверка на то, что памяти хватит
-    /*
-    instr = INSTR_CREATE_add(
-        drcontext,
-        opnd_create_reg(DR_REG_EDX),
-        OPND_CREATE_INT32(1)
-    );
     instrlist_meta_preinsert(bb, where, instr);
-    instr = XINST_CREATE_move(
-        drcontext,
-        opnd_create_reg(DR_REG_EDX),
-        opnd_create_reg(DR_REG_EBX)
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_shl(
-        drcontext,
-        opnd_create_reg(DR_REG_EBX),
-        opnd_create_immed_int(6, OPSZ_1)
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_add(
-        drcontext,
-        opnd_create_reg(DR_REG_EBX),
-        opnd_create_reg(DR_REG_EDX)
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    */
-    instr = INSTR_CREATE_mov_imm(
-        drcontext,
-        opnd_create_reg(DR_REG_EBX),
-        OPND_CREATE_INT32(65*(ind+1))
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_mov_imm(
-        drcontext,
-        opnd_create_reg(DR_REG_ESI),
-        OPND_CREATE_INT32(size)
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_cmp(
-        drcontext,
-        opnd_create_reg(DR_REG_EBX),
-        opnd_create_reg(DR_REG_ESI)
-    );
-    instrlist_meta_preinsert(bb, where, instr);
-    instr_t * finish = INSTR_CREATE_label(drcontext);
-    opnd_t opnd1 = opnd_create_instr(finish);
-    instr = INSTR_CREATE_jcc(
-        drcontext,
-        OP_jb,
-        opnd1
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    // checked
 
     // =========================================================================
     // get_msb_ind
     // RCX - исследуемый регистр хранится
     // RAX - возвращаемый результат
     // создаём метки mgb_loop, msb_finish, msb_ret_minus_1
-    instr_t * msb_finish      = INSTR_CREATE_label(drcontext);
-    instr_t * msb_loop        = INSTR_CREATE_label(drcontext);
-    instr_t * msb_ret_minus_1 = INSTR_CREATE_label(drcontext);
-    // if (x == 0) return -1; 
-    instr = INSTR_CREATE_test(
-        drcontext,
-        opnd_create_reg(DR_REG_RCX),
-        opnd_create_reg(DR_REG_RCX)
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_jcc(
-        drcontext,
-        OP_je,
-        opnd_create_instr(msb_ret_minus_1) // get_msb_ind continue
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
+
     instr = INSTR_CREATE_xor(
         drcontext,
         opnd_create_reg(DR_REG_RAX),
         opnd_create_reg(DR_REG_RAX)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_shr(
-        drcontext,
-        opnd_create_reg(DR_REG_RCX),
-        opnd_create_immed_int(1, OPSZ_1)
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_jcc(
-        drcontext,
-        OP_je,
-        opnd_create_instr(msb_finish) // get_msb_ind continue
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    // instrlist_meta_preinsert(bb, where, msb_loop);
-    instr = INSTR_CREATE_add(
-        drcontext,
-        opnd_create_reg(DR_REG_EAX),
-        OPND_CREATE_INT32(1)
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_shr(
-        drcontext,
-        opnd_create_reg(DR_REG_RCX),
-        opnd_create_immed_int(1, OPSZ_1)
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_jcc(
-        drcontext,
-        OP_jne,
-        opnd_create_instr(msb_loop) // loop
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    instr = INSTR_CREATE_jmp(
-        drcontext,
-        opnd_create_instr(msb_finish) // msb finish
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    // instrlist_meta_preinsert(bb, where, msb_ret_minus_1);
-    instr = INSTR_CREATE_mov_imm(
-        drcontext,
-        opnd_create_reg(DR_REG_RAX),
-        OPND_CREATE_INT64(-1)
-    );
-    // instrlist_meta_preinsert(bb, where, instr);
-    // instrlist_meta_preinsert(bb, where, msb_finish);
-    
     instr = INSTR_CREATE_bsr(
         drcontext,
         opnd_create_reg(DR_REG_RAX),
@@ -239,7 +119,7 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     instr = INSTR_CREATE_mov_imm(
         drcontext,
         opnd_create_reg(DR_REG_RCX),
-        OPND_CREATE_INT64(128-1)
+        OPND_CREATE_INT64(0x3f)
     );
     instrlist_meta_preinsert(bb, where, instr);
     instr = INSTR_CREATE_and(
@@ -274,14 +154,6 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         opnd_create_reg(DR_REG_RCX)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    
-    // делать %size не обязательно, т.к. ранее я произвёл проверку
-    // instr = INSTR_CREATE_div_4(
-    //     drcontext,
-    //     OPND_CREATE_
-    // );
-    // instrlist_meta_preinsert(bb, where, instr);
-    // читаем, что лежит по адресу данного байта
 
     instr = INSTR_CREATE_mov_ld(
         drcontext,
@@ -347,12 +219,7 @@ void instrument(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     );
     instrlist_meta_preinsert(bb, where, instr);
 
-    // конец вставки
-    instrlist_meta_preinsert(bb, where, finish);
-
     // возвращаем регистры и флаги на место
-    dr_restore_reg(drcontext, bb, where, xsi, SPILL_SLOT_8);
-    dr_restore_reg(drcontext, bb, where, xdi, SPILL_SLOT_7);
     dr_restore_reg(drcontext, bb, where, xdx, SPILL_SLOT_6);
     dr_restore_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
     dr_restore_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
@@ -391,40 +258,6 @@ public:
     }
 
 protected:
-    std::vector<instr_t *> construct_asmtrace_overflow( void *   drcontext, 
-                                                            size_t current_location,
-                                                            size_t trace_address) 
-    {
-        /*
-         * предполагается, что мы сохранили n регистров к SLOT 1...n и теперь можем их dr_read_saved_reg()
-         * 
-         * поскольку номер SLOT надо вбивать вручную, сделать адекватный цикл не получится
-         * 
-         * reg_t reg = dr_read_saved_reg()
-         * offset = n*64*add_ind+i
-         * bit_ind = 
-        */
-        reg_id_t    xax = this->flag_register, 
-                    xbx = this->work_registers[0], 
-                    xcx = this->work_registers[1], 
-                    xdx = this->work_registers[2];
-
-
-        instr_t * instr_1 = XINST_CREATE_move(      drcontext, 
-                                                    opnd_create_reg(xcx),
-                                                    opnd_create_reg(xax));
-
-        // reg_t == uint
-        reg_t reg = dr_read_saved_reg(drcontext, SPILL_SLOT_1);
-
-
-
-        std::vector<instr_t*> instrlist;
-        instrlist.push_back(instr_1);
-
-        return instrlist;
-    }
-
     std::vector<instr_t *> construct_asm_code(  void *   drcontext, 
                                                 size_t current_location,
                                                 size_t trace_address)
@@ -510,7 +343,6 @@ public:
 
         app_pc pc = instr_get_app_pc(instr);
         uint32_t current_location = ((uint32_t)(uintptr_t)pc * (uint32_t)33533) & 0xFFFF;
-        // dr_printf("curr_loc: %x\n", current_location);
         
         auto * module = dr_get_main_module();
         pc = module->start;
@@ -529,7 +361,6 @@ public:
     }
 
     void traceOverflow(void *drcontext, void *tag, instrlist_t *bb, instr_t *instr) {
-        // if (!instr_writes_memory(instr)) {
         if (!instr_num_dsts(instr)) {
             dr_printf("<1> cannot instrument this!\n");
             return;
@@ -556,12 +387,7 @@ public:
         dr_free_module_data(module);
         size_t start_size_t = (size_t) this->trace_area.start + (size_t) pc;
 
-        uint32_t high = (uint32_t)(start_size_t >> 32); // Старшая часть
-        uint32_t low = (uint32_t)(start_size_t & 0xFFFFFFFF); // Младшая часть
-
-        // return;
         instr_t *nxt = instr_get_next(instr);
-        std::cout << this->tracer_config["use_asm"] << std::endl;
         if (this->tracer_config["use_asm"]) {
             dr_printf("using inline-asm instrumentation!\n");
             instrument(drcontext, tag, bb, nxt, 
@@ -578,8 +404,6 @@ public:
                                     OPND_CREATE_INT32(ind),
                                     OPND_CREATE_INT32(dst_reg));
         }
-        
-        // проверка
         dr_printf("add number: %d | add index: %d | thread id: %s\n", 
                     this->pc_ind_map.size(), ind, get_thread_id().c_str());
     }

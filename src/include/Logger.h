@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 class Logger {
 private:
@@ -29,6 +30,13 @@ public:
         if (!new_out_file.empty()) {
             this->log_file = new_out_file;
         }
+
+        // если дирректории с файлом нет - создаём её
+        std::filesystem::path dir = std::filesystem::absolute(this->log_file).parent_path();
+        if (!dir.empty() && !std::filesystem::exists(dir)) {
+            std::filesystem::create_directories(dir);
+        }
+
         this->stream.open(this->log_file);
     }
 

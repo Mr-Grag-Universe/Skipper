@@ -62,7 +62,7 @@
     "logging" : {
         "log_symbols" : {
             "enable" : true,
-            "path" : "out/logs/symbols.txt"
+            "path" : "new_out/logs/symbols.txt"
         },
         "log_fuzzing" : {
             "enable" : true,

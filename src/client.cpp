@@ -84,47 +84,6 @@ bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, inst
                 good_lea_found = true;
                 continue;
             }
-
-            // try {
-            // // if (instr_writes_memory(instr)){ 140078363961276
-            //     // dr_printf("[new mem write instr]: ");
-            //     print_instruction(drcontext, instr);
-
-            //     opnd_t dst = instr_get_dst(instr, 0);
-            //     opnd_t src = instr_get_src(instr, 0);
-            //     dr_printf("src: %ld, dst: %ld\n", (long long) src.black_box_uint, (long) dst.black_box_uint);
-
-            //     reg_id_t base_reg = opnd_get_reg(dst);
-            //     dr_mcontext_t mc = { sizeof(mc), DR_MC_ALL};
-            //     dr_get_mcontext(drcontext, &mc);
-            //     reg_t base_addr = reg_get_value(base_reg, &mc);
-            //     int offset = opnd_get_disp(dst);
-            //     dr_printf("reg: %d, ba: %ld, offset: %ld\n", (int) base_reg, (long long) base_addr, offset);
-
-            //     // if (opnd_is_memory_reference(dst)) {
-            //         // -> работает в обратную сторону - достаёт второй аргумент instr_get_dst
-            //         // auto disp = opnd_get_mem_instr_disp(dst);
-            //         // dr_printf("disp: %d\n", (int) disp);
-
-            //         auto instr_addr = instr_get_app_pc(instr); // opnd_get_addr(dst);
-            //         instr_addr = dr_app_pc_for_decoding(instr_addr);
-            //         auto bb_addr = dr_fragment_app_pc(tag);
-            //         bb_addr = dr_app_pc_for_decoding(bb_addr);
-
-            //         auto mem_address_1 = opnd_get_addr(dst);
-            //         auto mem_address_2 = opnd_get_addr(src);
-
-            //         dr_printf("mem_address: %ld, %ld\n", (long long) mem_address_1, (long long) mem_address_2);
-            //         // if (global_guards_open["fuzz_app"][0] == ((long long) mem_address - (long long) bb_addr)) {
-            //             dr_printf("addr: %ld | base_addr: %ld -> %ld\n", instr_addr, bb_addr, (long long)instr_addr - (long long)bb_addr);
-                    // }
-                // }
-            // }
-            // } catch (...) {
-            //     // is not storing instr
-            //     // 140417460856764, base: 140417450172416
-            //     // 140417450749383 | 140417450749360
-            // }
         } else if (good_lea_found && instr_writes_memory(instr)) {
             print_instruction(drcontext, instr);
             opnd_t src = instr_get_src(instr, 0);

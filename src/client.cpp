@@ -2,13 +2,20 @@
 #include <stdexcept>
 
 #define X86_64
+// #define X64
 #include "dr_api.h"
 #include "dr_tools.h"
 #include "dr_events.h"
 #include "dr_os_utils.h"
+#include "drmgr.h"
+#include "drreg.h"
+#include "drx.h"
+#include "droption.h"
+// #include "options.h"
 
 #include "include/func_bounds.h"
 #include "include/funcs.h"
+#include "include/debug.h"
 
 #include "include/classes/Config.h"
 #include "include/classes/Logger.h"
@@ -281,8 +288,11 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (config.logFuzzingEnabled()) {
         auto path = config.getLogFuzzingPath();
         main_logger.set_log_file(path);
+        std::cout << "noooooo" << std::endl;
         main_logger.start_logging();
+        std::cout << "yeesss" << std::endl;
     }
+    std::cout << "log files opened" << std::endl;
 
     std::map<std::string, FuncConfig>
     inspect_functions = config.getInspectionFunctions();
@@ -306,7 +316,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         }
 
         
-        auto func_bounds = get_func_bounds_optimized(inspect_functions, true, config.use_default_bounds());
+        auto func_bounds = get_func_bounds(inspect_functions, true, config.use_default_bounds());
         for (auto & func : func_bounds) {
             if (config.logSymbolsEnabled()) {
                 std::ostringstream oss;
@@ -365,6 +375,5 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
     drmgr_register_bb_instrumentation_event(NULL, bb_instrumentation_event_handler, NULL);
 
-
-    dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
+    // dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
 }

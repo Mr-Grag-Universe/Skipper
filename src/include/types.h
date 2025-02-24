@@ -2,6 +2,8 @@
 #ifndef MY_TYPES_header
 #define MY_TYPES_header
 
+#include <stdint.h>
+#include <stddef.h>
 #include <cstring>
 #include <ostream>
 #include <stdio.h>
@@ -82,6 +84,13 @@ struct FuncConfig {
     std::string module_name;
     std::string module_path;
     std::pair<size_t, size_t> default_address;
+};
+
+static const size_t MAP_SIZE = 1025;
+typedef struct thread_data
+{
+    uint64_t location;
+    uint8_t map[MAP_SIZE];
 };
 
 #endif // MY_TYPES_header

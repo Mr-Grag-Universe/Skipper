@@ -32,12 +32,17 @@ public:
         }
 
         // если дирректории с файлом нет - создаём её
-        std::filesystem::path dir = std::filesystem::absolute(this->log_file).parent_path();
-        if (!dir.empty() && !std::filesystem::exists(dir)) {
-            std::filesystem::create_directories(dir);
-        }
+        // std::filesystem::path dir = std::filesystem::absolute(this->log_file).parent_path();
+        // if (!dir.empty() && !std::filesystem::exists(dir)) {
+        //     std::filesystem::create_directories(dir);
+        // }
 
-        this->stream.open(this->log_file);
+        std::cout << "stream opening: " << this->log_file << std::endl;
+        try {
+            this->stream.open(this->log_file);
+        } catch (...) {
+            std::cout << "error with stream opening!" << std::endl;
+        }
     }
 
     void stop_logging() {

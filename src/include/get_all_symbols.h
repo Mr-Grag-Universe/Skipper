@@ -160,4 +160,68 @@ get_all_symbols_with_offsets(
 }
 
 
+bool callback_get_all_symbols_1(drsym_info_t * info, drsym_error_t status, void * data) {
+    ((std::vector<std::string>*)data)->push_back(info->name);
+    return true;
+}
+bool callback_get_all_symbols_2(const char *name, size_t modoffs, void *data) {
+    sym_info_t info(name, modoffs);
+    // printf("youuuu\n");
+    ((std::vector<sym_info_t>*)data)->push_back(info);
+    return true;
+}
+
+std::vector<std::string> get_all_symbols(const char * module_name, drsym_flags_t flag) {
+    drsym_init(NULL);
+    drsym_error_t error;
+    drsym_debug_kind_t kind;
+    
+    error = drsym_get_module_debug_kind(module_name, &kind);
+    if (error != DRSYM_SUCCESS) {
+        perror("error in drsym_get_module_debug_kind()\n");
+        fprintf(stderr, "ERROR: %d\n", error);
+        throw "error";
+    } else {
+        // printf("kind: %d\n", kind);
+    }
+
+    std::vector<std::string> syms;
+    error = drsym_enumerate_symbols_ex(module_name,
+                                    callback_get_all_symbols_1,
+                                    sizeof(drsym_info_t),
+                                    &syms,
+                                    flag);
+    /*error = drsym_enumerate_symbols(module_name,
+                                    callback_get_all_symbols_2,
+                                    &syms,
+                                    flag);*/
+    
+    module_data_t * module = dr_lookup_module_by_name(module_name);
+    if (module == NULL) {
+        fprintf(stderr, "cannot load module with name \"%s\"", module_name);
+    }
+    // все импортируемые функции
+    dr_symbol_import_iterator_t * sym_imp_iter = dr_symbol_import_iterator_start(module->handle, NULL);
+    while (dr_symbol_import_iterator_hasnext(sym_imp_iter)) {
+        dr_symbol_import_t * symbol = dr_symbol_import_iterator_next(sym_imp_iter);
+        if (symbol != NULL) {
+            syms.push_back(symbol->name);
+        }
+    }
+    dr_symbol_import_iterator_stop(sym_imp_iter);
+    dr_free_module_data(module);
+
+    if (error != DRSYM_SUCCESS) {
+        perror("error in drsym_lookup_symbol()\n");
+        fprintf(stderr, "ERROR: %d\n", error);
+        throw "error";
+    } else {
+        // printf("HIIII");
+    }
+    
+    drsym_exit();
+
+    return syms;
+}
+
 #endif // GET_ALL_SYMBOLS_header

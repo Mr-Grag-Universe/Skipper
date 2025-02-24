@@ -7,10 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-// #include <type_traits>
 #include <string.h>
-// #include <libelf.h>
-// #include <gelf.h>
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
@@ -26,49 +23,6 @@
 
 #include "types.h"
 
-
-bool callback_get_all_symbols_1(drsym_info_t * info, drsym_error_t status, void * data) {
-    ((std::vector<std::string>*)data)->push_back(info->name);
-    return true;
-}
-bool callback_get_all_symbols_2(const char *name, size_t modoffs, void *data) {
-    sym_info_t info(name, modoffs);
-    // printf("youuuu\n");
-    ((std::vector<sym_info_t>*)data)->push_back(info);
-    return true;
-}
-
-
-bool print_module_data(module_data_t * m) {
-    if (m == NULL) {
-        return false;
-    }
-    bool err = printf(
-            "end                    :   %p\n"
-            "entry_point            :   %p\n"
-            "flags                  :   %u\n"
-            "name                   :   %s\n"
-            "full_path              :   %s\n"
-            // "file_version           :   %u"
-            // "product_version        :   %u"
-            // "checksum               :   %u"
-            "timestamp              :   %u\n"
-            // "module_internal_size   :   %lld"
-            "preferred_base         :   %p\n"
-            "start                  :   %p\n",
-            m->end,
-            m->entry_point,
-            m->flags,
-            dr_module_preferred_name(m),
-            m->full_path,
-              // m->file_version.version,
-            // m->product_version.version,
-            // m->checksum,
-            m->timestamp,
-            // m->module_internal_size,
-            m->start);
-    return true;
-}
 
 size_t get_symbol_offset(std::string module_name, std::string module_path, std::string symbol_name) {
     drsym_init(NULL);
@@ -100,60 +54,6 @@ size_t get_symbol_offset(std::string module_name, std::string module_path, std::
     drsym_exit();
 
     return offset;
-}
-
-
-std::vector<std::string> get_all_symbols(const char * module_name, drsym_flags_t flag) {
-    drsym_init(NULL);
-    drsym_error_t error;
-    drsym_debug_kind_t kind;
-    
-    error = drsym_get_module_debug_kind(module_name, &kind);
-    if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_get_module_debug_kind()\n");
-        fprintf(stderr, "ERROR: %d\n", error);
-        throw "error";
-    } else {
-        // printf("kind: %d\n", kind);
-    }
-
-    std::vector<std::string> syms;
-    error = drsym_enumerate_symbols_ex(module_name,
-                                    callback_get_all_symbols_1,
-                                    sizeof(drsym_info_t),
-                                    &syms,
-                                    flag);
-    /*error = drsym_enumerate_symbols(module_name,
-                                    callback_get_all_symbols_2,
-                                    &syms,
-                                    flag);*/
-    
-    module_data_t * module = dr_lookup_module_by_name(module_name);
-    if (module == NULL) {
-        fprintf(stderr, "cannot load module with name \"%s\"", module_name);
-    }
-    // все импортируемые функции
-    dr_symbol_import_iterator_t * sym_imp_iter = dr_symbol_import_iterator_start(module->handle, NULL);
-    while (dr_symbol_import_iterator_hasnext(sym_imp_iter)) {
-        dr_symbol_import_t * symbol = dr_symbol_import_iterator_next(sym_imp_iter);
-        if (symbol != NULL) {
-            syms.push_back(symbol->name);
-        }
-    }
-    dr_symbol_import_iterator_stop(sym_imp_iter);
-    dr_free_module_data(module);
-
-    if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_lookup_symbol()\n");
-        fprintf(stderr, "ERROR: %d\n", error);
-        throw "error";
-    } else {
-        // printf("HIIII");
-    }
-    
-    drsym_exit();
-
-    return syms;
 }
 
 
@@ -318,35 +218,6 @@ std::vector<ModuleInfo> get_all_modules() {
     return modules;
 }
 
-void print_all_imported_symbols() {
-    drsym_init(NULL);
-
-    auto modules = get_all_modules();
-    for (auto module_info : modules) {
-        auto module_name = module_info.name;
-        dr_printf("module_name: %s\n", module_name.c_str());
-        auto module = dr_lookup_module_by_name(module_name.c_str());
-        // dr_get_proc_address(module->handle, "New_G1");
-
-        auto iterator_im = dr_symbol_import_iterator_start(module->handle, NULL);
-        do {
-            auto * symbol = dr_symbol_import_iterator_next(iterator_im);
-            dr_printf("symbol: %s\n", symbol->name);
-        } while (dr_symbol_import_iterator_hasnext(iterator_im));
-        dr_symbol_import_iterator_stop(iterator_im);
-    }
-
-    drsym_exit();
-}
-
-void print_modules() {
-    auto modules = get_all_modules();
-    dr_printf("modules:\n");
-    for (auto module : modules) {
-        dr_printf("\tmodule_name: %s; module_path: %s\n", module.name.c_str(), module.path.c_str());
-    }
-}
-
 std::vector <std::string> get_modules_names() {
     auto modules = get_all_modules();
     std::vector <std::string> modules_names;
@@ -362,12 +233,6 @@ std::string int_to_hex(int my_integer) {
     sstream << std::hex << my_integer;
     std::string result = sstream.str();
     return result;
-}
-
-void print_instruction(void *drcontext, instr_t *instr) {
-    char instr_str[256];
-    instr_disassemble_to_buffer(drcontext, instr, instr_str, sizeof(instr_str));
-    dr_printf("Instruction: %s\n", instr_str);
 }
 
 std::string get_thread_id() {

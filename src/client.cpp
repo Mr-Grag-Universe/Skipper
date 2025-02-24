@@ -2,22 +2,30 @@
 #include <stdexcept>
 
 #define X86_64
+// #define X64
 #include "dr_api.h"
 #include "dr_tools.h"
 #include "dr_events.h"
 #include "dr_os_utils.h"
+#include "drmgr.h"
+#include "drreg.h"
+#include "drx.h"
+#include "droption.h"
+// #include "options.h"
 
 #include "include/func_bounds.h"
 #include "include/funcs.h"
+#include "include/debug.h"
 
-#include "include/Config.h"
-#include "include/Logger.h"
-#include "include/Tracer.h"
-#include "include/Guarder.h"
+#include "include/classes/Config.h"
+#include "include/classes/Logger.h"
+#include "include/classes/Tracer.h"
+#include "include/classes/Guarder.h"
+// #include "include/classes/Options.h"
 
 using namespace std::chrono_literals;
 
-static Configurator config(std::string("input/settings.json"));
+static Configurator config = Configurator();
 static Tracer tracer(config);
 static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
@@ -198,6 +206,26 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
+    // print_argv(argc, argv);
+
+    // Parser parser;
+    // auto ptr1 = std::make_shared<Option<int>>("myvar", 10, "d1", "d2");
+    // parser.add_option(ptr1);
+    // auto ptr2 = std::make_shared<Option<std::string>>("config", "input/settings.json", "d1", "d2");
+    // parser.add_option(ptr2);
+
+    // auto options = parser.get_options();
+    // for (int i = 0; i < options.size(); ++i) {
+    //     std::cout << options[i]->get_value_str() << std::endl;
+    // }
+    // parser.parse_argv(argc, argv, NULL, NULL);
+    // std::cout << "new options" << std::endl;
+    // options = parser.get_options();
+    // for (int i = 0; i < options.size(); ++i) {
+    //     std::cout << options[i]->get_value_str() << std::endl;
+    // }
+    config.load_config("input/settings.openssl.json"); // parser["config"]->get_value_str());
+
     auto tid = get_thread_id();
     dr_printf("================================================================\nhellow world!\n");
     dr_printf("app_name: %s\n", dr_get_application_name());
@@ -270,8 +298,11 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (config.logFuzzingEnabled()) {
         auto path = config.getLogFuzzingPath();
         main_logger.set_log_file(path);
+        std::cout << "noooooo" << std::endl;
         main_logger.start_logging();
+        std::cout << "yeesss" << std::endl;
     }
+    std::cout << "log files opened" << std::endl;
 
     std::map<std::string, FuncConfig>
     inspect_functions = config.getInspectionFunctions();
@@ -295,7 +326,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         }
 
         
-        auto func_bounds = get_func_bounds_optimized(inspect_functions, true, config.use_default_bounds());
+        auto func_bounds = get_func_bounds(inspect_functions, true, config.use_default_bounds());
         for (auto & func : func_bounds) {
             if (config.logSymbolsEnabled()) {
                 std::ostringstream oss;
@@ -354,6 +385,5 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
     drmgr_register_bb_instrumentation_event(NULL, bb_instrumentation_event_handler, NULL);
 
-
-    dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
+    // dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
 }

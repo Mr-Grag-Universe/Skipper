@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
-#include "types.h"
+#include "../types.h"
 
 using json = nlohmann::json;
 
@@ -51,7 +51,13 @@ public:
     json fuzzing_config;
     json _config;
 
-    Configurator(const std::string config_file_name = "settings.json") {
+    Configurator(const std::string config_file_name = "") {
+        if (!config_file_name.empty()) {
+            this->load_config(config_file_name);
+        }
+    }
+
+    void load_config(std::string config_file_name = "settings.json") {
         std::cout << "loading " << config_file_name << "..." << std::endl;
         std::ifstream f(config_file_name, std::ifstream::in);
         
@@ -63,12 +69,6 @@ public:
         this->_config = config_data;
 
         std::cout << "configured" << std::endl;
-    }
-
-    void load_config(std::string config_file_name = "settings.json") {
-        std::ifstream f(config_file_name);
-        json config_data = json::parse(f);
-        this->_config = config_data;
     }
 
     void config(json config_data) {

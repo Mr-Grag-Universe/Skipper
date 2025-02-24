@@ -10,15 +10,15 @@
 #include "include/func_bounds.h"
 #include "include/funcs.h"
 
-#include "include/Config.h"
-#include "include/Logger.h"
-#include "include/Tracer.h"
-#include "include/Guarder.h"
+#include "include/classes/Config.h"
+#include "include/classes/Logger.h"
+#include "include/classes/Tracer.h"
+#include "include/classes/Guarder.h"
 
 using namespace std::chrono_literals;
 
-static Configurator config(std::string("input/settings.json"));
-static Tracer tracer(config);
+static Configurator config;
+static Tracer tracer;
 static std::vector <CodeSegmentDescriber> code_segment_describers;
 static Logger main_logger;
 static std::set<int> opcodes;
@@ -198,6 +198,9 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
+    config.load_config("input/settings.openssl.json");
+    tracer.set_config(config);
+
     auto tid = get_thread_id();
     dr_printf("================================================================\nhellow world!\n");
     dr_printf("app_name: %s\n", dr_get_application_name());

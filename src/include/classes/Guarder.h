@@ -10,7 +10,7 @@
 #include "dr_tools.h"
 #include "dr_ir_instr.h"
 
-#include "funcs.h"
+#include "../funcs.h"
 
 class Guarder {
 public:

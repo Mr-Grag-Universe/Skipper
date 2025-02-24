@@ -235,8 +235,12 @@ class Tracer {
     std::map<reg_id_t, size_t> reg_ind_map;
 public:
     json tracer_config;
-    Tracer(const Configurator & config) {
+    Tracer() {}
+
+    bool set_config(Configurator config) {
+        std::cout << "setting config to tracer!" << std::endl;
         this->tracer_config = config.getTracerConfig();
+        return true;
     }
 
     void set_registers(reg_id_t flag_register, std::vector <reg_id_t> work_registers)

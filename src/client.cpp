@@ -14,6 +14,7 @@
 #include "include/classes/Logger.h"
 #include "include/classes/Tracer.h"
 #include "include/classes/Guarder.h"
+#include "include/classes/Options.h"
 
 using namespace std::chrono_literals;
 
@@ -198,7 +199,14 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
-    config.load_config("input/settings.openssl.json");
+    Parser parser;
+    auto ptr = std::make_shared<Option<std::string>>("config", "input/settings.json", "d1", "d2");
+    parser.add_option(ptr);
+    std::string path_to_config = "input/settings.openssl.json";
+    if (parser.parse_argv(argc, argv, NULL, NULL) && parser["config"]->is_specified()) {
+        path_to_config = parser["config"]->get_value_str();
+    }
+    config.load_config(path_to_config);
     tracer.set_config(config);
 
     auto tid = get_thread_id();

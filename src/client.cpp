@@ -21,12 +21,13 @@
 #include "include/classes/Guarder.h"
 #include "include/classes/Options.h"
 
+#include "loggers.h"
+
 using namespace std::chrono_literals;
 
 static Configurator config;
 static Tracer tracer;
 static std::vector <CodeSegmentDescriber> code_segment_describers;
-static Logger main_logger;
 static std::set<int> opcodes;
 static Guarder guarder;
 
@@ -204,6 +205,7 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
 
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
+    // parsing command line arguments
     Parser parser;
     auto ptr = std::make_shared<Option<std::string>>("config", "input/settings.json", "d1", "d2");
     parser.add_option(ptr);
@@ -211,24 +213,23 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (parser.parse_argv(argc, argv, NULL, NULL) && parser["config"]->is_specified()) {
         path_to_config = parser["config"]->get_value_str();
     }
+
+    // load configuration file settings
     config.load_config(path_to_config);
+    // setup logging
+    if (config.logFuzzingEnabled()) {
+        auto path = config.getLogFuzzingPath();
+        main_logger.set_log_file(path);
+        main_logger.start_logging();
+    }
+    // setup tracer for work
     tracer.set_config(config);
 
-    auto tid = get_thread_id();
-    dr_printf("================================================================\nhellow world!\n");
-    dr_printf("app_name: %s\n", dr_get_application_name());
-    int num_args = dr_num_app_args();
-    dr_printf("num_args: %d\n", num_args);
-    dr_app_arg_t args_array[100];
-    int err = dr_get_app_args(args_array, num_args);
-    if (err == -1) {
-        dr_printf("cannot get app args\n");
-        throw std::runtime_error("cannot get app args");
+    if (config.debugModeEnabled()) {
+        main_logger.log_program_params();
     }
-    char buff[1000];
-    for (int i = 0; i < num_args; ++i)
-        dr_printf("arg-%d: %s\n", i, dr_app_arg_as_cstring(&(args_array[i]), buff, sizeof(dr_app_arg_t)*10));
-    dr_printf("================================================================\n");
+
+    auto tid = get_thread_id();
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 
@@ -282,13 +283,6 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         auto path = config.getLogSymbolsPath();
         symbol_logger.set_log_file(path);
         symbol_logger.start_logging();
-    }
-    if (config.logFuzzingEnabled()) {
-        auto path = config.getLogFuzzingPath();
-        main_logger.set_log_file(path);
-        std::cout << "noooooo" << std::endl;
-        main_logger.start_logging();
-        std::cout << "yeesss" << std::endl;
     }
     std::cout << "log files opened" << std::endl;
 

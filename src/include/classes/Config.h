@@ -188,6 +188,10 @@ public:
         }
         return modules_info;
     }
+
+    bool debugModeEnabled() const {
+        return this->_config["debug"];
+    }
 };
 
 #endif // MY_CONFIG_header

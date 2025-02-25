@@ -64,6 +64,35 @@ public:
     bool is_open() const {
         return this->stream.is_open();
     }
+
+
+    bool log_program_params() {
+        this->stream << "================================================================" << std::endl;
+        this->stream << "[DEBUG] : " << "app_name: " << dr_get_application_name() << std::endl;
+        int num_args = dr_num_app_args();
+        this->stream << "[DEBUG] : " << "num_args: " << num_args << std::endl;
+
+        if (num_args > 100) {
+            // num of args must be less or equal to 100
+            return false;
+        }
+
+        dr_app_arg_t args_array[100];
+        int err = dr_get_app_args(args_array, num_args);
+        if (err == -1) {
+            this->stream << "[ERROR] : " << "cannot get app args" << std::endl;
+            return false;
+        }
+
+        char buff[1000];
+        for (int i = 0; i < num_args; ++i) {
+            auto arg = dr_app_arg_as_cstring(&(args_array[i]), buff, sizeof(dr_app_arg_t)*10);
+            this->stream << "[DEBUG] :\t" << "arg-" << i << ": " << arg << std::endl;
+        }
+        this->stream << "================================================================" << std::endl;
+
+        return true;
+    }
 };
 
 #endif // MY_LOGGER_header

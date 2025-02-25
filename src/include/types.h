@@ -80,6 +80,11 @@ struct sym_info_t {
     }
 };
 
+struct ModuleInfo {
+    std::string name;
+    std::string path;
+};
+
 struct FuncConfig {
     std::string module_name;
     std::string module_path;

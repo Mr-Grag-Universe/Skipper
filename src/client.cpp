@@ -10,8 +10,6 @@
 #include "drmgr.h"
 #include "drreg.h"
 #include "drx.h"
-#include "droption.h"
-// #include "options.h"
 
 #include "include/func_bounds.h"
 #include "include/funcs.h"

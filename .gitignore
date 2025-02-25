@@ -12,5 +12,6 @@ out/*
 *glibc*
 *crash-*
 *.log
+*legacy.h
 json/*
 llvm-project

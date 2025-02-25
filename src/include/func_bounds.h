@@ -6,7 +6,6 @@
 #include "dr_tools.h"
 #include "drsyms.h"
 #include "drmgr.h"
-#include "find_pattern.h"
 #include "get_all_symbols.h"
 
 #include "types.h"
@@ -51,7 +50,6 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
     for (auto & symbol : symbols) {
         symbols_vector.push_back({(size_t) symbol.second, symbol.first});
     }
-
     // сортируем символы
     std::sort(symbols_vector.begin(), symbols_vector.end());
 
@@ -64,6 +62,7 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
         auto iter = std::find_if(symbols_vector.begin(), symbols_vector.end(), [&func_name](const auto x){
             return func_name == std::string(x.second);
         });
+
         if ((iter == symbols_vector.end()) && use_pattern) {
             dr_printf("second try...\n");
             // ищем неточное совпадение
@@ -86,8 +85,7 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
             auto default_address = func.second.default_address;
             if (default_address.first && default_address.first <= default_address.second) {
                 if (use_default_bounds) {
-                    res[func_name] = std::make_pair(
-                                                    (generic_func_t) default_address.first, 
+                    res[func_name] = std::make_pair((generic_func_t) default_address.first, 
                                                     (generic_func_t) default_address.second);
                     continue;
                 } else {
@@ -121,7 +119,8 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
         if (iter + 1 != symbols_vector.end()) {
             printf("find complete!\nnext_name: %s\n", (iter+1)->second.c_str());
             dr_printf("%zu - %zu\n", iter->first, (iter+1)->first);
-            res[func_name] = std::make_pair((generic_func_t)iter->first, (generic_func_t)(iter+1)->first);
+            res[func_name] = std::make_pair((generic_func_t)iter->first, 
+                                            (generic_func_t)(iter+1)->first);
         }
     }
     

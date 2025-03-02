@@ -9,6 +9,7 @@
 
 #include <nlohmann/json.hpp>
 #include "../types.h"
+#include "../../loggers.h"
 
 using json = nlohmann::json;
 
@@ -60,15 +61,10 @@ public:
     void load_config(std::string config_file_name = "settings.json") {
         std::cout << "loading " << config_file_name << "..." << std::endl;
         std::ifstream f(config_file_name, std::ifstream::in);
-        
-        std::cout << "parsing..." << std::endl;
         json config_data;
         f >> config_data;
-
-        std::cout << "assigning..." << std::endl;
         this->_config = config_data;
-
-        std::cout << "configured" << std::endl;
+        std::cout << "configuration loaded!" << std::endl;
     }
 
     void config(json config_data) {
@@ -168,10 +164,9 @@ public:
     }
 
     std::set <std::string> get_modules_names() const {
-        dr_printf("getting modules names...\n");
+        main_logger.log_info("getting modules names...");
         std::set <std::string> module_names;
         for (auto mn : this->_config["fuzzing"]["inspect_funcs"]) {
-            std::cout << "hi" << std::endl;
             std::string name = mn["module_name"];
             module_names.insert((std::string) name);
         }

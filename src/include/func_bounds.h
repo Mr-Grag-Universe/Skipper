@@ -9,6 +9,7 @@
 #include "get_all_symbols.h"
 
 #include "types.h"
+#include "../loggers.h"
 
 #include <map>
 
@@ -27,7 +28,8 @@ std::map<std::string, std::pair<generic_func_t, generic_func_t>>
 get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_pattern, bool use_default_bounds) 
 {
     if (inspect_funcs.empty()) {
-        dr_printf("[ERROR] : empty instr function map!");
+        main_logger.log_error("empty instr function map!");
+        dr_printf("[ERROR] : empty instr function map!\n");
         throw std::invalid_argument("[ERROR] : empty instr function map!");
     }
 
@@ -64,7 +66,7 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
         });
 
         if ((iter == symbols_vector.end()) && use_pattern) {
-            dr_printf("second try...\n");
+            main_logger.log_debug("second try...");
             // ищем неточное совпадение
             iter = std::find_if(
                 symbols_vector.begin(), symbols_vector.end(), 
@@ -72,13 +74,12 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
                     return std::string(x.second).find(func_name) != std::string::npos;
                 });
         }
-        dr_printf("searching complete!\n");
+        main_logger.log_debug("searching complete!");
 
         if (iter == symbols_vector.end()) {
-            dr_printf("cannot find such func_name =(\n");
+            main_logger.log_debug("cannot find such func_name =(");
             char message[1024];
-            sprintf(message, "there is not func name <%s> here", func_name.c_str());
-            dr_printf("message: %s\n", message);
+            main_logger.log_debug("message: there is not func name <{}> here", func_name);
 
             std::string answer;
             size_t addr = 0;
@@ -89,8 +90,10 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
                                                     (generic_func_t) default_address.second);
                     continue;
                 } else {
+                    main_logger.log("CONTROLE", "do you want to use default_address?[y/n] ");
                     dr_printf("[CONTROLE] : do you want to use default_address?[y/n] ");
                     std::cin >> answer;
+                    main_logger.log("CONTROLE", "user answer: ", answer);
                     if (answer == "y" || answer == "yes") {
                         res[func_name] = std::make_pair(
                                                             (generic_func_t) default_address.first, 
@@ -100,25 +103,31 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
                 }
             }
             {
+                main_logger.log("CONTROLE", "do you want to enter address?[y/n] ");
                 dr_printf("[CONTROLE] : do you want to enter address?[y/n] ");
                 std::cin >> answer;
+                main_logger.log("CONTROLE", "user answer: ", answer);
                 if (answer == "n" || answer == "no") {
                     res[func_name] = std::make_pair((generic_func_t)0, (generic_func_t)0);
                     continue;
                 }
                 size_t start{}, stop{};
+                main_logger.log("CONTROLE", "enter start address: ");
                 dr_printf("[CONTROLE] : enter start address: ");
                 std::cin >> start;
+                main_logger.log("CONTROLE", "user answer: ", start);
+                main_logger.log("CONTROLE", "enter stop address: ");
                 dr_printf("[CONTROLE] : enter stop address: ");
                 std::cin >> stop;
+                main_logger.log("CONTROLE", "user answer: ", stop);
                 res[func_name] = std::make_pair((generic_func_t)start, (generic_func_t)stop);
                 continue;
             }
         }
 
         if (iter + 1 != symbols_vector.end()) {
-            printf("find complete!\nnext_name: %s\n", (iter+1)->second.c_str());
-            dr_printf("%zu - %zu\n", iter->first, (iter+1)->first);
+            main_logger.log_debug("find complete!\nnext_name: {}", (iter+1)->second);
+            main_logger.log_debug("segment: {} - {}", iter->first, (iter+1)->first);
             res[func_name] = std::make_pair((generic_func_t)iter->first, 
                                             (generic_func_t)(iter+1)->first);
         }

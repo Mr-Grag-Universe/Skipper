@@ -51,7 +51,7 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
 
     for (auto & segment : segments) {
         if (segment.start <= (size_t)bb_addr && (size_t)bb_addr <= segment.end) {
-            main_logger.log("ADDR", int_to_hex((size_t) tag) + " : " + int_to_hex(segment.start) + " - " + int_to_hex(segment.end));
+            main_logger.log("INSTR", "addr = ", int_to_hex((size_t) tag) + " : " + int_to_hex(segment.start) + " - " + int_to_hex(segment.end));
             return true;
         }
     }
@@ -77,13 +77,13 @@ bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, inst
 
             void* mem_addr;
             try {
-                dr_printf("1 opnd get addr\n");
+                main_logger.log("INSTR", "1 opnd get addr");
                 mem_addr = opnd_get_addr(src);
             } catch (...) {
                 good_lea_found = false;
                 continue;
             }
-            dr_printf("mem_addr: %ld\n", (long) mem_addr);
+            main_logger.log("INSTR", "mem_addr: {}", (long) mem_addr);
 
             if (std::find(  global_guards["fuzz_app"].begin(), 
                             global_guards["fuzz_app"].end(), 
@@ -96,13 +96,13 @@ bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, inst
             opnd_t src = instr_get_src(instr, 0);
             if (opnd_is_immed_int(src)) {
                 int val = opnd_get_immed_int(src);
-                dr_printf("move opnd value is <%d>\n", val);
+                main_logger.log("INSTR", "move opnd value is {}", val);
                 guards_opened = (val == 1);
 
                 if (guards_opened)
-                    dr_printf("open the gates!\n");
+                    main_logger.log("INSTR", "open the gates!");
                 else
-                    dr_printf("close the gates!\n");
+                    main_logger.log("INSTR", "close the gates!");
             }
         }
         good_lea_found = false;
@@ -131,7 +131,7 @@ bb_instrumentation_event_handler(
             // логируем
             char buff[1024];
             instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
-            main_logger.log("ADDR", int_to_hex((size_t) instr_get_app_pc(instr)));
+            main_logger.log("INSTR", "addr = {}", int_to_hex((size_t) instr_get_app_pc(instr)));
             main_logger.log("INSTR", std::string(buff));
         } else if (guarder.guards_opened) {
             tracer.traceOverflow(drcontext, tag, bb, instr);
@@ -220,7 +220,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (config.logFuzzingEnabled()) {
         auto path = config.getLogFuzzingPath();
         main_logger.set_log_file(path);
-        main_logger.start_logging();
+        main_logger.start_logging("", true);
     }
     // setup tracer for work
     tracer.set_config(config);
@@ -237,45 +237,52 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     // если это не программа с искомым модулем - не исполняемся дальше
     auto analized_modules_names = config.get_modules_names();
     auto current_modules_names = get_modules_names();
-    for (auto & m: analized_modules_names) {
-        dr_printf("[INFO] : %s : module_name_1: %s\n", tid.c_str(), m.c_str());
+    if (config.debugModeEnabled()) {
+        for (auto & m: analized_modules_names) {
+            main_logger.log_debug("{} : analized module name: {}", tid, m);
+        }
+        for (auto & m: current_modules_names) {
+            main_logger.log_debug("{} : visible module name: {}", tid, m);
+        }
     }
-    for (auto & m: current_modules_names) {
-        dr_printf("[INFO] : %s : module_name_2: %s\n", tid.c_str(), m.c_str());
-    }
-
     std::set <std::string> cmn_set(current_modules_names.begin(), current_modules_names.end());
     if (!std::includes( cmn_set.begin(), cmn_set.end(), 
                         analized_modules_names.begin(), analized_modules_names.end())) {
-                            dr_printf("[INFO] : %s : there is not modules in current process!\n", tid.c_str());
+                            dr_printf("[WARNING] : %s : there is not modules in current process!\n", tid.c_str());
+                            main_logger.log_warning("{} : there is not modules in current process!", tid);
                             return;
                         }
 
-    // регистрируем обработчики на каждый модуль
+    // ищем guards по всем доступным модулям
     for (auto & module_name : cmn_set) {
         module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
         if (module) {
             long long global_var_addr = (long long) dr_get_proc_address(module->handle, "instr_global");
             if (global_var_addr == 0) {
-                dr_printf("[INFO] : %s : global guard var in module <%s> was not found! =(\n", tid.c_str(), module_name.c_str());
+                main_logger.log_info("{} : global guard var in module <{}> was not found! =(", tid, module_name);
             } else {
                 dr_printf("[INFO] : %s : global guard var in module <%s>: %ld, base: %ld\n", tid.c_str(), module_name.c_str(), (long long) global_var_addr, (long long) module->start);
+                main_logger.log_info("{} : global guard var in module <{}>: {}, base: {}", tid, module_name, (long long) global_var_addr, (long long) module->start);
                 global_guards[module_name].push_back((long long int) global_var_addr);
             }
             dr_free_module_data(module);
         } else {
             // error
+            main_logger.log_error("cannot find one of previosly seen modules <{}>", module_name);
             exit(1);
         }
     }
-    dr_printf("[INFO] : %s : global guard vars collected!\n", tid.c_str());
     guarder.set_global_guards(global_guards);
+    dr_printf("[INFO] : %s : global guard vars collected!\n", tid.c_str());
+    main_logger.log_info("{} : global guard vars collected!", tid);
     
-    tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX});
+    tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX}); // legacy
     opcodes = config.getInspectOpcodes();
-    dr_printf("%s : DR configured\n", tid.c_str());
 
-    print_modules();
+    if (config.debugModeEnabled()) {
+        main_logger.log_modules();
+        print_modules();
+    }
 
     std::set<std::string> symbols;
     Logger symbol_logger;
@@ -284,7 +291,9 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         symbol_logger.set_log_file(path);
         symbol_logger.start_logging();
     }
-    std::cout << "log files opened" << std::endl;
+    if (config.debugModeEnabled()) {
+        main_logger.log_debug("symbol_logger activated");
+    }
 
     std::map<std::string, FuncConfig>
     inspect_functions = config.getInspectionFunctions();
@@ -294,16 +303,11 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
                                         (*inspect_functions.begin()).second.module_name, 
                                         (*inspect_functions.begin()).second.module_path, 
                                         config.getFuzzConfig()["use_pattern"]);
-        Logger debug_logger;
-        debug_logger.set_log_file("out/logs/debug_logs.txt");
-        debug_logger.start_logging();
-        debug_logger.stop_logging();
-
         for (auto & symbol : symbols_map) {
             if (config.logSymbolsEnabled()) {
                 std::ostringstream oss;
                 oss << symbol.first << " : " << std::hex << (size_t) symbol.second;
-                symbol_logger.log("DEBUG", oss.str());
+                symbol_logger.log_debug(oss.str());
             }
         }
 
@@ -313,26 +317,27 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
             if (config.logSymbolsEnabled()) {
                 std::ostringstream oss;
                 oss << func.first << " : " << std::hex << (size_t) func.second.first << " - " << (size_t) func.second.second;
-                symbol_logger.log("DEBUG", oss.str());
+                symbol_logger.log_debug(oss.str());
             }
 
             code_segment_describers.push_back({(size_t) func.second.first, (size_t) func.second.second});
         }
         symbol_logger.stop_logging();
         if (!symbol_logger.is_open()) {
-            dr_printf("[INFO] : log_symbols_stream closed successfuly!\n");
+            main_logger.log_info("log_symbols_stream closed successfuly!");
         } else {
-            dr_printf("[ERROR] : log_symbols_stream cannot be closed successfuly!\n");
+            main_logger.log_error("log_symbols_stream cannot be closed successfuly!");
+            dr_printf("log_symbols_stream cannot be closed successfuly!\n");
             dr_abort();
         }
-        dr_printf("[INFO] : symbols logged! log stream closed.\n");
+        main_logger.log_info("symbols logged! log stream closed.");
     }
     // предупреждаем, если совсем ничего не нашли
     if (code_segment_describers.size() == 0) {
+        main_logger.log_warning("there is not no one symbol from inspection function names passed to fuzzer!");
         dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
     }
-    dr_printf("%s : DR segments readed successfully!\n", tid.c_str());
-    fflush(stdout);
+    main_logger.log_info("{} : DR segments readed successfully!", tid);
 
     // достаём адрес для доп покрытия
     for (auto & p : config.get_modules_info()) {
@@ -350,6 +355,11 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
             break;
         }
     }
+    main_logger.log_info("{} : extra_counters address found successfully!", tid);
+    
+    main_logger.log_info("{} : DR configured!", tid);
+    main_logger.log_line();
+    dr_printf("%s : DR configured!\n", tid.c_str());
 
     /*
      * ######################## Устанавливаем обработчики ########################3
@@ -367,5 +377,6 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 
     drmgr_register_bb_instrumentation_event(NULL, bb_instrumentation_event_handler, NULL);
 
-    // dr_printf("[SYS] : %s : sleeping!\n", tid.c_str());
+    main_logger.log("SYS", "{} : main_client function work is complete!", tid);
+    dr_printf("[SYS] : %s : main_client function work is complete!\n", tid.c_str());
 }

@@ -2,7 +2,8 @@
     "tracer" : {
         "start_location" : 0,
         "trace_size" : -1,
-        "trace_area_name" : "__libfuzzer_extra_counters"
+        "trace_area_name" : "__libfuzzer_extra_counters",
+        "debug" : true
     },
     "fuzzing" : {
         "use_pattern" : true,

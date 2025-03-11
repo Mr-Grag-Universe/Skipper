@@ -1,17 +1,7 @@
-
 #ifndef MY_TYPES_header
 #define MY_TYPES_header
 
-#include <stdint.h>
-#include <stddef.h>
-#include <cstring>
-#include <ostream>
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <string>
 #include "dr_api.h"
-
 
 struct sym_info_t {
     std::string file;
@@ -33,7 +23,8 @@ struct sym_info_t {
 
     sym_info_t(const char * name, size_t off, bool imp = false) {
         if (name == NULL) {
-            throw "error";
+            dr_fprintf(STDERR, "NULL name in sym_info_t constructor\n");
+            throw std::runtime_error("NULL name in sym_info_t constructor");
         }
         this->ex = false;
         this->imp = imp;
@@ -41,10 +32,9 @@ struct sym_info_t {
         this->moffs = off;
     }
     sym_info_t(const drsym_info_t * info, bool imp=false) {
-        // std::cout << "construct" << std::endl;
         if (!info) {
-            perror("NULL drsym_info_t pointer in constructor!\n");
-            throw "error";
+            dr_fprintf(STDERR, "NULL drsym_info_t pointer in constructor!\n");
+            throw std::runtime_error("NULL drsym_info_t pointer in constructor");
         }
         this->ex = true;
         this->imp = imp;
@@ -63,7 +53,6 @@ struct sym_info_t {
     ~sym_info_t() {}
 
     sym_info_t(const sym_info_t & sym) {
-        // std::cout << "copy" << sym.name << std::endl;
         this->name = sym.name;
         this->type_id = sym.type_id;
         this->flags = sym.flags;
@@ -92,8 +81,7 @@ struct FuncConfig {
 };
 
 static const size_t MAP_SIZE = 1025;
-typedef struct thread_data
-{
+struct thread_data {
     uint64_t location;
     uint8_t map[MAP_SIZE];
 };

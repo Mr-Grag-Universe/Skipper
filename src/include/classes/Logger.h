@@ -58,13 +58,6 @@ public:
         }
     }
 
-    // void log(std::string tag, std::string data) {
-    //     if (!this->stream.is_open()) {
-    //         printf("logging is impossible. log stream is closed!\n");
-    //         throw std::runtime_error("logging is impossible. log stream is closed!");
-    //     }
-    //     this->stream << "[" << tag << "] : " << data << std::endl;
-    // }
     template<typename... Args>
     void log(std::string tag, const std::string& format, Args... args) {
         if (!this->stream) {

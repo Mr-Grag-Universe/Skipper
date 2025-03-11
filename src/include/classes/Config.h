@@ -14,7 +14,6 @@
 using json = nlohmann::json;
 
 
-
 class Configurator {
 private:
     void config_with_json(json config_data) {

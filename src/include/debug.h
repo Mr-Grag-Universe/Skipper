@@ -46,7 +46,7 @@ bool print_module_data(module_data_t * m) {
             m->flags,
             dr_module_preferred_name(m),
             m->full_path,
-              // m->file_version.version,
+            // m->file_version.version,
             // m->product_version.version,
             // m->checksum,
             m->timestamp,

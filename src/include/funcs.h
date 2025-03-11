@@ -1,17 +1,9 @@
 #ifndef FUNCS_DR_header
 #define FUNCS_DR_header
 
-#include <elf.h>
-#include <err.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-#include <unistd.h>
 #include <iostream>
 #include <sstream>
-#include <cstdlib>
+#include <string>
 #include <vector>
 
 #include "dr_api.h"
@@ -31,8 +23,8 @@ size_t get_symbol_offset(std::string module_name, std::string module_path, std::
     
     error = drsym_get_module_debug_kind(module_path.c_str(), &kind);
     if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_get_module_debug_kind() : get_symbol_offset\n");
-        fprintf(stderr, "ERROR: %d\n", error);
+        // main_logger.log_error("error in drsym_get_module_debug_kind() : get_symbol_offset : kind error");
+        dr_fprintf(STDERR, "ERROR: error in drsym_get_module_debug_kind() : get_symbol_offset\n");
         return 0;
     } else {
         // printf("kind: %d\n", kind);
@@ -44,8 +36,8 @@ size_t get_symbol_offset(std::string module_name, std::string module_path, std::
                                 &offset,
                                 DRSYM_DEMANGLE_FULL);
     if (error != DRSYM_SUCCESS) {
-        perror("error in drsym_lookup_symbol() : get_symbol_offset\n");
-        fprintf(stderr, "ERROR: %d\n", error);
+        // main_logger.log_error("error in drsym_lookup_symbol() : get_symbol_offset");
+        dr_fprintf(STDERR, "ERROR: error in drsym_lookup_symbol() : get_symbol_offset\n");
         return 0;
     } else {
         // printf("offset: %d\n", offset);

@@ -43,8 +43,7 @@ void init_tls() {
     dr_printf("thread <%s> tls inited!\n", get_thread_id().c_str());
 }
 
-bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments)
-{ 
+bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments) {
     app_pc 
     bb_addr = dr_fragment_app_pc(tag);
     bb_addr = dr_app_pc_for_decoding(bb_addr);
@@ -276,7 +275,6 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     dr_printf("[INFO] : %s : global guard vars collected!\n", tid.c_str());
     main_logger.log_info("{} : global guard vars collected!", tid);
     
-    tracer.set_registers(DR_REG_EAX, {DR_REG_EBX, DR_REG_ECX, DR_REG_EDX}); // legacy
     opcodes = config.getInspectOpcodes();
 
     if (config.debugModeEnabled()) {

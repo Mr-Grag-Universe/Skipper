@@ -2,6 +2,8 @@
 #define FIND_FUNC_BOUNDS_header
 
 #include <algorithm>
+#include <set>
+#include <map>
 
 #include "dr_tools.h"
 #include "drsyms.h"
@@ -11,12 +13,11 @@
 #include "types.h"
 #include "../loggers.h"
 
-#include <map>
 
 bool get_func_bounds_callback(drsym_info_t *info, drsym_error_t status, void *data) {
     if (info != NULL && data != NULL) {
         // if (status != DRSYM_SUCCESS) {
-        //      printf("line shit is not success!\n");
+        //     ("line shit is not success!\n");
         // }
         auto * d = (std::vector<std::pair<size_t, std::string>> *) data;
         d->push_back(std::make_pair(info->start_offs, info->name));

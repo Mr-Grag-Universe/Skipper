@@ -1,3 +1,13 @@
+/**
+ * @file debug.h
+ * @author Stepan kafanov
+ * @brief my debug functions for project
+ * @version 0.1
+ * @date 2025-03-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef MY_DEBUG_header
 #define MY_DEBUG_header
 
@@ -23,7 +33,9 @@
 
 #include "types.h"
 
-
+/// @brief prints DR module info
+/// @param m - DR module-info pointer
+/// @return whether `m` is not `NULL`
 bool print_module_data(module_data_t * m) {
     if (m == NULL) {
         return false;
@@ -55,6 +67,7 @@ bool print_module_data(module_data_t * m) {
     return true;
 }
 
+/// @brief prints all `imported` in DR opinion symbols
 void print_all_imported_symbols() {
     drsym_init(NULL);
 
@@ -76,6 +89,7 @@ void print_all_imported_symbols() {
     drsym_exit();
 }
 
+/// @brief prints all visible modules
 void print_modules() {
     auto modules = get_all_modules();
     dr_printf("modules:\n");
@@ -84,12 +98,14 @@ void print_modules() {
     }
 }
 
+/// @brief prints ASM instruction
 void print_instruction(void *drcontext, instr_t *instr) {
     char instr_str[256];
     instr_disassemble_to_buffer(drcontext, instr, instr_str, sizeof(instr_str));
     dr_printf("Instruction: %s\n", instr_str);
 }
 
+/// @brief prints client's argv
 void print_argv(int argc, const char *argv[]) {
     dr_printf("command line args:\n");
     for (int i=0; i < argc; ++i) {

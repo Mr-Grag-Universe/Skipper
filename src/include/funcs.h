@@ -1,3 +1,6 @@
+/**
+@file funcs.h
+*/
 #ifndef FUNCS_DR_header
 #define FUNCS_DR_header
 
@@ -16,6 +19,14 @@
 #include "types.h"
 
 // используется, чтобы достать отступ extra_counters
+/**
+ * @brief Get the symbol offset
+ * 
+ * @param module_name name of the module, where symbol contains
+ * @param module_path path to the module
+ * @param symbol_name name of the seeked symbol
+ * @return size_t - offset of the symbol
+ */
 size_t get_symbol_offset(std::string module_name, std::string module_path, std::string symbol_name) {
     drsym_init(NULL);
     drsym_error_t error;
@@ -48,7 +59,12 @@ size_t get_symbol_offset(std::string module_name, std::string module_path, std::
     return offset;
 }
 
-// используется
+/**
+ * @brief Get the all pairs <module_name, module_path>.
+ *        Looks for a DynamoRIO-seen modules.
+ * 
+ * @return std::vector<ModuleInfo> list of module-pairs
+ */
 std::vector<ModuleInfo> get_all_modules() {
     auto iterator = dr_module_iterator_start();
     std::vector<ModuleInfo> modules;
@@ -61,7 +77,11 @@ std::vector<ModuleInfo> get_all_modules() {
     return modules;
 }
 
-// используется
+/**
+ * @brief Get all modules names, which DynamoRIO can see.
+ * 
+ * @return std::vector <std::string> 
+ */
 std::vector <std::string> get_modules_names() {
     auto modules = get_all_modules();
     std::vector <std::string> modules_names;
@@ -72,6 +92,12 @@ std::vector <std::string> get_modules_names() {
     return modules_names;
 }
 
+/**
+ * @brief Converts int numbers to hex form.
+ * 
+ * @param my_integer - converted number
+ * @return std::string - hex form of number
+ */
 std::string int_to_hex(int my_integer) {
     std::stringstream sstream;
     sstream << std::hex << my_integer;
@@ -79,6 +105,11 @@ std::string int_to_hex(int my_integer) {
     return result;
 }
 
+/**
+ * @brief Get current thread id for printing
+ * 
+ * @return std::string - return str-format current thread id
+ */
 std::string get_thread_id() {
     std::stringstream ss;
     ss << std::this_thread::get_id();

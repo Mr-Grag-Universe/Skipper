@@ -1,8 +1,15 @@
+/**
+@file types.h
+*/
 #ifndef MY_TYPES_header
 #define MY_TYPES_header
 
 #include "dr_api.h"
 
+/**
+ * @brief Contains all aviable info about some symbol.
+ * 
+ */
 struct sym_info_t {
     std::string file;
 
@@ -69,18 +76,31 @@ struct sym_info_t {
     }
 };
 
+/**
+ * @brief Just pair <module name, module path> struct
+ * 
+ */
 struct ModuleInfo {
     std::string name;
     std::string path;
 };
 
+/**
+ * @brief Contains function-under-test info
+ * 
+ */
 struct FuncConfig {
+    /// @brief name of the module, where it will be searched by client
     std::string module_name;
+    /// @brief path to that module
     std::string module_path;
+    /// @brief addresses, which will be assigned as a bounds of function in case of search failure and if user will not enter address manualy
     std::pair<size_t, size_t> default_address;
 };
 
+/// @brief depricated
 static const size_t MAP_SIZE = 1025;
+/// @brief depricated
 struct thread_data {
     uint64_t location;
     uint8_t map[MAP_SIZE];

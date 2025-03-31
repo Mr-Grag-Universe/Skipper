@@ -1,3 +1,7 @@
+/**
+@file client.cpp
+*/
+
 #include <thread>
 #include <stdexcept>
 
@@ -25,14 +29,18 @@
 
 using namespace std::chrono_literals;
 
+/// config object with all client settings
 static Configurator config;
+/// tracer object to insert tracing into code (basic) blocks
 static Tracer tracer;
+/// code segments with instructed function description
 static std::vector <CodeSegmentDescriber> code_segment_describers;
-static std::set<int> opcodes;
+/// guard object to trace LLVM "guards" state
 static Guarder guarder;
-
+/// found LLVM "guards" in code under instrumentation 
 static std::map<std::string, std::vector <long long int>> global_guards;
 
+static std::set<int> opcodes;
 static int tls_key;
 
 void init_tls() {
@@ -43,6 +51,12 @@ void init_tls() {
     dr_printf("thread <%s> tls inited!\n", get_thread_id().c_str());
 }
 
+/**
+ * @brief Checks whether a piece of instruction is included in one of the instrumented segments
+ * 
+ * @param tag - DynamoRIO code segment tag
+ * @param segments - found segments (passed through the config)
+ */
 bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & segments) {
     app_pc 
     bb_addr = dr_fragment_app_pc(tag);
@@ -57,58 +71,11 @@ bool address_in_code_segment(void * tag, std::vector <CodeSegmentDescriber> & se
     return false;
 }
 
-
-bool address_in_global_guard(void * drcontext, instrlist_t * bb, void *tag, instr_t * c_instr) {
-    bool guards_opened = false;
-    bool good_lea_found = false;
-    for (auto instr = instrlist_first(bb); instr != NULL; instr = instr_get_next(instr)) {
-        if (instr == c_instr) {
-            return guards_opened;
-        }
-        print_instruction(drcontext, instr);
-
-        int opcode = instr_get_opcode(instr);
-        if (opcode == (int) OP_lea) {
-            opnd_t src = instr_get_src(instr, 0);
-            if (!opnd_is_memory_reference(src)) {
-            }
-
-
-            void* mem_addr;
-            try {
-                main_logger.log("INSTR", "1 opnd get addr");
-                mem_addr = opnd_get_addr(src);
-            } catch (...) {
-                good_lea_found = false;
-                continue;
-            }
-            main_logger.log("INSTR", "mem_addr: {}", (long) mem_addr);
-
-            if (std::find(  global_guards["fuzz_app"].begin(), 
-                            global_guards["fuzz_app"].end(), 
-                            (long long) mem_addr) != global_guards["fuzz_app"].end()) {
-                good_lea_found = true;
-                continue;
-            }
-        } else if (good_lea_found && instr_writes_memory(instr)) {
-            print_instruction(drcontext, instr);
-            opnd_t src = instr_get_src(instr, 0);
-            if (opnd_is_immed_int(src)) {
-                int val = opnd_get_immed_int(src);
-                main_logger.log("INSTR", "move opnd value is {}", val);
-                guards_opened = (val == 1);
-
-                if (guards_opened)
-                    main_logger.log("INSTR", "open the gates!");
-                else
-                    main_logger.log("INSTR", "close the gates!");
-            }
-        }
-        good_lea_found = false;
-    }
-    return guards_opened;
-}
-
+/**
+ * @brief The main handler containing the code instrumentation logic
+ * 
+ * See handler signature in DynamoRIO docs
+ */
 static dr_emit_flags_t
 bb_instrumentation_event_handler(
                                     void *drcontext, 
@@ -132,7 +99,7 @@ bb_instrumentation_event_handler(
             instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
             main_logger.log("INSTR", "addr = {}", int_to_hex((size_t) instr_get_app_pc(instr)));
             main_logger.log("INSTR", std::string(buff));
-        } else if (guarder.guards_opened) {
+        } else if (guarder.guards_opened()) {
             tracer.traceOverflow(drcontext, tag, bb, instr);
         }
     }
@@ -202,6 +169,16 @@ event_module_load(void *drcontext, const module_data_t *mod, bool loaded) {
     }
 }
 
+/**
+ * @brief Main client function
+ * 
+ * @param id - client id
+ * @param argc - number of command line arguments
+ * @param argv - command line arguments
+ * 
+ * In this function, the client is configured and prepared for operation, 
+ * and all handlers are posted for events occurring in the fuzzer-program process.
+ */
 void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
     // parsing command line arguments

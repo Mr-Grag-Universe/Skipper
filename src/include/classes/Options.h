@@ -1,3 +1,13 @@
+/**
+ * @file Options.h
+ * @author Stepan Kafanov
+ * @brief I adopted DynamoRIO parser for my project, because for some reason that parser didn't work
+ * @version 0.1
+ * @date 2025-03-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef MY_OPTIONS_header
 #define MY_OPTIONS_header
 

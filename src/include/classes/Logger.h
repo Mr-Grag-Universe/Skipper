@@ -1,3 +1,13 @@
+/**
+ * @file Logger.h
+ * @author Stepan Kafanov
+ * @brief Logger class
+ * @version 0.1
+ * @date 2025-03-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef MY_LOGGER_header
 #define MY_LOGGER_header
 
@@ -7,6 +17,10 @@
 
 #include "../funcs.h"
 
+/**
+ * @brief Logger class
+ * 
+ */
 class Logger {
 private:
     std::string log_file;
@@ -18,6 +32,11 @@ public:
         this->log_file = out_file;
     }
 
+    /**
+     * @brief Set the file to logs collection
+     * 
+     * @param new_out_file - file to write logs in
+     */
     void set_log_file(const std::string & new_out_file) {
         if (this->stream.is_open()) {
             this->stream.close();
@@ -25,6 +44,12 @@ public:
         this->log_file = new_out_file;
     }
 
+    /**
+     * @brief Prepare logger for working. Opens log-file descriptor
+     * 
+     * @param new_out_file - optional new log-file name to set
+     * @param use_tid - shall logger log messages to file with thread-id prefix like '1234-log-file-name.txt'
+     */
     void start_logging(std::string new_out_file = "", bool use_tid = false) {
         if (this->stream.is_open()) {
             this->stream.close();
@@ -50,6 +75,10 @@ public:
         }
     }
 
+    /**
+     * @brief Close file descriptor / stream
+     * 
+     */
     void stop_logging() {
         if (this->stream.is_open()) {
             this->stream.close();
@@ -58,6 +87,15 @@ public:
         }
     }
 
+    /**
+     * @brief arbitrary log function
+     * @details apply args to '{}' inside passed message string and write it into log-file with passed `tag`
+     * 
+     * @tparam Args - args for 
+     * @param tag - tag of message. message will be like "[tag] : message"
+     * @param format - message string with '{}' to insert passed args
+     * @param args - agrs to insert into format message string
+     */
     template<typename... Args>
     void log(std::string tag, const std::string& format, Args... args) {
         if (!this->stream) {
@@ -81,11 +119,14 @@ public:
         oss << format;
     }
 
+    /// @brief checks whether logging stream is opened or not
     bool is_open() const {
         return this->stream.is_open();
     }
 
 
+    /// @brief Logs info about client program and passed args: path, number of arguments (argc), arguments from argv
+    /// @return 
     bool log_program_params() {
         this->log_line();
         this->stream << "[DEBUG] : " << "app_name: " << dr_get_application_name() << std::endl;
@@ -118,23 +159,28 @@ public:
         this->stream << "================================================================" << std::endl;
     }
 
+    /// @brief Call this->log method with `tag = "DEBUG"`
     template<typename... Args>
     void log_debug(const std::string& format, Args... args) {
         this->log("DEBUG", format, args...);
     }
+    /// @brief Call this->log method with `tag = "INFO"`
     template<typename... Args>
     void log_info(const std::string& format, Args... args) {
         this->log("INFO", format, args...);
     }
+    /// @brief Call this->log method with `tag = "ERROR"`
     template<typename... Args>
     void log_error(const std::string& format, Args... args) {
         this->log("ERROR", format, args...);
     }
+    /// @brief Call this->log method with `tag = "WARNING"`
     template<typename... Args>
     void log_warning(const std::string& format, Args... args) {
         this->log("WARNING", format, args...);
     }
 
+    /// @brief Logs all visible by DR modules
     void log_modules() {
         auto modules = get_all_modules();
         this->stream << "[DEBUG] : modules:" << std::endl;

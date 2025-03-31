@@ -1,3 +1,13 @@
+/**
+ * @file func_bounds.h
+ * @author Stepan Kafanov
+ * @brief 
+ * @version 0.1
+ * @date 2025-03-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef FIND_FUNC_BOUNDS_header
 #define FIND_FUNC_BOUNDS_header
 
@@ -14,6 +24,7 @@
 #include "../loggers.h"
 
 
+/// @brief depricated
 bool get_func_bounds_callback(drsym_info_t *info, drsym_error_t status, void *data) {
     if (info != NULL && data != NULL) {
         // if (status != DRSYM_SUCCESS) {
@@ -25,6 +36,23 @@ bool get_func_bounds_callback(drsym_info_t *info, drsym_error_t status, void *da
     return true;
 }
 
+/**
+ * @brief Get bounds for passed functions
+ * 
+ * @details Algorithm of search: 
+ * + collect all symbols and their addresses (offsets) from modules, poited in functions-under-test info
+ * + sort all symbols with their offsets
+ * + for every function-under-test name searching for coincidence
+ *      + if there is not exact coincidence and `use_pattern = true` will search pattern coincidence
+ *      + if failure and `use_default_bounds = true` and default-address is correct will take default-address as function bounds
+ *      + else will ask user to enter bounds manualy
+ * + return resulting dict with function bounds
+ * 
+ * @param inspect_funcs - list of inspecting functions (functions, bounds for we are searching)
+ * @param use_pattern - shall we try to search for not exact coincidence
+ * @param use_default_bounds - shall we use default functions bounds in case of search failure
+ * @return std::map<std::string, std::pair<generic_func_t, generic_func_t>> - dict {'fucntion name' : (function-start-offset, function-end-offset)}
+ */
 std::map<std::string, std::pair<generic_func_t, generic_func_t>> 
 get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_pattern, bool use_default_bounds) 
 {

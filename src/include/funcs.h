@@ -18,7 +18,6 @@
 
 #include "types.h"
 
-// используется, чтобы достать отступ extra_counters
 /**
  * @brief Get the symbol offset
  * 

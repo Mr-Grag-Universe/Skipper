@@ -58,7 +58,6 @@ public:
             this->log_file = new_out_file;
         }
 
-        // если дирректории с файлом нет - создаём её
         std::filesystem::path dir = std::filesystem::absolute(this->log_file).parent_path();
         if (!dir.empty() && !std::filesystem::exists(dir)) {
             std::filesystem::create_directories(dir);

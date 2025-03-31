@@ -31,7 +31,7 @@ struct TraceArea {
 /// @brief gets most signifant bit of `x` digit
 int get_msb_ind(uint x) {
     if (x == 0)
-        return -1; // Возвращает -1, если нет установленных битов
+        return -1; // if there is not any rised bits (==0)
 
     int msb_index = 0;
     while (x >>= 1) {
@@ -53,31 +53,26 @@ int get_msb_ind(uint x) {
  * @return 0 - error code
  */
 int trace_overflow(int* offset_int_ptr, uint32_t size, uint32_t ind, uint32_t reg_id) {
-    // offset - адрес памяти, куда писать
-    // size - размер памяти
-    // ind - индекс add
-    // reg_id - индекс регистра в DynamoRIO
-
     char* offset = (char*) offset_int_ptr;
     reg_id_t dst_reg = (reg_id_t) reg_id;
     if (size < 65*(ind+1)) {
-        // TODO : надо проверить, как работает
+        // TODO : cheking
         printf("memory is not enough for tracing\n");
     }
 
-    // восстанавливаем контекст
+    // restore context
     dr_mcontext_t mc = { sizeof(mc), DR_MC_ALL};
     dr_get_mcontext(dr_get_current_drcontext(), &mc);
 
-    // регистр флагов
+    // flag register
     reg_t xflags = mc.xflags;
-    // регистр назначения
+    // target register
     reg_t reg = reg_get_value(dst_reg, &mc);
 
-    // находим индекс старшего бита
+    // most signigicant bit
     int msb_ind_reg = get_msb_ind((uint) reg);
 
-    // трейсим
+    // trace
     if (msb_ind_reg >= 0) {
         ((char *)offset)[(ind*65+msb_ind_reg) % size] += 1;
     }
@@ -108,8 +103,8 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     auto xcx = DR_REG_XCX;
     auto xdx = DR_REG_XDX;
 
-    // сохраняем регистры и флаги
-    dr_save_arith_flags(drcontext, bb, where, SPILL_SLOT_2); // по умолчанию кладёт в xax
+    // save registers and flags
+    dr_save_arith_flags(drcontext, bb, where, SPILL_SLOT_2); // store into xax by default
     dr_save_reg(drcontext, bb, where, xax, SPILL_SLOT_3);
     dr_save_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
     dr_save_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
@@ -117,7 +112,7 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     
     instr_t * instr;
 
-    // сохраняем значение исследуемого регистра в RCX
+    // save interesting reg value into RCX
     instr = XINST_CREATE_move(
         drcontext,
         opnd_create_reg(DR_REG_RCX),
@@ -127,9 +122,9 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
 
     // =========================================================================
     // get_msb_ind
-    // RCX - исследуемый регистр хранится
-    // RAX - возвращаемый результат
-    // создаём метки mgb_loop, msb_finish, msb_ret_minus_1
+    // RCX - research register
+    // RAX - return result
+    // create labels mgb_loop, msb_finish, msb_ret_minus_1
 
     instr = INSTR_CREATE_xor(
         drcontext,
@@ -158,7 +153,6 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
 
 
     // ==============================================================================
-    // теперь результат функции помещаем в RCX и инкрементаируем соответствующий байт
     
     instr = XINST_CREATE_move(
         drcontext,
@@ -166,8 +160,8 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         opnd_create_reg(DR_REG_RAX)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // ответ в RCX
-    // записываем адрес в RAX
+    // answer in RCX
+    // write address into RAX
     auto pos = ind*65;
     instr = INSTR_CREATE_mov_imm(
         drcontext,
@@ -188,13 +182,13 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
         OPND_CREATE_MEM8(DR_REG_RAX, 0)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // прибавляем 1
+    // add 1
     instr = INSTR_CREATE_inc(
         drcontext,
         opnd_create_reg(DR_REG_DL)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // кладём новое значение по адресу
+    // store value
     instr = XINST_CREATE_store(
         drcontext,
         OPND_CREATE_MEM8(DR_REG_RAX, 0),
@@ -203,42 +197,41 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     instrlist_meta_preinsert(bb, where, instr);
 
     // =========================================================================
-    // заняты RAX под адрес, RCX под флаги, RDX - вспомогательный
-    // берём сохранённые флаги и кладём в reg RCX
+    // occupied RAX for address, RCX for flags, RDX - supportive
+    // read saved flags and store them to reg RCX
     dr_restore_reg(
         drcontext, bb, where, (reg_id_t) DR_REG_RCX, SPILL_SLOT_2
     );
-    // по идее их всего 6 и должно прокатить, если я использую eax вместо rax
     instr = INSTR_CREATE_and(
         drcontext,
         opnd_create_reg(DR_REG_ECX),
         OPND_CREATE_INT32((uint32_t) EFLAGS_CF)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // сохраняем в памяти флаг
+    // store flag
     auto i = (ind*65+64) % size;
-    // формируем адрес
+    // form address
     instr = INSTR_CREATE_mov_imm(
         drcontext,
         opnd_create_reg(DR_REG_RAX),
         OPND_CREATE_INT64(offset)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // читаем, что лежит по адресу данного байта
+    // read byte
     instr = INSTR_CREATE_mov_ld(
         drcontext,
         opnd_create_reg(DR_REG_DL),
         OPND_CREATE_MEM8(DR_REG_RAX, i)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // прибавляем бит CF регистра флагов
+    // plus CF bit
     instr = INSTR_CREATE_add(
         drcontext,
         opnd_create_reg(DR_REG_DL),
         opnd_create_reg(DR_REG_CL)
     );
     instrlist_meta_preinsert(bb, where, instr);
-    // кладём новое значение по адресу
+    // store new value
     instr = XINST_CREATE_store(
         drcontext,
         OPND_CREATE_MEM8(DR_REG_RAX, i),
@@ -246,7 +239,7 @@ void insert_tracing(void *drcontext, void *tag, instrlist_t *bb, instr_t *where,
     );
     instrlist_meta_preinsert(bb, where, instr);
 
-    // возвращаем регистры и флаги на место
+    // restore flags and registers
     dr_restore_reg(drcontext, bb, where, xdx, SPILL_SLOT_6);
     dr_restore_reg(drcontext, bb, where, xcx, SPILL_SLOT_5);
     dr_restore_reg(drcontext, bb, where, xbx, SPILL_SLOT_4);
@@ -314,7 +307,7 @@ public:
         int reg_ind = this->get_reg_id(dst_reg);
 
         app_pc instr_pc = instr_get_app_pc(instr);
-        // если эту инструкцию ещё не встречали - выдаём ей номер
+        // new instruction? - set index
         if (this->pc_ind_map.find(instr_pc) == this->pc_ind_map.end()) {
             this->pc_ind_map[instr_pc] = this->pc_ind_map.size();
         }

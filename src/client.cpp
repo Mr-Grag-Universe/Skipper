@@ -94,7 +94,7 @@ bb_instrumentation_event_handler(
         if (address_in_code_segment(tag, code_segment_describers)) {
             tracer.traceOverflow(drcontext, tag, bb, instr);
 
-            // логируем
+            // logs
             char buff[1024];
             instr_disassemble_to_buffer(drcontext, instr, buff, 1024);
             main_logger.log("INSTR", "addr = {}", int_to_hex((size_t) instr_get_app_pc(instr)));
@@ -151,7 +151,7 @@ event_thread_exit(void *drcontext)
     dr_printf("thread tls clearing...\n");
     Logger* logger = static_cast<Logger*>(drmgr_get_tls_field(drcontext, tls_key));
     if (logger != NULL) {
-        delete logger; // Освобождение ресурсов логгера
+        delete logger; // loggers resources freeing
         drmgr_set_tls_field(drcontext, tls_key, NULL); // Удаление из TLS
     }
 }
@@ -209,8 +209,8 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (!drmgr_init())
         throw std::runtime_error("cannot init dr_mgr");
 
-    //  проверка, что мы в той программе
-    // если это не программа с искомым модулем - не исполняемся дальше
+    // check if we in the main program
+    // if it doesn't contain interesting modules execution is stopped
     auto analized_modules_names = config.get_modules_names();
     auto current_modules_names = get_modules_names();
     if (config.debugModeEnabled()) {
@@ -229,7 +229,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
                             return;
                         }
 
-    // ищем guards по всем доступным модулям
+    // seeking for LLVM-guards over each module
     for (auto & module_name : cmn_set) {
         module_data_t * module = dr_lookup_module_by_name(module_name.c_str());
         if (module) {
@@ -307,14 +307,14 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
         }
         main_logger.log_info("symbols logged! log stream closed.");
     }
-    // предупреждаем, если совсем ничего не нашли
+    // alarm, that we found nothing
     if (code_segment_describers.size() == 0) {
         main_logger.log_warning("there is not no one symbol from inspection function names passed to fuzzer!");
         dr_printf("[WARNING] : there is not no one symbol from inspection function names passed to fuzzer!\n");
     }
     main_logger.log_info("{} : DR segments readed successfully!", tid);
 
-    // достаём адрес для доп покрытия
+    // extra counters addresses
     for (auto & p : config.get_modules_info()) {
         auto module_name = p.first;
         auto module_path = p.second;
@@ -337,7 +337,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     dr_printf("%s : DR configured!\n", tid.c_str());
 
     /*
-     * ######################## Устанавливаем обработчики ########################3
+     * ######################## Handlers Set Up ########################3
      */
 
     dr_register_exit_event(exit_event);

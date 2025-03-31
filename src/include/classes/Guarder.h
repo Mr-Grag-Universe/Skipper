@@ -83,7 +83,6 @@ public:
                 if (std::find(  this->global_guards_[module_name].begin(), 
                                 this->global_guards_[module_name].end(), 
                                 (long long) mem_addr) != this->global_guards_[module_name].end()) {
-                    // lea инструкция хорошая
                     this->good_lea_met_ = true;
                 } else {
                     this->good_lea_met_ = false;
@@ -104,7 +103,6 @@ public:
                 this->good_lea_met_ = false;
             }
         } else {
-            // если инструкция без src -> это не move и не lea -> плохая
             this->good_lea_met_ = false;
         }
         return this->guards_opened_;

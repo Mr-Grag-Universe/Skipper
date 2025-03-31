@@ -17,3 +17,6 @@ out/*
 *legacy.h
 json/*
 llvm-project
+
+./docs/html
+./docs/latex

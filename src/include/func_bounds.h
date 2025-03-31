@@ -62,41 +62,34 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
         throw std::invalid_argument("[ERROR] : empty instr function map!");
     }
 
-    // собираем все пары модуль-путь
     std::set<std::pair<std::string, std::string>> module_path;
     for (auto & func : inspect_funcs) {
         module_path.insert(std::make_pair(func.second.module_name, func.second.module_path));
     }
     
-    // собираем все символы отовсюду
-    // в результате они уже будут указаны с учётом отступа модуля
+    // with module offsets
     std::map<std::string, generic_func_t> symbols;
     for (auto & m_p : module_path) {
         auto symbols_offests = get_all_symbols_with_offsets(m_p.first, m_p.second, use_pattern);
         symbols.merge(symbols_offests);
     }
 
-    // переводим в вектор, чтобы сортировать было удобнее
     std::vector <std::pair<size_t, std::string>> symbols_vector;
     for (auto & symbol : symbols) {
         symbols_vector.push_back({(size_t) symbol.second, symbol.first});
     }
-    // сортируем символы
     std::sort(symbols_vector.begin(), symbols_vector.end());
 
-    // для каждой из искомых функций находим границы
     std::map<std::string, std::pair<generic_func_t, generic_func_t>> res;
     for (auto & func : inspect_funcs) {
         std::string func_name = func.first;
 
-        // ищем точное совпадение
         auto iter = std::find_if(symbols_vector.begin(), symbols_vector.end(), [&func_name](const auto x){
             return func_name == std::string(x.second);
         });
 
         if ((iter == symbols_vector.end()) && use_pattern) {
             main_logger.log_debug("second try...");
-            // ищем неточное совпадение
             iter = std::find_if(
                 symbols_vector.begin(), symbols_vector.end(), 
                 [&func_name](const auto x){

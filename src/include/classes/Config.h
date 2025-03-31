@@ -30,10 +30,9 @@ using json = nlohmann::json;
 class Configurator {
 private:
     void config_with_json(json config_data) {
-        // настройки инспектирования asm-вставок
+        // ASM-inspection settings
         // TODO
 
-        // настройки tracer
         this->tracer_config = config_data["tracer_config"];
     }
 

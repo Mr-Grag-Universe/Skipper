@@ -121,7 +121,7 @@ public:
         , maxval_(option.maxval_) {}
     Option& operator=(const Option& other)
     {
-        if (this != &other) { // Проверка на самоприсваивание
+        if (this != &other) {
             value_ = other.value_;
             defval_ = other.defval_;
             valsep_ = other.valsep_;

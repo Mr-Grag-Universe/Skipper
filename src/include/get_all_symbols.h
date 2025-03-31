@@ -87,9 +87,9 @@ get_all_symbols_with_offsets(
     }
     size_t base = (size_t)module->start;
 
-    // #################### начало работы #####################
+    // #################### job start #####################
 
-    // вытаскиваем все пары символ-адрес
+    // all pairs <symbol_name, offset>
     std::map<std::string, generic_func_t> data;
     error = drsym_enumerate_symbols_ex(module_path.c_str(),
                                        get_all_symbols_with_offsets_callback,
@@ -97,7 +97,7 @@ get_all_symbols_with_offsets(
                                        &data,
                                        DRSYM_DEMANGLE_FULL);
 
-    // прибывляем отступ модуля
+    // + module offset
     for (auto &symbol : data) {
         symbol.second = (generic_func_t)((size_t)symbol.second + base);
     }

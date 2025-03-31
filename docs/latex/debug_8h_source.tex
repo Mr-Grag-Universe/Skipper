@@ -1,0 +1,106 @@
+\hypertarget{debug_8h_source}{}\doxysection{debug.\+h}
+\label{debug_8h_source}\index{/home/debian/Skipper/src/include/debug.h@{/home/debian/Skipper/src/include/debug.h}}
+\mbox{\hyperlink{debug_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef MY\_DEBUG\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define MY\_DEBUG\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <elf.h>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <err.h>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <fcntl.h>}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <stdio.h>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <stdlib.h>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include <stddef.h>}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include <string.h>}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include <unistd.h>}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{25 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#include "{}dr\_api.h"{}}}
+\DoxyCodeLine{28 \textcolor{preprocessor}{\#include "{}drreg.h"{}}}
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#include "{}drsyms.h"{}}}
+\DoxyCodeLine{30 \textcolor{preprocessor}{\#include "{}drmgr.h"{}}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{\#include "{}drx.h"{}}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{\#include "{}dr\_modules.h"{}}}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{types_8h}{types.h}}"{}}}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{39 \textcolor{keywordtype}{bool} \mbox{\hyperlink{debug_8h_a7fb3591ed5d60fc2230132f7fe587cd1}{print\_module\_data}}(module\_data\_t * m) \{}
+\DoxyCodeLine{40     \textcolor{keywordflow}{if} (m == NULL) \{}
+\DoxyCodeLine{41         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{42     \}}
+\DoxyCodeLine{43     \textcolor{keywordtype}{bool} err = printf(}
+\DoxyCodeLine{44             \textcolor{stringliteral}{"{}end                    :   \%p\(\backslash\)n"{}}}
+\DoxyCodeLine{45             \textcolor{stringliteral}{"{}entry\_point            :   \%p\(\backslash\)n"{}}}
+\DoxyCodeLine{46             \textcolor{stringliteral}{"{}flags                  :   \%u\(\backslash\)n"{}}}
+\DoxyCodeLine{47             \textcolor{stringliteral}{"{}name                   :   \%s\(\backslash\)n"{}}}
+\DoxyCodeLine{48             \textcolor{stringliteral}{"{}full\_path              :   \%s\(\backslash\)n"{}}}
+\DoxyCodeLine{49             \textcolor{comment}{// "{}file\_version           :   \%u"{}}}
+\DoxyCodeLine{50             \textcolor{comment}{// "{}product\_version        :   \%u"{}}}
+\DoxyCodeLine{51             \textcolor{comment}{// "{}checksum               :   \%u"{}}}
+\DoxyCodeLine{52             \textcolor{stringliteral}{"{}timestamp              :   \%u\(\backslash\)n"{}}}
+\DoxyCodeLine{53             \textcolor{comment}{// "{}module\_internal\_size   :   \%lld"{}}}
+\DoxyCodeLine{54             \textcolor{stringliteral}{"{}preferred\_base         :   \%p\(\backslash\)n"{}}}
+\DoxyCodeLine{55             \textcolor{stringliteral}{"{}start                  :   \%p\(\backslash\)n"{}},}
+\DoxyCodeLine{56             m-\/>end,}
+\DoxyCodeLine{57             m-\/>entry\_point,}
+\DoxyCodeLine{58             m-\/>flags,}
+\DoxyCodeLine{59             dr\_module\_preferred\_name(m),}
+\DoxyCodeLine{60             m-\/>full\_path,}
+\DoxyCodeLine{61             \textcolor{comment}{// m-\/>file\_version.version,}}
+\DoxyCodeLine{62             \textcolor{comment}{// m-\/>product\_version.version,}}
+\DoxyCodeLine{63             \textcolor{comment}{// m-\/>checksum,}}
+\DoxyCodeLine{64             m-\/>timestamp,}
+\DoxyCodeLine{65             \textcolor{comment}{// m-\/>module\_internal\_size,}}
+\DoxyCodeLine{66             m-\/>start);}
+\DoxyCodeLine{67     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{68 \}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{71 \textcolor{keywordtype}{void} \mbox{\hyperlink{debug_8h_a6c03b5a755d1f7dd33cb872aa7b324f0}{print\_all\_imported\_symbols}}() \{}
+\DoxyCodeLine{72     drsym\_init(NULL);}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{74     \textcolor{keyword}{auto} modules = \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}();}
+\DoxyCodeLine{75     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} module\_info : modules) \{}
+\DoxyCodeLine{76         \textcolor{keyword}{auto} module\_name = module\_info.name;}
+\DoxyCodeLine{77         dr\_printf(\textcolor{stringliteral}{"{}module\_name: \%s\(\backslash\)n"{}}, module\_name.c\_str());}
+\DoxyCodeLine{78         \textcolor{keyword}{auto} module = dr\_lookup\_module\_by\_name(module\_name.c\_str());}
+\DoxyCodeLine{79         \textcolor{comment}{// dr\_get\_proc\_address(module-\/>handle, "{}New\_G1"{});}}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81         \textcolor{keyword}{auto} iterator\_im = dr\_symbol\_import\_iterator\_start(module-\/>handle, NULL);}
+\DoxyCodeLine{82         \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{83             \textcolor{keyword}{auto} * symbol = dr\_symbol\_import\_iterator\_next(iterator\_im);}
+\DoxyCodeLine{84             dr\_printf(\textcolor{stringliteral}{"{}symbol: \%s\(\backslash\)n"{}}, symbol-\/>name);}
+\DoxyCodeLine{85         \} \textcolor{keywordflow}{while} (dr\_symbol\_import\_iterator\_hasnext(iterator\_im));}
+\DoxyCodeLine{86         dr\_symbol\_import\_iterator\_stop(iterator\_im);}
+\DoxyCodeLine{87     \}}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89     drsym\_exit();}
+\DoxyCodeLine{90 \}}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{93 \textcolor{keywordtype}{void} \mbox{\hyperlink{debug_8h_a977ed29aab6042d90ec5467e830e990d}{print\_modules}}() \{}
+\DoxyCodeLine{94     \textcolor{keyword}{auto} modules = \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}();}
+\DoxyCodeLine{95     dr\_printf(\textcolor{stringliteral}{"{}modules:\(\backslash\)n"{}});}
+\DoxyCodeLine{96     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} module : modules) \{}
+\DoxyCodeLine{97         dr\_printf(\textcolor{stringliteral}{"{}\(\backslash\)tmodule\_name: \%s; module\_path: \%s\(\backslash\)n"{}}, module.name.c\_str(), module.path.c\_str());}
+\DoxyCodeLine{98     \}}
+\DoxyCodeLine{99 \}}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{102 \textcolor{keywordtype}{void} \mbox{\hyperlink{debug_8h_a4edbca9ef2359deec25de9a7a0169cb3}{print\_instruction}}(\textcolor{keywordtype}{void} *drcontext, instr\_t *instr) \{}
+\DoxyCodeLine{103     \textcolor{keywordtype}{char} instr\_str[256];}
+\DoxyCodeLine{104     instr\_disassemble\_to\_buffer(drcontext, instr, instr\_str, \textcolor{keyword}{sizeof}(instr\_str));}
+\DoxyCodeLine{105     dr\_printf(\textcolor{stringliteral}{"{}Instruction: \%s\(\backslash\)n"{}}, instr\_str);}
+\DoxyCodeLine{106 \}}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{109 \textcolor{keywordtype}{void} \mbox{\hyperlink{debug_8h_a1c41f7d8e6d4286a6b66c46e24052407}{print\_argv}}(\textcolor{keywordtype}{int} argc, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *argv[]) \{}
+\DoxyCodeLine{110     dr\_printf(\textcolor{stringliteral}{"{}command line args:\(\backslash\)n"{}});}
+\DoxyCodeLine{111     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i=0; i < argc; ++i) \{}
+\DoxyCodeLine{112         dr\_printf(\textcolor{stringliteral}{"{}\(\backslash\)t\%d: \%s\(\backslash\)n"{}}, i, argv[i]);}
+\DoxyCodeLine{113     \}}
+\DoxyCodeLine{114 \}}
+\DoxyCodeLine{115 }
+\DoxyCodeLine{116 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MY\_DEBUG\_header}}
+
+\end{DoxyCode}

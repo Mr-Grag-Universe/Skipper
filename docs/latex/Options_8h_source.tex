@@ -1,0 +1,369 @@
+\hypertarget{Options_8h_source}{}\doxysection{Options.\+h}
+\label{Options_8h_source}\index{/home/debian/Skipper/src/include/classes/Options.h@{/home/debian/Skipper/src/include/classes/Options.h}}
+\mbox{\hyperlink{Options_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef MY\_OPTIONS\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define MY\_OPTIONS\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <string.h>}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <stdlib.h>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include <iomanip>}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include <limits.h>}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include <stdint.h>}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{\#include <errno.h>}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include <ctype.h>}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#include <memory>}}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{keyword}{static} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{27 is\_negative(\textcolor{keyword}{const} std::string \&s)}
+\DoxyCodeLine{28 \{}
+\DoxyCodeLine{29     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < s.size(); i++) \{}
+\DoxyCodeLine{30         \textcolor{keywordflow}{if} (isspace(s[i]))}
+\DoxyCodeLine{31             \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{32         \textcolor{keywordflow}{if} (s[i] == \textcolor{charliteral}{'-\/'})}
+\DoxyCodeLine{33             \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{34         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{35     \}}
+\DoxyCodeLine{36     \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{37 \}}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39 \textcolor{keyword}{class }\mbox{\hyperlink{classUnitypeOption}{UnitypeOption}} \{}
+\DoxyCodeLine{40 \textcolor{keyword}{public}:}
+\DoxyCodeLine{41     std::string valsep\_;}
+\DoxyCodeLine{42     std::string name\_;}
+\DoxyCodeLine{43     \textcolor{keywordtype}{bool} is\_specified\_;}
+\DoxyCodeLine{44     std::string desc\_short\_;}
+\DoxyCodeLine{45     std::string desc\_long\_;}
+\DoxyCodeLine{46 \textcolor{keyword}{public}:}
+\DoxyCodeLine{47     \mbox{\hyperlink{classUnitypeOption}{UnitypeOption}}(std::string name, std::string desc\_short, std::string desc\_long) }
+\DoxyCodeLine{48         : name\_(name)}
+\DoxyCodeLine{49         , desc\_short\_(desc\_short)}
+\DoxyCodeLine{50         , desc\_long\_(desc\_long)}
+\DoxyCodeLine{51         , valsep\_(\textcolor{stringliteral}{"{} "{}})}
+\DoxyCodeLine{52         , is\_specified\_(\textcolor{keyword}{false}) \{\}}
+\DoxyCodeLine{53     \textcolor{keyword}{virtual} \mbox{\hyperlink{classUnitypeOption}{\string~UnitypeOption}}() \{\};}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55     std::string get\_name()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{56         \textcolor{keywordflow}{return} name\_;}
+\DoxyCodeLine{57     \}}
+\DoxyCodeLine{58     \textcolor{keywordtype}{bool} name\_match(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *arg) \{}
+\DoxyCodeLine{59         std::cout << \textcolor{stringliteral}{"{}name matching"{}} << std::endl;}
+\DoxyCodeLine{60         std::cout << this-\/>name\_ << \textcolor{stringliteral}{"{} "{}} << arg << std::endl;}
+\DoxyCodeLine{61         \textcolor{keywordflow}{return} std::string(\textcolor{stringliteral}{"{}-\/"{}}).append(this-\/>name\_) == arg || std::string(\textcolor{stringliteral}{"{}-\/-\/"{}}).append(this-\/>name\_) == arg;}
+\DoxyCodeLine{62     \}}
+\DoxyCodeLine{63     \textcolor{keywordtype}{void} set\_is\_specified(\textcolor{keywordtype}{bool} x) \{}
+\DoxyCodeLine{64         is\_specified\_ = x;}
+\DoxyCodeLine{65     \}}
+\DoxyCodeLine{66     \textcolor{keywordtype}{bool} is\_specified()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{67         \textcolor{keywordflow}{return} is\_specified\_;}
+\DoxyCodeLine{68     \}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70     \textcolor{keyword}{virtual} std::string get\_value\_str() \textcolor{keyword}{const} = 0;}
+\DoxyCodeLine{71     \textcolor{keyword}{virtual} \textcolor{keywordtype}{bool} convert\_from\_string(\textcolor{keyword}{const} std::string s) = 0;}
+\DoxyCodeLine{72     \textcolor{keyword}{virtual} \textcolor{keywordtype}{bool} clamp\_value() = 0;}
+\DoxyCodeLine{73     \textcolor{keyword}{virtual} \textcolor{keywordtype}{bool} option\_takes\_arg() \textcolor{keyword}{const} = 0;}
+\DoxyCodeLine{74     \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} clear\_value() \{}
+\DoxyCodeLine{75         is\_specified\_ = \textcolor{keyword}{false};}
+\DoxyCodeLine{76     \}}
+\DoxyCodeLine{77 \};}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79 \textcolor{keyword}{template} <\textcolor{keyword}{typename} T> }
+\DoxyCodeLine{80 \textcolor{keyword}{class }\mbox{\hyperlink{classOption}{Option}} : \textcolor{keyword}{public} \mbox{\hyperlink{classUnitypeOption}{UnitypeOption}} \{}
+\DoxyCodeLine{81 \textcolor{keyword}{public}:}
+\DoxyCodeLine{82     T value\_;}
+\DoxyCodeLine{83     T defval\_;}
+\DoxyCodeLine{84     T minval\_;}
+\DoxyCodeLine{85     T maxval\_;}
+\DoxyCodeLine{86     \textcolor{keywordtype}{bool} has\_range\_;}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88     \textcolor{keywordtype}{bool} clamp\_value()\textcolor{keyword}{ override }\{}
+\DoxyCodeLine{89         \textcolor{keywordflow}{if} (has\_range\_) \{}
+\DoxyCodeLine{90             \textcolor{keywordflow}{if} (value\_ < minval\_) \{}
+\DoxyCodeLine{91                 value\_ = minval\_;}
+\DoxyCodeLine{92                 \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{93             \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (value\_ > maxval\_) \{}
+\DoxyCodeLine{94                 value\_ = maxval\_;}
+\DoxyCodeLine{95                 \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{96             \}}
+\DoxyCodeLine{97         \}}
+\DoxyCodeLine{98         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{99     \}}
+\DoxyCodeLine{100 \textcolor{keyword}{public}:}
+\DoxyCodeLine{101     \mbox{\hyperlink{classOption}{Option}}(std::string name, T defval,                     std::string desc\_short, std::string desc\_long)}
+\DoxyCodeLine{102         : \mbox{\hyperlink{classUnitypeOption}{UnitypeOption}}(name, desc\_short, desc\_long)}
+\DoxyCodeLine{103         , value\_(defval)}
+\DoxyCodeLine{104         , defval\_(defval)}
+\DoxyCodeLine{105         , has\_range\_(\textcolor{keyword}{false}) \{\}}
+\DoxyCodeLine{106     \mbox{\hyperlink{classOption}{Option}}(std::string name, T defval, T minval, T maxval, std::string desc\_short, std::string desc\_long)}
+\DoxyCodeLine{107         : \mbox{\hyperlink{classUnitypeOption}{UnitypeOption}}(name, desc\_short, desc\_long)}
+\DoxyCodeLine{108         , value\_(defval)}
+\DoxyCodeLine{109         , defval\_(defval)}
+\DoxyCodeLine{110         , has\_range\_(\textcolor{keyword}{true})}
+\DoxyCodeLine{111         , minval\_(minval)}
+\DoxyCodeLine{112         , maxval\_(maxval) \{\}}
+\DoxyCodeLine{113     }
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115     \mbox{\hyperlink{classOption}{Option}}(\textcolor{keyword}{const} \mbox{\hyperlink{classOption}{Option}}\& option) }
+\DoxyCodeLine{116         : \mbox{\hyperlink{classUnitypeOption}{UnitypeOption}}(option.name\_, option.desc\_short, option.desc\_long)}
+\DoxyCodeLine{117         , value\_(option.value\_)}
+\DoxyCodeLine{118         , defval\_(option.defval\_)}
+\DoxyCodeLine{119         , has\_range\_(option.has\_range\_)}
+\DoxyCodeLine{120         , minval\_(option.minval\_)}
+\DoxyCodeLine{121         , maxval\_(option.maxval\_) \{\}}
+\DoxyCodeLine{122     \mbox{\hyperlink{classOption}{Option}}\& operator=(\textcolor{keyword}{const} \mbox{\hyperlink{classOption}{Option}}\& other)}
+\DoxyCodeLine{123     \{}
+\DoxyCodeLine{124         \textcolor{keywordflow}{if} (\textcolor{keyword}{this} != \&other) \{ \textcolor{comment}{// Проверка на самоприсваивание}}
+\DoxyCodeLine{125             value\_ = other.value\_;}
+\DoxyCodeLine{126             defval\_ = other.defval\_;}
+\DoxyCodeLine{127             valsep\_ = other.valsep\_;}
+\DoxyCodeLine{128             has\_range\_ = other.has\_range\_;}
+\DoxyCodeLine{129             minval\_ = other.minval\_;}
+\DoxyCodeLine{130             maxval\_ = other.maxval\_;}
+\DoxyCodeLine{131             name\_ = other.name\_;}
+\DoxyCodeLine{132             is\_specified\_ = other.is\_specified\_;}
+\DoxyCodeLine{133             desc\_short\_ = other.desc\_short\_;}
+\DoxyCodeLine{134             desc\_long\_ = other.desc\_long\_;}
+\DoxyCodeLine{135         \}}
+\DoxyCodeLine{136         \textcolor{keywordflow}{return} *\textcolor{keyword}{this};}
+\DoxyCodeLine{137     \}}
+\DoxyCodeLine{138     \mbox{\hyperlink{classOption}{\string~Option}}() \textcolor{keyword}{override} = \textcolor{keywordflow}{default};}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{140     std::string get\_value\_str()\textcolor{keyword}{ const override }\{}
+\DoxyCodeLine{141         std::ostringstream ss;}
+\DoxyCodeLine{142         ss << value\_;}
+\DoxyCodeLine{143         \textcolor{keywordflow}{return} ss.str();}
+\DoxyCodeLine{144     \}}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{146     std::string get\_value\_separator()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{147         \textcolor{keywordflow}{return} valsep\_;}
+\DoxyCodeLine{148     \}}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150     T get\_value()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{151         \textcolor{keywordflow}{return} this-\/>value\_;}
+\DoxyCodeLine{152     \}}
+\DoxyCodeLine{153 }
+\DoxyCodeLine{154     \textcolor{keywordtype}{void} clear\_value()\textcolor{keyword}{ override }\{}
+\DoxyCodeLine{155         value\_ = defval\_;}
+\DoxyCodeLine{156         is\_specified\_ = \textcolor{keyword}{false};}
+\DoxyCodeLine{157     \}}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159     \textcolor{keywordtype}{void} set\_value(T new\_value) \{}
+\DoxyCodeLine{160         value\_ = new\_value;}
+\DoxyCodeLine{161     \}}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164     \textcolor{keywordtype}{bool} convert\_from\_string(\textcolor{keyword}{const} std::string s) \textcolor{keyword}{override};}
+\DoxyCodeLine{165     \textcolor{keywordtype}{bool} option\_takes\_arg() \textcolor{keyword}{const override};}
+\DoxyCodeLine{166 \};}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168 \textcolor{keyword}{class }\mbox{\hyperlink{classParser}{Parser}} \{}
+\DoxyCodeLine{169 \textcolor{keyword}{public}:}
+\DoxyCodeLine{170     std::vector <std::shared\_ptr<UnitypeOption>> options\_ = \{\};}
+\DoxyCodeLine{171 \textcolor{keyword}{public}:}
+\DoxyCodeLine{172     \mbox{\hyperlink{classParser}{Parser}}() \{\}}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{174     \textcolor{keywordtype}{bool} parse\_argv(\textcolor{keywordtype}{int} argc, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *argv[], std::string *error\_msg, \textcolor{keywordtype}{int} *last\_index)}
+\DoxyCodeLine{175     \{}
+\DoxyCodeLine{176         \textcolor{keywordtype}{int} i;}
+\DoxyCodeLine{177         \textcolor{keywordtype}{bool} res = \textcolor{keyword}{true};}
+\DoxyCodeLine{178         \textcolor{keywordflow}{for} (i = 1 \textcolor{comment}{/*skip app*/}; i < argc; ++i) \{}
+\DoxyCodeLine{179             \textcolor{comment}{// We support the universal "{}-\/-\/"{} as a separator}}
+\DoxyCodeLine{180             \textcolor{keywordflow}{if} (strcmp(argv[i], \textcolor{stringliteral}{"{}-\/-\/"{}}) == 0) \{}
+\DoxyCodeLine{181                 ++i; \textcolor{comment}{// for last\_index}}
+\DoxyCodeLine{182                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{183             \}}
+\DoxyCodeLine{184             \textcolor{comment}{// Also stop on a non-\/leading-\/dash token to support arguments without}}
+\DoxyCodeLine{185             \textcolor{comment}{// a separating "{}-\/-\/"{}.}}
+\DoxyCodeLine{186             \textcolor{keywordflow}{if} (argv[i][0] != \textcolor{charliteral}{'-\/'}) \{}
+\DoxyCodeLine{187                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{188             \}}
+\DoxyCodeLine{189             \textcolor{keywordtype}{bool} matched = \textcolor{keyword}{false};}
+\DoxyCodeLine{190             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = 0; j < this-\/>options\_.size(); ++j) \{}
+\DoxyCodeLine{191                 \textcolor{keyword}{auto} op = this-\/>options\_[j];}
+\DoxyCodeLine{192                 \textcolor{keywordflow}{if} (op-\/>name\_match(argv[i])) \{}
+\DoxyCodeLine{193                     matched = \textcolor{keyword}{true};}
+\DoxyCodeLine{194                     std::cout << \textcolor{stringliteral}{"{}option takes arg..."{}} << std::endl;}
+\DoxyCodeLine{195                     \textcolor{keywordflow}{if} (op-\/>option\_takes\_arg()) \{}
+\DoxyCodeLine{196                         ++i;}
+\DoxyCodeLine{197                         \textcolor{keywordflow}{if} (i == argc) \{}
+\DoxyCodeLine{198                             \textcolor{keywordflow}{if} (error\_msg != NULL) \{}
+\DoxyCodeLine{199                                 std::cout << \textcolor{stringliteral}{"{}error"{}};}
+\DoxyCodeLine{200                                 *error\_msg = \textcolor{stringliteral}{"{}Option "{}} + op-\/>get\_name() + \textcolor{stringliteral}{"{} missing value"{}};}
+\DoxyCodeLine{201                             \}}
+\DoxyCodeLine{202                             res = \textcolor{keyword}{false};}
+\DoxyCodeLine{203                             \textcolor{keywordflow}{goto} parse\_finished;}
+\DoxyCodeLine{204                         \}}
+\DoxyCodeLine{205                         \textcolor{keywordflow}{if} (!op-\/>convert\_from\_string(argv[i]) || !op-\/>clamp\_value()) \{}
+\DoxyCodeLine{206                             \textcolor{keywordflow}{if} (error\_msg != NULL) \{}
+\DoxyCodeLine{207                                 std::cout << \textcolor{stringliteral}{"{}error"{}};}
+\DoxyCodeLine{208                                 *error\_msg = \textcolor{stringliteral}{"{}Option "{}} + op-\/>get\_name() + \textcolor{stringliteral}{"{} value out of range"{}};}
+\DoxyCodeLine{209                             \}}
+\DoxyCodeLine{210                             res = \textcolor{keyword}{false};}
+\DoxyCodeLine{211                             \textcolor{keywordflow}{goto} parse\_finished;}
+\DoxyCodeLine{212                         \}}
+\DoxyCodeLine{213                     \}}
+\DoxyCodeLine{214                     std::cout << \textcolor{stringliteral}{"{}setting is specified..."{}} << std::endl;}
+\DoxyCodeLine{215                     op-\/>set\_is\_specified(\textcolor{keyword}{true});}
+\DoxyCodeLine{216                     \textcolor{comment}{// op-\/>is\_specified\_ = true; // *after* convert\_from\_string()}}
+\DoxyCodeLine{217                 \}}
+\DoxyCodeLine{218             \}}
+\DoxyCodeLine{219             \textcolor{keywordflow}{if} (!matched) \{}
+\DoxyCodeLine{220                 \textcolor{keywordflow}{if} (error\_msg != NULL) \{}
+\DoxyCodeLine{221                     std::cout << \textcolor{stringliteral}{"{}error"{}};}
+\DoxyCodeLine{222                     *error\_msg = std::string(\textcolor{stringliteral}{"{}Unknown option: "{}}) + argv[i];}
+\DoxyCodeLine{223                 \}}
+\DoxyCodeLine{224                 res = \textcolor{keyword}{false};}
+\DoxyCodeLine{225                 \textcolor{keywordflow}{goto} parse\_finished;}
+\DoxyCodeLine{226             \}}
+\DoxyCodeLine{227         \}}
+\DoxyCodeLine{228     parse\_finished:}
+\DoxyCodeLine{229         \textcolor{keywordflow}{if} (last\_index != NULL)}
+\DoxyCodeLine{230             *last\_index = i;}
+\DoxyCodeLine{231         \textcolor{keywordflow}{return} res;}
+\DoxyCodeLine{232     \}}
+\DoxyCodeLine{233 }
+\DoxyCodeLine{234     \textcolor{keywordtype}{bool} add\_option(std::shared\_ptr<UnitypeOption> option) \{}
+\DoxyCodeLine{235         this-\/>options\_.push\_back(option);}
+\DoxyCodeLine{236         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{237     \}}
+\DoxyCodeLine{238 }
+\DoxyCodeLine{239     std::vector <std::shared\_ptr<UnitypeOption>> get\_options() \{}
+\DoxyCodeLine{240         \textcolor{keywordflow}{return} this-\/>options\_;}
+\DoxyCodeLine{241     \}}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243     std::shared\_ptr<UnitypeOption> \& operator[](\textcolor{keyword}{const} std::string \& name) \{}
+\DoxyCodeLine{244         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < this-\/>options\_.size(); ++i) \{}
+\DoxyCodeLine{245             \textcolor{keywordflow}{if} (this-\/>options\_[i]-\/>get\_name() == name) \{}
+\DoxyCodeLine{246                 \textcolor{keywordflow}{return} this-\/>options\_[i];}
+\DoxyCodeLine{247             \}}
+\DoxyCodeLine{248         \}}
+\DoxyCodeLine{249         \textcolor{keywordflow}{throw} std::runtime\_error(std::string(\textcolor{stringliteral}{"{}there is not operator with such name: "{}}) + name);}
+\DoxyCodeLine{250     \}}
+\DoxyCodeLine{251     \textcolor{keyword}{const} std::shared\_ptr<UnitypeOption> \& operator[](\textcolor{keyword}{const} std::string \& name)\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{252         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < this-\/>options\_.size(); ++i) \{}
+\DoxyCodeLine{253             \textcolor{keywordflow}{if} (this-\/>options\_[i]-\/>get\_name() == name) \{}
+\DoxyCodeLine{254                 \textcolor{keywordflow}{return} this-\/>options\_[i];}
+\DoxyCodeLine{255             \}}
+\DoxyCodeLine{256         \}}
+\DoxyCodeLine{257         \textcolor{keywordflow}{throw} std::runtime\_error(std::string(\textcolor{stringliteral}{"{}there is not operator with such name: "{}}) + name);}
+\DoxyCodeLine{258     \}}
+\DoxyCodeLine{259 \};}
+\DoxyCodeLine{260 }
+\DoxyCodeLine{261 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{262 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{263 \mbox{\hyperlink{classOption}{Option<std::string>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{264 \{}
+\DoxyCodeLine{265     std::cout << \textcolor{stringliteral}{"{}casting string with <"{}} << s << \textcolor{stringliteral}{"{}>..."{}} << std::endl;}
+\DoxyCodeLine{266     \textcolor{keywordflow}{if} (is\_specified\_)}
+\DoxyCodeLine{267         value\_ += valsep\_ + s;}
+\DoxyCodeLine{268     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{269         value\_ = s;}
+\DoxyCodeLine{270     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{271 \}}
+\DoxyCodeLine{272 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{273 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{274 \mbox{\hyperlink{classOption}{Option<int>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{275 \{}
+\DoxyCodeLine{276     std::cout << \textcolor{stringliteral}{"{}casting int with <"{}} << s << \textcolor{stringliteral}{"{}>..."{}} << std::endl;}
+\DoxyCodeLine{277     errno = 0;}
+\DoxyCodeLine{278     \textcolor{comment}{// If we set 0 as the base, strtol() will automatically identify the base of the}}
+\DoxyCodeLine{279     \textcolor{comment}{// number to convert. By default, it will assume the number to be converted is}}
+\DoxyCodeLine{280     \textcolor{comment}{// decimal, and a number starting with 0 or 0x is assumed to be octal or hexadecimal,}}
+\DoxyCodeLine{281     \textcolor{comment}{// respectively.}}
+\DoxyCodeLine{282     \textcolor{keywordtype}{long} input = strtol(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{283     std::cout << \textcolor{stringliteral}{"{}res: "{}} << input << std::endl;}
+\DoxyCodeLine{284 }
+\DoxyCodeLine{285     \textcolor{comment}{// strtol returns a long, but this may not always fit into an integer.}}
+\DoxyCodeLine{286     \textcolor{keywordflow}{if} (input >= (\textcolor{keywordtype}{long})INT\_MIN \&\& input <= (\textcolor{keywordtype}{long})INT\_MAX) \{}
+\DoxyCodeLine{287         value\_ = (int)input;}
+\DoxyCodeLine{288         std::cout << \textcolor{stringliteral}{"{}success"{}} << std::endl;}
+\DoxyCodeLine{289     \} \textcolor{keywordflow}{else}}
+\DoxyCodeLine{290         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{291 }
+\DoxyCodeLine{292     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{293 \}}
+\DoxyCodeLine{294 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{295 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{296 \mbox{\hyperlink{classOption}{Option<long>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{297 \{}
+\DoxyCodeLine{298     errno = 0;}
+\DoxyCodeLine{299     value\_ = strtol(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{300     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{301 \}}
+\DoxyCodeLine{302 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{303 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{304 \mbox{\hyperlink{classOption}{Option<long long>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{305 \{}
+\DoxyCodeLine{306     errno = 0;}
+\DoxyCodeLine{307     \textcolor{comment}{// If we set 0 as the base, strtoll() will automatically identify the base.}}
+\DoxyCodeLine{308     value\_ = strtoll(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{309     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{310 \}}
+\DoxyCodeLine{311 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{312 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{313 \mbox{\hyperlink{classOption}{Option<unsigned int>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{314 \{}
+\DoxyCodeLine{315     errno = 0;}
+\DoxyCodeLine{316     \textcolor{keywordtype}{long} input = strtol(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{317     \textcolor{comment}{// Is the value positive and fits into an unsigned integer?}}
+\DoxyCodeLine{318     \textcolor{keywordflow}{if} (input >= 0 \&\& (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long})input <= (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long})UINT\_MAX)}
+\DoxyCodeLine{319         value\_ = (\textcolor{keywordtype}{unsigned} int)input;}
+\DoxyCodeLine{320     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{321         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{322 }
+\DoxyCodeLine{323     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{324 \}}
+\DoxyCodeLine{325 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{326 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{327 \mbox{\hyperlink{classOption}{Option<unsigned long>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{328 \{}
+\DoxyCodeLine{329     \textcolor{keywordflow}{if} (is\_negative(s))}
+\DoxyCodeLine{330         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{331 }
+\DoxyCodeLine{332     errno = 0;}
+\DoxyCodeLine{333     value\_ = strtoul(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{334     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{335 \}}
+\DoxyCodeLine{336 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{337 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{338 \mbox{\hyperlink{classOption}{Option<unsigned long long>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{339 \{}
+\DoxyCodeLine{340     \textcolor{keywordflow}{if} (is\_negative(s))}
+\DoxyCodeLine{341         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{342 }
+\DoxyCodeLine{343     errno = 0;}
+\DoxyCodeLine{344     value\_ = strtoull(s.c\_str(), NULL, 0);}
+\DoxyCodeLine{345     \textcolor{keywordflow}{return} errno == 0;}
+\DoxyCodeLine{346 \}}
+\DoxyCodeLine{347 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{348 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{349 \mbox{\hyperlink{classOption}{Option<double>::convert\_from\_string}}(\textcolor{keyword}{const} std::string s)}
+\DoxyCodeLine{350 \{}
+\DoxyCodeLine{351     \textcolor{comment}{// strtod will return 0.0 for invalid conversions}}
+\DoxyCodeLine{352     \textcolor{keywordtype}{char} *pEnd = NULL;}
+\DoxyCodeLine{353     value\_ = strtod(s.c\_str(), \&pEnd);}
+\DoxyCodeLine{354     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{355 \}}
+\DoxyCodeLine{356 }
+\DoxyCodeLine{357 }
+\DoxyCodeLine{358 \textcolor{keyword}{template} <\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{359 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{360 \mbox{\hyperlink{classOption}{Option<T>::option\_takes\_arg}}()\textcolor{keyword}{ const}}
+\DoxyCodeLine{361 \textcolor{keyword}{}\{}
+\DoxyCodeLine{362     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{363 \}}
+\DoxyCodeLine{364 \textcolor{keyword}{template} <>}
+\DoxyCodeLine{365 \textcolor{keyword}{inline} \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{366 \mbox{\hyperlink{classOption}{Option<bool>::option\_takes\_arg}}()\textcolor{keyword}{ const}}
+\DoxyCodeLine{367 \textcolor{keyword}{}\{}
+\DoxyCodeLine{368     \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{369 \}}
+\DoxyCodeLine{370 }
+\DoxyCodeLine{371 }
+\DoxyCodeLine{372 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MY\_OPTIONS\_header}}
+
+\end{DoxyCode}

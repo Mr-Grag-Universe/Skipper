@@ -1,0 +1,290 @@
+\hypertarget{classConfigurator}{}\doxysection{Configurator Class Reference}
+\label{classConfigurator}\index{Configurator@{Configurator}}
+
+
+Contains and provides configuration settings.  
+
+
+
+
+{\ttfamily \#include $<$Config.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classConfigurator_a9abc1b39cf493f3d85817bed9ec4f970}\label{classConfigurator_a9abc1b39cf493f3d85817bed9ec4f970}} 
+{\bfseries Configurator} (const std\+::string config\+\_\+file\+\_\+name=\char`\"{}\char`\"{})
+\item 
+void \mbox{\hyperlink{classConfigurator_ad9efb8f7078590f48be1da5994350805}{load\+\_\+config}} (std\+::string config\+\_\+file\+\_\+name=\char`\"{}settings.\+json\char`\"{})
+\begin{DoxyCompactList}\small\item\em loads config directly from passed file\+\_\+path \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classConfigurator_a9de34156addfc9eb2bdefde5ac0bcc7d}{config}} (json config\+\_\+data)
+\begin{DoxyCompactList}\small\item\em updates config \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classConfigurator_a61f907e42debacf1f066e7b8b8a0da9f}{config}} (std\+::string config\+\_\+string)
+\begin{DoxyCompactList}\small\item\em updates config \end{DoxyCompactList}\item 
+json \mbox{\hyperlink{classConfigurator_ad54923859a18f257292fca330d5cf215}{get\+Tracer\+Config}} () const
+\begin{DoxyCompactList}\small\item\em get tracer\textquotesingle{}s config part \end{DoxyCompactList}\item 
+json \mbox{\hyperlink{classConfigurator_a7b19ccde94cb3bb39391716728bbafbb}{get\+Fuzz\+Config}} () const
+\begin{DoxyCompactList}\small\item\em get fuzzing\textquotesingle{} config part \end{DoxyCompactList}\item 
+std\+::map$<$ std\+::string, \mbox{\hyperlink{structFuncConfig}{Func\+Config}} $>$ \mbox{\hyperlink{classConfigurator_a6b56bc1f5bc0c5d7cf83549fe304fc24}{get\+Inspection\+Functions}} () const
+\begin{DoxyCompactList}\small\item\em get information about functions for instrumentation \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classConfigurator_aa892642128e400c27751988659da68ef}{log\+Symbols\+Enabled}} () const
+\begin{DoxyCompactList}\small\item\em shall client log all symbols found in program\textquotesingle{}s modules \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classConfigurator_a776beda38d43f8c414fbc998e48e6d2c}{get\+Log\+Symbols\+Path}} () const
+\begin{DoxyCompactList}\small\item\em get logging path for symbols \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classConfigurator_aa79147ebc4a7ce3f7d64b456b30f0aef}{log\+Fuzzing\+Enabled}} () const
+\begin{DoxyCompactList}\small\item\em shall client log fuzzing events or not \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classConfigurator_a6777e2fb3e5ba2aedd08c12cee035821}{get\+Log\+Fuzzing\+Path}} () const
+\begin{DoxyCompactList}\small\item\em get logging path for fuzzing events \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classConfigurator_aa97fa89b12360d9b2be936c3229c2566}{get\+Fuzzing\+Corpus\+Path}} () const
+\begin{DoxyCompactList}\small\item\em where to store fuzzing corpus \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classConfigurator_a69d63956aaac0b4c3a75c61c7b566fac}{use\+\_\+default\+\_\+bounds}} () const
+\begin{DoxyCompactList}\small\item\em shall client use passed default function bounds or not \end{DoxyCompactList}\item 
+std\+::set$<$ int $>$ \mbox{\hyperlink{classConfigurator_adb3ba06e5e008617e8703d21aeb3b669}{get\+Inspect\+Opcodes}} () const
+\begin{DoxyCompactList}\small\item\em get opcodes which will be traced \end{DoxyCompactList}\item 
+std\+::set$<$ std\+::string $>$ \mbox{\hyperlink{classConfigurator_a8b33b7cf3211d057cf08e7c5d87363eb}{get\+\_\+modules\+\_\+names}} () const
+\begin{DoxyCompactList}\small\item\em Get the modules names, containing functions under instrumentation. \end{DoxyCompactList}\item 
+std\+::set$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ \mbox{\hyperlink{classConfigurator_ab38e66feddb6a37bf0f7aaef0ded707d}{get\+\_\+modules\+\_\+info}} () const
+\begin{DoxyCompactList}\small\item\em Get the modules info. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classConfigurator_ac061765bd3fab5eaff02c1b8d9f8fec2}{debug\+Mode\+Enabled}} () const
+\begin{DoxyCompactList}\small\item\em shall we log debug information or not \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classConfigurator_ace2ec8f2c1e706f99e7b1ec71e3016f1}\label{classConfigurator_ace2ec8f2c1e706f99e7b1ec71e3016f1}} 
+json {\bfseries tracer\+\_\+config}
+\item 
+\mbox{\Hypertarget{classConfigurator_afeb9d92a4f490a93349e256effbef0c5}\label{classConfigurator_afeb9d92a4f490a93349e256effbef0c5}} 
+json {\bfseries fuzzing\+\_\+config}
+\item 
+\mbox{\Hypertarget{classConfigurator_a3a170af0a88759507c8076276ab9e55f}\label{classConfigurator_a3a170af0a88759507c8076276ab9e55f}} 
+json {\bfseries \+\_\+config}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Contains and provides configuration settings. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classConfigurator_a9de34156addfc9eb2bdefde5ac0bcc7d}\label{classConfigurator_a9de34156addfc9eb2bdefde5ac0bcc7d}} 
+\index{Configurator@{Configurator}!config@{config}}
+\index{config@{config}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{config()}{config()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Configurator\+::config (\begin{DoxyParamCaption}\item[{json}]{config\+\_\+data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+updates config 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+\_\+data} & -\/ json-\/like object, containing neccessery configurations \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConfigurator_a61f907e42debacf1f066e7b8b8a0da9f}\label{classConfigurator_a61f907e42debacf1f066e7b8b8a0da9f}} 
+\index{Configurator@{Configurator}!config@{config}}
+\index{config@{config}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{config()}{config()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Configurator\+::config (\begin{DoxyParamCaption}\item[{std\+::string}]{config\+\_\+string }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+updates config 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+\_\+string} & -\/ serialized json string with configuration \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConfigurator_ac061765bd3fab5eaff02c1b8d9f8fec2}\label{classConfigurator_ac061765bd3fab5eaff02c1b8d9f8fec2}} 
+\index{Configurator@{Configurator}!debugModeEnabled@{debugModeEnabled}}
+\index{debugModeEnabled@{debugModeEnabled}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{debugModeEnabled()}{debugModeEnabled()}}
+{\footnotesize\ttfamily bool Configurator\+::debug\+Mode\+Enabled (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+shall we log debug information or not 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_ab38e66feddb6a37bf0f7aaef0ded707d}\label{classConfigurator_ab38e66feddb6a37bf0f7aaef0ded707d}} 
+\index{Configurator@{Configurator}!get\_modules\_info@{get\_modules\_info}}
+\index{get\_modules\_info@{get\_modules\_info}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{get\_modules\_info()}{get\_modules\_info()}}
+{\footnotesize\ttfamily std\+::set$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ Configurator\+::get\+\_\+modules\+\_\+info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the modules info. 
+
+\begin{DoxyReturn}{Returns}
+set of pairs$<$ module\+\_\+name, module\+\_\+path $>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_a8b33b7cf3211d057cf08e7c5d87363eb}\label{classConfigurator_a8b33b7cf3211d057cf08e7c5d87363eb}} 
+\index{Configurator@{Configurator}!get\_modules\_names@{get\_modules\_names}}
+\index{get\_modules\_names@{get\_modules\_names}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{get\_modules\_names()}{get\_modules\_names()}}
+{\footnotesize\ttfamily std\+::set$<$ std\+::string $>$ Configurator\+::get\+\_\+modules\+\_\+names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the modules names, containing functions under instrumentation. 
+
+Just walk through all functions in config and collect involved program modules.
+
+\begin{DoxyReturn}{Returns}
+set of modules\textquotesingle{} names 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_a7b19ccde94cb3bb39391716728bbafbb}\label{classConfigurator_a7b19ccde94cb3bb39391716728bbafbb}} 
+\index{Configurator@{Configurator}!getFuzzConfig@{getFuzzConfig}}
+\index{getFuzzConfig@{getFuzzConfig}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getFuzzConfig()}{getFuzzConfig()}}
+{\footnotesize\ttfamily json Configurator\+::get\+Fuzz\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get fuzzing\textquotesingle{} config part 
+
+\begin{DoxyReturn}{Returns}
+fuzzing\textquotesingle{} config part 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_aa97fa89b12360d9b2be936c3229c2566}\label{classConfigurator_aa97fa89b12360d9b2be936c3229c2566}} 
+\index{Configurator@{Configurator}!getFuzzingCorpusPath@{getFuzzingCorpusPath}}
+\index{getFuzzingCorpusPath@{getFuzzingCorpusPath}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getFuzzingCorpusPath()}{getFuzzingCorpusPath()}}
+{\footnotesize\ttfamily std\+::string Configurator\+::get\+Fuzzing\+Corpus\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+where to store fuzzing corpus 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+depricated? \mbox{\Hypertarget{classConfigurator_a6b56bc1f5bc0c5d7cf83549fe304fc24}\label{classConfigurator_a6b56bc1f5bc0c5d7cf83549fe304fc24}} 
+\index{Configurator@{Configurator}!getInspectionFunctions@{getInspectionFunctions}}
+\index{getInspectionFunctions@{getInspectionFunctions}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getInspectionFunctions()}{getInspectionFunctions()}}
+{\footnotesize\ttfamily std\+::map$<$ std\+::string, \mbox{\hyperlink{structFuncConfig}{Func\+Config}} $>$ Configurator\+::get\+Inspection\+Functions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get information about functions for instrumentation 
+
+\begin{DoxyReturn}{Returns}
+dict \{func\+\_\+name \+: \{module\+\_\+name, module\+\_\+path, default\+\_\+address\}\} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_adb3ba06e5e008617e8703d21aeb3b669}\label{classConfigurator_adb3ba06e5e008617e8703d21aeb3b669}} 
+\index{Configurator@{Configurator}!getInspectOpcodes@{getInspectOpcodes}}
+\index{getInspectOpcodes@{getInspectOpcodes}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getInspectOpcodes()}{getInspectOpcodes()}}
+{\footnotesize\ttfamily std\+::set$<$ int $>$ Configurator\+::get\+Inspect\+Opcodes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get opcodes which will be traced 
+
+\begin{DoxyReturn}{Returns}
+set of Dynamo\+RIO enum macros opcodes 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_a6777e2fb3e5ba2aedd08c12cee035821}\label{classConfigurator_a6777e2fb3e5ba2aedd08c12cee035821}} 
+\index{Configurator@{Configurator}!getLogFuzzingPath@{getLogFuzzingPath}}
+\index{getLogFuzzingPath@{getLogFuzzingPath}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getLogFuzzingPath()}{getLogFuzzingPath()}}
+{\footnotesize\ttfamily std\+::string Configurator\+::get\+Log\+Fuzzing\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get logging path for fuzzing events 
+
+\begin{DoxyReturn}{Returns}
+path to file for logs writing 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_a776beda38d43f8c414fbc998e48e6d2c}\label{classConfigurator_a776beda38d43f8c414fbc998e48e6d2c}} 
+\index{Configurator@{Configurator}!getLogSymbolsPath@{getLogSymbolsPath}}
+\index{getLogSymbolsPath@{getLogSymbolsPath}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getLogSymbolsPath()}{getLogSymbolsPath()}}
+{\footnotesize\ttfamily std\+::string Configurator\+::get\+Log\+Symbols\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get logging path for symbols 
+
+\begin{DoxyReturn}{Returns}
+path to file for logs writing 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_ad54923859a18f257292fca330d5cf215}\label{classConfigurator_ad54923859a18f257292fca330d5cf215}} 
+\index{Configurator@{Configurator}!getTracerConfig@{getTracerConfig}}
+\index{getTracerConfig@{getTracerConfig}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{getTracerConfig()}{getTracerConfig()}}
+{\footnotesize\ttfamily json Configurator\+::get\+Tracer\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get tracer\textquotesingle{}s config part 
+
+\begin{DoxyReturn}{Returns}
+tracer\textquotesingle{}s config part 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_ad9efb8f7078590f48be1da5994350805}\label{classConfigurator_ad9efb8f7078590f48be1da5994350805}} 
+\index{Configurator@{Configurator}!load\_config@{load\_config}}
+\index{load\_config@{load\_config}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{load\_config()}{load\_config()}}
+{\footnotesize\ttfamily void Configurator\+::load\+\_\+config (\begin{DoxyParamCaption}\item[{std\+::string}]{config\+\_\+file\+\_\+name = {\ttfamily \char`\"{}settings.json\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+loads config directly from passed file\+\_\+path 
+
+
+\begin{DoxyParams}{Parameters}
+{\em config\+\_\+file\+\_\+name} & -\/ path to configuration JSON file \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConfigurator_aa79147ebc4a7ce3f7d64b456b30f0aef}\label{classConfigurator_aa79147ebc4a7ce3f7d64b456b30f0aef}} 
+\index{Configurator@{Configurator}!logFuzzingEnabled@{logFuzzingEnabled}}
+\index{logFuzzingEnabled@{logFuzzingEnabled}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{logFuzzingEnabled()}{logFuzzingEnabled()}}
+{\footnotesize\ttfamily bool Configurator\+::log\+Fuzzing\+Enabled (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+shall client log fuzzing events or not 
+
+\begin{DoxyReturn}{Returns}
+true is it must and false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_aa892642128e400c27751988659da68ef}\label{classConfigurator_aa892642128e400c27751988659da68ef}} 
+\index{Configurator@{Configurator}!logSymbolsEnabled@{logSymbolsEnabled}}
+\index{logSymbolsEnabled@{logSymbolsEnabled}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{logSymbolsEnabled()}{logSymbolsEnabled()}}
+{\footnotesize\ttfamily bool Configurator\+::log\+Symbols\+Enabled (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+shall client log all symbols found in program\textquotesingle{}s modules 
+
+\begin{DoxyReturn}{Returns}
+true is it must and false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConfigurator_a69d63956aaac0b4c3a75c61c7b566fac}\label{classConfigurator_a69d63956aaac0b4c3a75c61c7b566fac}} 
+\index{Configurator@{Configurator}!use\_default\_bounds@{use\_default\_bounds}}
+\index{use\_default\_bounds@{use\_default\_bounds}!Configurator@{Configurator}}
+\doxysubsubsection{\texorpdfstring{use\_default\_bounds()}{use\_default\_bounds()}}
+{\footnotesize\ttfamily bool Configurator\+::use\+\_\+default\+\_\+bounds (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+shall client use passed default function bounds or not 
+
+\begin{DoxyReturn}{Returns}
+true -\/ shall use 
+
+false -\/ shall not 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/debian/\+Skipper/src/include/classes/\mbox{\hyperlink{Config_8h}{Config.\+h}}\end{DoxyCompactItemize}

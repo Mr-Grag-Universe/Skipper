@@ -1,0 +1,123 @@
+\hypertarget{funcs_8h}{}\doxysection{/home/debian/\+Skipper/src/include/funcs.h File Reference}
+\label{funcs_8h}\index{/home/debian/Skipper/src/include/funcs.h@{/home/debian/Skipper/src/include/funcs.h}}
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}dr\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drreg.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drsyms.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drmgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drx.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}dr\+\_\+modules.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}types.\+h\char`\"{}}\newline
+Include dependency graph for funcs.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{funcs_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{funcs_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{funcs_8h_a2fc824318fd11e5d4fe36f0e35684955}{get\+\_\+symbol\+\_\+offset}} (std\+::string module\+\_\+name, std\+::string module\+\_\+path, std\+::string symbol\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Get the symbol offset. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structModuleInfo}{Module\+Info}} $>$ \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\+\_\+all\+\_\+modules}} ()
+\begin{DoxyCompactList}\small\item\em Get the all pairs \texorpdfstring{$<$}{<}module\+\_\+name, module\+\_\+path\texorpdfstring{$>$}{>}. Looks for a Dynamo\+RIO-\/seen modules. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{funcs_8h_a569a2b2417d85f0f7112d0f47f19d960}{get\+\_\+modules\+\_\+names}} ()
+\begin{DoxyCompactList}\small\item\em Get all modules names, which Dynamo\+RIO can see. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{funcs_8h_a5a9593f1fd1c0608e3357842f89937d2}{int\+\_\+to\+\_\+hex}} (int my\+\_\+integer)
+\begin{DoxyCompactList}\small\item\em Converts int numbers to hex form. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{funcs_8h_aba532940df77bb2847dcabd25caf5b59}{get\+\_\+thread\+\_\+id}} ()
+\begin{DoxyCompactList}\small\item\em Get current thread id for printing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}\label{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}} 
+\index{funcs.h@{funcs.h}!get\_all\_modules@{get\_all\_modules}}
+\index{get\_all\_modules@{get\_all\_modules}!funcs.h@{funcs.h}}
+\doxysubsubsection{\texorpdfstring{get\_all\_modules()}{get\_all\_modules()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{structModuleInfo}{Module\+Info}} $>$ get\+\_\+all\+\_\+modules (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the all pairs \texorpdfstring{$<$}{<}module\+\_\+name, module\+\_\+path\texorpdfstring{$>$}{>}. Looks for a Dynamo\+RIO-\/seen modules. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Module\+Info$>$ list of module-\/pairs 
+\end{DoxyReturn}
+\mbox{\Hypertarget{funcs_8h_a569a2b2417d85f0f7112d0f47f19d960}\label{funcs_8h_a569a2b2417d85f0f7112d0f47f19d960}} 
+\index{funcs.h@{funcs.h}!get\_modules\_names@{get\_modules\_names}}
+\index{get\_modules\_names@{get\_modules\_names}!funcs.h@{funcs.h}}
+\doxysubsubsection{\texorpdfstring{get\_modules\_names()}{get\_modules\_names()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ get\+\_\+modules\+\_\+names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get all modules names, which Dynamo\+RIO can see. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector \texorpdfstring{$<$}{<}std\+::string\texorpdfstring{$>$}{>} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{funcs_8h_a2fc824318fd11e5d4fe36f0e35684955}\label{funcs_8h_a2fc824318fd11e5d4fe36f0e35684955}} 
+\index{funcs.h@{funcs.h}!get\_symbol\_offset@{get\_symbol\_offset}}
+\index{get\_symbol\_offset@{get\_symbol\_offset}!funcs.h@{funcs.h}}
+\doxysubsubsection{\texorpdfstring{get\_symbol\_offset()}{get\_symbol\_offset()}}
+{\footnotesize\ttfamily size\+\_\+t get\+\_\+symbol\+\_\+offset (\begin{DoxyParamCaption}\item[{std\+::string}]{module\+\_\+name,  }\item[{std\+::string}]{module\+\_\+path,  }\item[{std\+::string}]{symbol\+\_\+name }\end{DoxyParamCaption})}
+
+
+
+Get the symbol offset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em module\+\_\+name} & name of the module, where symbol contains \\
+\hline
+{\em module\+\_\+path} & path to the module \\
+\hline
+{\em symbol\+\_\+name} & name of the seeked symbol \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+size\+\_\+t -\/ offset of the symbol 
+\end{DoxyReturn}
+\mbox{\Hypertarget{funcs_8h_aba532940df77bb2847dcabd25caf5b59}\label{funcs_8h_aba532940df77bb2847dcabd25caf5b59}} 
+\index{funcs.h@{funcs.h}!get\_thread\_id@{get\_thread\_id}}
+\index{get\_thread\_id@{get\_thread\_id}!funcs.h@{funcs.h}}
+\doxysubsubsection{\texorpdfstring{get\_thread\_id()}{get\_thread\_id()}}
+{\footnotesize\ttfamily std\+::string get\+\_\+thread\+\_\+id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get current thread id for printing. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string -\/ return str-\/format current thread id 
+\end{DoxyReturn}
+\mbox{\Hypertarget{funcs_8h_a5a9593f1fd1c0608e3357842f89937d2}\label{funcs_8h_a5a9593f1fd1c0608e3357842f89937d2}} 
+\index{funcs.h@{funcs.h}!int\_to\_hex@{int\_to\_hex}}
+\index{int\_to\_hex@{int\_to\_hex}!funcs.h@{funcs.h}}
+\doxysubsubsection{\texorpdfstring{int\_to\_hex()}{int\_to\_hex()}}
+{\footnotesize\ttfamily std\+::string int\+\_\+to\+\_\+hex (\begin{DoxyParamCaption}\item[{int}]{my\+\_\+integer }\end{DoxyParamCaption})}
+
+
+
+Converts int numbers to hex form. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em my\+\_\+integer} & -\/ converted number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string -\/ hex form of number 
+\end{DoxyReturn}

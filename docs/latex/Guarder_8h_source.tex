@@ -1,0 +1,84 @@
+\hypertarget{Guarder_8h_source}{}\doxysection{Guarder.\+h}
+\label{Guarder_8h_source}\index{/home/debian/Skipper/src/include/classes/Guarder.h@{/home/debian/Skipper/src/include/classes/Guarder.h}}
+\mbox{\hyperlink{Guarder_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef MY\_GUARDER\_H}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define MY\_GUARDER\_H}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#define X86}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include "{}dr\_api.h"{}}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include "{}dr\_tools.h"{}}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include "{}dr\_ir\_instr.h"{}}}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include "{}../funcs.h"{}}}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{29 \textcolor{keyword}{class }\mbox{\hyperlink{classGuarder}{Guarder}} \{}
+\DoxyCodeLine{30 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{32     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classGuarder_a6a004db083e1c756fe6f46841eeedea2}{good\_lea\_met\_}} = \textcolor{keyword}{false};}
+\DoxyCodeLine{34     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classGuarder_a61214232b00f78411004e68607a489f2}{guards\_opened\_}} = \textcolor{keyword}{false};}
+\DoxyCodeLine{35     std::map<std::string, std::vector <long long int>> global\_guards\_;}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37 \textcolor{keyword}{public}:}
+\DoxyCodeLine{38     \mbox{\hyperlink{classGuarder}{Guarder}}() \{\}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{45     \textcolor{keywordtype}{void} \mbox{\hyperlink{classGuarder_a330c88ce34dedd1a94d24ef74661da53}{set\_global\_guards}}(std::map<std::string, std::vector <long long int>> guards) \{}
+\DoxyCodeLine{46         this-\/>global\_guards\_ = guards;}
+\DoxyCodeLine{47     \}}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{54     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classGuarder_a6f47cab2e6fcf211b21316e29c640d79}{guards\_opened}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{55         \textcolor{keywordflow}{return} this-\/>\mbox{\hyperlink{classGuarder_a61214232b00f78411004e68607a489f2}{guards\_opened\_}};}
+\DoxyCodeLine{56     \}}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{69     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classGuarder_a9560eb3e7238a4bea6fa9bb83a34c9f7}{throw\_instr}}(instr\_t * instr) \{}
+\DoxyCodeLine{70         app\_pc addr = instr\_get\_app\_pc(instr);}
+\DoxyCodeLine{71         module\_data\_t *mod = dr\_lookup\_module(addr);}
+\DoxyCodeLine{72         \textcolor{keyword}{auto} module\_name = std::string(dr\_module\_preferred\_name(mod));}
+\DoxyCodeLine{73         dr\_free\_module\_data(mod);}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75         \textcolor{keywordtype}{int} opcode = instr\_get\_opcode(instr);}
+\DoxyCodeLine{76         \textcolor{keywordflow}{if} (instr\_num\_srcs(instr)) \{}
+\DoxyCodeLine{77             opnd\_t src = instr\_get\_src(instr, 0);}
+\DoxyCodeLine{78             \textcolor{keywordflow}{if} (opcode == (\textcolor{keywordtype}{int}) OP\_lea \&\& (opnd\_is\_far\_memory\_reference(src) || opnd\_is\_near\_memory\_reference(src)) \&\& opnd\_is\_abs\_addr(src)) \{}
+\DoxyCodeLine{79                 dr\_printf(\textcolor{stringliteral}{"{}2 opnd get addr\(\backslash\)n"{}});}
+\DoxyCodeLine{80                 \textcolor{keyword}{auto} mem\_addr = opnd\_get\_addr(src);}
+\DoxyCodeLine{81                 dr\_printf(\textcolor{stringliteral}{"{}addr has been gotten\(\backslash\)n"{}});}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83                 \textcolor{keywordflow}{if} (std::find(  this-\/>global\_guards\_[module\_name].begin(), }
+\DoxyCodeLine{84                                 this-\/>global\_guards\_[module\_name].end(), }
+\DoxyCodeLine{85                                 (\textcolor{keywordtype}{long} \textcolor{keywordtype}{long}) mem\_addr) != this-\/>global\_guards\_[module\_name].end()) \{}
+\DoxyCodeLine{86                     \textcolor{comment}{// lea инструкция хорошая}}
+\DoxyCodeLine{87                     this-\/>good\_lea\_met\_ = \textcolor{keyword}{true};}
+\DoxyCodeLine{88                 \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{89                     this-\/>good\_lea\_met\_ = \textcolor{keyword}{false};}
+\DoxyCodeLine{90                 \}}
+\DoxyCodeLine{91             \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{92                 \textcolor{keywordflow}{if} (this-\/>good\_lea\_met\_ \&\& instr\_writes\_memory(instr)) \{ }
+\DoxyCodeLine{93                     \textcolor{keywordflow}{if} (opnd\_is\_immed\_int64(src)) \{}
+\DoxyCodeLine{94                         \textcolor{keywordtype}{long} val = opnd\_get\_immed\_int64(src);}
+\DoxyCodeLine{95                         dr\_printf(\textcolor{stringliteral}{"{}move opnd value is <\%ld>\(\backslash\)n"{}}, val);}
+\DoxyCodeLine{96                         this-\/>guards\_opened\_ = (val == 1);}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98                         \textcolor{keywordflow}{if} (this-\/>guards\_opened\_)}
+\DoxyCodeLine{99                             dr\_printf(\textcolor{stringliteral}{"{}open the gates!\(\backslash\)n"{}});}
+\DoxyCodeLine{100                         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{101                             dr\_printf(\textcolor{stringliteral}{"{}close the gates!\(\backslash\)n"{}});}
+\DoxyCodeLine{102                     \}}
+\DoxyCodeLine{103                 \}}
+\DoxyCodeLine{104                 this-\/>good\_lea\_met\_ = \textcolor{keyword}{false};}
+\DoxyCodeLine{105             \}}
+\DoxyCodeLine{106         \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{107             \textcolor{comment}{// если инструкция без src -\/> это не move и не lea -\/> плохая}}
+\DoxyCodeLine{108             this-\/>good\_lea\_met\_ = \textcolor{keyword}{false};}
+\DoxyCodeLine{109         \}}
+\DoxyCodeLine{110         \textcolor{keywordflow}{return} this-\/>\mbox{\hyperlink{classGuarder_a61214232b00f78411004e68607a489f2}{guards\_opened\_}};}
+\DoxyCodeLine{111     \}}
+\DoxyCodeLine{112 \};}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MY\_GUARDER\_H}}
+
+\end{DoxyCode}

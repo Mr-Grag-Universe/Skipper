@@ -1,0 +1,93 @@
+\hypertarget{funcs_8h_source}{}\doxysection{funcs.\+h}
+\label{funcs_8h_source}\index{/home/debian/Skipper/src/include/funcs.h@{/home/debian/Skipper/src/include/funcs.h}}
+\mbox{\hyperlink{funcs_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#ifndef FUNCS\_DR\_header}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#define FUNCS\_DR\_header}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include "{}dr\_api.h"{}}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include "{}drreg.h"{}}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include "{}drsyms.h"{}}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include "{}drmgr.h"{}}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include "{}drx.h"{}}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include "{}dr\_modules.h"{}}}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{types_8h}{types.h}}"{}}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{comment}{// используется, чтобы достать отступ extra\_counters}}
+\DoxyCodeLine{30 \textcolor{comment}{}\textcolor{keywordtype}{size\_t} \mbox{\hyperlink{funcs_8h_a2fc824318fd11e5d4fe36f0e35684955}{get\_symbol\_offset}}(std::string module\_name, std::string module\_path, std::string symbol\_name) \{}
+\DoxyCodeLine{31     drsym\_init(NULL);}
+\DoxyCodeLine{32     drsym\_error\_t error;}
+\DoxyCodeLine{33     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{34     }
+\DoxyCodeLine{35     error = drsym\_get\_module\_debug\_kind(module\_path.c\_str(), \&kind);}
+\DoxyCodeLine{36     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{37         \textcolor{comment}{// main\_logger.log\_error("{}error in drsym\_get\_module\_debug\_kind() : get\_symbol\_offset : kind error"{});}}
+\DoxyCodeLine{38         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}ERROR: error in drsym\_get\_module\_debug\_kind() : get\_symbol\_offset\(\backslash\)n"{}});}
+\DoxyCodeLine{39         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{40     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{41         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{42     \}}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44     \textcolor{keywordtype}{size\_t} offset = 0;}
+\DoxyCodeLine{45     error = drsym\_lookup\_symbol(module\_path.c\_str(), }
+\DoxyCodeLine{46                                 symbol\_name.c\_str(),}
+\DoxyCodeLine{47                                 \&offset,}
+\DoxyCodeLine{48                                 DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{49     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{50         \textcolor{comment}{// main\_logger.log\_error("{}error in drsym\_lookup\_symbol() : get\_symbol\_offset"{});}}
+\DoxyCodeLine{51         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}ERROR: error in drsym\_lookup\_symbol() : get\_symbol\_offset\(\backslash\)n"{}});}
+\DoxyCodeLine{52         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{53     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{54         \textcolor{comment}{// printf("{}offset: \%d\(\backslash\)n"{}, offset);}}
+\DoxyCodeLine{55     \}}
+\DoxyCodeLine{56     }
+\DoxyCodeLine{57     drsym\_exit();}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{59     \textcolor{keywordflow}{return} offset;}
+\DoxyCodeLine{60 \}}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{68 std::vector<ModuleInfo> \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}() \{}
+\DoxyCodeLine{69     \textcolor{keyword}{auto} iterator = dr\_module\_iterator\_start();}
+\DoxyCodeLine{70     std::vector<ModuleInfo> modules;}
+\DoxyCodeLine{71     \textcolor{keywordflow}{while} (dr\_module\_iterator\_hasnext(iterator)) \{}
+\DoxyCodeLine{72         \textcolor{keyword}{auto} * module = dr\_module\_iterator\_next(iterator);}
+\DoxyCodeLine{73         modules.push\_back(\{dr\_module\_preferred\_name(module), module-\/>full\_path\});}
+\DoxyCodeLine{74         dr\_free\_module\_data(module);}
+\DoxyCodeLine{75     \}}
+\DoxyCodeLine{76     dr\_module\_iterator\_stop(iterator);}
+\DoxyCodeLine{77     \textcolor{keywordflow}{return} modules;}
+\DoxyCodeLine{78 \}}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{85 std::vector <std::string> \mbox{\hyperlink{funcs_8h_a569a2b2417d85f0f7112d0f47f19d960}{get\_modules\_names}}() \{}
+\DoxyCodeLine{86     \textcolor{keyword}{auto} modules = \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}();}
+\DoxyCodeLine{87     std::vector <std::string> modules\_names;}
+\DoxyCodeLine{88     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} module : modules) \{}
+\DoxyCodeLine{89         \textcolor{keyword}{auto} mn = module.name;}
+\DoxyCodeLine{90         modules\_names.push\_back(mn);}
+\DoxyCodeLine{91     \}}
+\DoxyCodeLine{92     \textcolor{keywordflow}{return} modules\_names;}
+\DoxyCodeLine{93 \}}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{101 std::string \mbox{\hyperlink{funcs_8h_a5a9593f1fd1c0608e3357842f89937d2}{int\_to\_hex}}(\textcolor{keywordtype}{int} my\_integer) \{}
+\DoxyCodeLine{102     std::stringstream sstream;}
+\DoxyCodeLine{103     sstream << std::hex << my\_integer;}
+\DoxyCodeLine{104     std::string result = sstream.str();}
+\DoxyCodeLine{105     \textcolor{keywordflow}{return} result;}
+\DoxyCodeLine{106 \}}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{113 std::string \mbox{\hyperlink{funcs_8h_aba532940df77bb2847dcabd25caf5b59}{get\_thread\_id}}() \{}
+\DoxyCodeLine{114     std::stringstream ss;}
+\DoxyCodeLine{115     ss << std::this\_thread::get\_id();}
+\DoxyCodeLine{116     \textcolor{keywordflow}{return} ss.str();}
+\DoxyCodeLine{117 \}}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{119 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// FUNCS\_DR\_header}}
+
+\end{DoxyCode}

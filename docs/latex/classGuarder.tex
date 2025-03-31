@@ -1,0 +1,97 @@
+\hypertarget{classGuarder}{}\doxysection{Guarder Class Reference}
+\label{classGuarder}\index{Guarder@{Guarder}}
+
+
+This class is responsible for tracking the opening and closing of the \char`\"{}gates\char`\"{}.  
+
+
+
+
+{\ttfamily \#include $<$Guarder.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classGuarder_a330c88ce34dedd1a94d24ef74661da53}{set\+\_\+global\+\_\+guards}} (std\+::map$<$ std\+::string, std\+::vector$<$ long long int $>$ $>$ guards)
+\begin{DoxyCompactList}\small\item\em Set the global guards object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classGuarder_a6f47cab2e6fcf211b21316e29c640d79}{guards\+\_\+opened}} () const
+\begin{DoxyCompactList}\small\item\em wether LLVM \char`\"{}guards\char`\"{} are opened \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classGuarder_a9560eb3e7238a4bea6fa9bb83a34c9f7}{throw\+\_\+instr}} (instr\+\_\+t $\ast$instr)
+\begin{DoxyCompactList}\small\item\em Update LLVM-\/guards state, using current instruction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGuarder_a6a004db083e1c756fe6f46841eeedea2}\label{classGuarder_a6a004db083e1c756fe6f46841eeedea2}} 
+bool {\bfseries good\+\_\+lea\+\_\+met\+\_\+} = false
+\begin{DoxyCompactList}\small\item\em Tells wether we met lea instr with expected operands. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGuarder_a61214232b00f78411004e68607a489f2}\label{classGuarder_a61214232b00f78411004e68607a489f2}} 
+bool {\bfseries guards\+\_\+opened\+\_\+} = false
+\begin{DoxyCompactList}\small\item\em Tells wether \char`\"{}guards\char`\"{} were opened or not. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGuarder_a35e461b7e500884964507f93308bc7ff}\label{classGuarder_a35e461b7e500884964507f93308bc7ff}} 
+std\+::map$<$ std\+::string, std\+::vector$<$ long long int $>$ $>$ {\bfseries global\+\_\+guards\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class is responsible for tracking the opening and closing of the \char`\"{}gates\char`\"{}. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classGuarder_a6f47cab2e6fcf211b21316e29c640d79}\label{classGuarder_a6f47cab2e6fcf211b21316e29c640d79}} 
+\index{Guarder@{Guarder}!guards\_opened@{guards\_opened}}
+\index{guards\_opened@{guards\_opened}!Guarder@{Guarder}}
+\doxysubsubsection{\texorpdfstring{guards\_opened()}{guards\_opened()}}
+{\footnotesize\ttfamily bool Guarder\+::guards\+\_\+opened (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+wether LLVM \char`\"{}guards\char`\"{} are opened 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGuarder_a330c88ce34dedd1a94d24ef74661da53}\label{classGuarder_a330c88ce34dedd1a94d24ef74661da53}} 
+\index{Guarder@{Guarder}!set\_global\_guards@{set\_global\_guards}}
+\index{set\_global\_guards@{set\_global\_guards}!Guarder@{Guarder}}
+\doxysubsubsection{\texorpdfstring{set\_global\_guards()}{set\_global\_guards()}}
+{\footnotesize\ttfamily void Guarder\+::set\+\_\+global\+\_\+guards (\begin{DoxyParamCaption}\item[{std\+::map$<$ std\+::string, std\+::vector$<$ long long int $>$ $>$}]{guards }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the global guards object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em guards} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classGuarder_a9560eb3e7238a4bea6fa9bb83a34c9f7}\label{classGuarder_a9560eb3e7238a4bea6fa9bb83a34c9f7}} 
+\index{Guarder@{Guarder}!throw\_instr@{throw\_instr}}
+\index{throw\_instr@{throw\_instr}!Guarder@{Guarder}}
+\doxysubsubsection{\texorpdfstring{throw\_instr()}{throw\_instr()}}
+{\footnotesize\ttfamily bool Guarder\+::throw\+\_\+instr (\begin{DoxyParamCaption}\item[{instr\+\_\+t $\ast$}]{instr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Update LLVM-\/guards state, using current instruction. 
+
+Use fixed pattern\+:
+\begin{DoxyItemize}
+\item LEA guard-\/address
+\item MOV
+\end{DoxyItemize}
+
+If mov 1 -\/ guards are opening here, else guards are closing
+
+
+\begin{DoxyParams}{Parameters}
+{\em instr} & -\/ current basic block instruction \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+wheter or not LLVM-\/gurds are opened now 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/debian/\+Skipper/src/include/classes/\mbox{\hyperlink{Guarder_8h}{Guarder.\+h}}\end{DoxyCompactItemize}

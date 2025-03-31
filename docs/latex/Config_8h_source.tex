@@ -1,0 +1,201 @@
+\hypertarget{Config_8h_source}{}\doxysection{Config.\+h}
+\label{Config_8h_source}\index{/home/debian/Skipper/src/include/classes/Config.h@{/home/debian/Skipper/src/include/classes/Config.h}}
+\mbox{\hyperlink{Config_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef MY\_CONFIG\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define MY\_CONFIG\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <set>}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include <nlohmann/json.hpp>}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include "{}../types.h"{}}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{\#include "{}../../loggers.h"{}}}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24 \textcolor{keyword}{using }json = nlohmann::json;}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{30 \textcolor{keyword}{class }\mbox{\hyperlink{classConfigurator}{Configurator}} \{}
+\DoxyCodeLine{31 \textcolor{keyword}{private}:}
+\DoxyCodeLine{32     \textcolor{keywordtype}{void} config\_with\_json(json config\_data) \{}
+\DoxyCodeLine{33         \textcolor{comment}{// настройки инспектирования asm-\/вставок}}
+\DoxyCodeLine{34         \textcolor{comment}{// TODO}}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36         \textcolor{comment}{// настройки tracer}}
+\DoxyCodeLine{37         this-\/>tracer\_config = config\_data[\textcolor{stringliteral}{"{}tracer\_config"{}}];}
+\DoxyCodeLine{38     \}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{45     \textcolor{keywordtype}{int} get\_opcode(std::string op\_s)\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{46         \textcolor{keywordflow}{if}        (op\_s == \textcolor{stringliteral}{"{}add"{}} ) \{}
+\DoxyCodeLine{47             \textcolor{keywordflow}{return} OP\_add;}
+\DoxyCodeLine{48         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}adc"{}} ) \{}
+\DoxyCodeLine{49             \textcolor{keywordflow}{return} OP\_adc;}
+\DoxyCodeLine{50         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}sub"{}} ) \{}
+\DoxyCodeLine{51             \textcolor{keywordflow}{return} OP\_sub;}
+\DoxyCodeLine{52         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}sbb"{}} ) \{}
+\DoxyCodeLine{53             \textcolor{keywordflow}{return} OP\_sbb;}
+\DoxyCodeLine{54         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}adcx"{}}) \{}
+\DoxyCodeLine{55             \textcolor{keywordflow}{return} OP\_adcx;}
+\DoxyCodeLine{56         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}adox"{}}) \{}
+\DoxyCodeLine{57             \textcolor{keywordflow}{return} OP\_adox;}
+\DoxyCodeLine{58         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}cmp"{}} ) \{}
+\DoxyCodeLine{59             \textcolor{keywordflow}{return} OP\_cmp;}
+\DoxyCodeLine{60         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (op\_s == \textcolor{stringliteral}{"{}movq"{}}) \{}
+\DoxyCodeLine{61             \textcolor{keywordflow}{return} OP\_movq;}
+\DoxyCodeLine{62         \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{63             main\_logger.log\_error(\textcolor{stringliteral}{"{}cannot translate \{\} to DR opcode -\/ unknown!"{}}, op\_s);}
+\DoxyCodeLine{64             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}we do not know this opcode's name!"{}});}
+\DoxyCodeLine{65             \textcolor{keywordflow}{return} -\/1;}
+\DoxyCodeLine{66         \}}
+\DoxyCodeLine{67     \}}
+\DoxyCodeLine{68 \textcolor{keyword}{public}:}
+\DoxyCodeLine{69     json tracer\_config;}
+\DoxyCodeLine{70     json fuzzing\_config;}
+\DoxyCodeLine{71     json \_config;}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73     \mbox{\hyperlink{classConfigurator}{Configurator}}(\textcolor{keyword}{const} std::string config\_file\_name = \textcolor{stringliteral}{"{}"{}}) \{}
+\DoxyCodeLine{74         \textcolor{keywordflow}{if} (!config\_file\_name.empty()) \{}
+\DoxyCodeLine{75             this-\/>\mbox{\hyperlink{classConfigurator_ad9efb8f7078590f48be1da5994350805}{load\_config}}(config\_file\_name);}
+\DoxyCodeLine{76         \}}
+\DoxyCodeLine{77     \}}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{84     \textcolor{keywordtype}{void} \mbox{\hyperlink{classConfigurator_ad9efb8f7078590f48be1da5994350805}{load\_config}}(std::string config\_file\_name = \textcolor{stringliteral}{"{}settings.json"{}}) \{}
+\DoxyCodeLine{85         std::cout << \textcolor{stringliteral}{"{}loading "{}} << config\_file\_name << \textcolor{stringliteral}{"{}..."{}} << std::endl;}
+\DoxyCodeLine{86         std::ifstream f(config\_file\_name, std::ifstream::in);}
+\DoxyCodeLine{87         json config\_data;}
+\DoxyCodeLine{88         f >> config\_data;}
+\DoxyCodeLine{89         this-\/>\_config = config\_data;}
+\DoxyCodeLine{90         std::cout << \textcolor{stringliteral}{"{}configuration loaded!"{}} << std::endl;}
+\DoxyCodeLine{91     \}}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{95     \textcolor{keywordtype}{void} \mbox{\hyperlink{classConfigurator_a9de34156addfc9eb2bdefde5ac0bcc7d}{config}}(json config\_data) \{}
+\DoxyCodeLine{96         this-\/>\_config = config\_data;}
+\DoxyCodeLine{97     \}}
+\DoxyCodeLine{100     \textcolor{keywordtype}{void} \mbox{\hyperlink{classConfigurator_a61f907e42debacf1f066e7b8b8a0da9f}{config}}(std::string config\_string) \{}
+\DoxyCodeLine{101         json config\_data = json::parse(config\_string);}
+\DoxyCodeLine{102         this-\/>\_config = config\_data;}
+\DoxyCodeLine{103     \}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{107     json \mbox{\hyperlink{classConfigurator_ad54923859a18f257292fca330d5cf215}{getTracerConfig}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{108         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}tracer"{}}];}
+\DoxyCodeLine{109     \}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{113     json \mbox{\hyperlink{classConfigurator_a7b19ccde94cb3bb39391716728bbafbb}{getFuzzConfig}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{114         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}];}
+\DoxyCodeLine{115     \}}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{119     std::map<std::string, FuncConfig> }
+\DoxyCodeLine{120     \mbox{\hyperlink{classConfigurator_a6b56bc1f5bc0c5d7cf83549fe304fc24}{getInspectionFunctions}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{121         std::cout << \textcolor{stringliteral}{"{}inspection functions providing..."{}} << std::endl;}
+\DoxyCodeLine{122         \textcolor{keyword}{auto} f\_info\_json = this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}inspect\_funcs"{}}];}
+\DoxyCodeLine{123         std::map<std::string, FuncConfig> }
+\DoxyCodeLine{124         f\_names;}
+\DoxyCodeLine{125         \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} f\_info : f\_info\_json) \{}
+\DoxyCodeLine{126             \mbox{\hyperlink{structFuncConfig}{FuncConfig}} conf =   \{}
+\DoxyCodeLine{127                                     f\_info[\textcolor{stringliteral}{"{}module\_name"{}}],}
+\DoxyCodeLine{128                                     f\_info[\textcolor{stringliteral}{"{}module\_path"{}}],}
+\DoxyCodeLine{129                                     std::make\_pair(}
+\DoxyCodeLine{130                                         (\textcolor{keywordtype}{size\_t}) std::stoull((std::string) f\_info[\textcolor{stringliteral}{"{}default\_address"{}}][\textcolor{stringliteral}{"{}start"{}}], \textcolor{keyword}{nullptr}, 16), }
+\DoxyCodeLine{131                                         (\textcolor{keywordtype}{size\_t}) std::stoull((std::string) f\_info[\textcolor{stringliteral}{"{}default\_address"{}}][\textcolor{stringliteral}{"{}start"{}}], \textcolor{keyword}{nullptr}, 16))}
+\DoxyCodeLine{132                                 \};}
+\DoxyCodeLine{133             f\_names[f\_info[\textcolor{stringliteral}{"{}func\_name"{}}]] = conf;}
+\DoxyCodeLine{134         \}}
+\DoxyCodeLine{135         std::cout << \textcolor{stringliteral}{"{}functions collected successfuly!"{}} << std::endl;}
+\DoxyCodeLine{136         \textcolor{keywordflow}{return} f\_names;}
+\DoxyCodeLine{137     \}}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{141     \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{142     \mbox{\hyperlink{classConfigurator_aa892642128e400c27751988659da68ef}{logSymbolsEnabled}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{143         \textcolor{keywordflow}{if} (!\_config.contains(\textcolor{stringliteral}{"{}logging"{}})) \{}
+\DoxyCodeLine{144             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}Missing 'logging' section"{}});}
+\DoxyCodeLine{145         \}}
+\DoxyCodeLine{146         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_symbols"{}}][\textcolor{stringliteral}{"{}enable"{}}];}
+\DoxyCodeLine{147     \}}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{151     std::string}
+\DoxyCodeLine{152     \mbox{\hyperlink{classConfigurator_a776beda38d43f8c414fbc998e48e6d2c}{getLogSymbolsPath}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{153         \textcolor{keywordflow}{if} (!\_config.contains(\textcolor{stringliteral}{"{}logging"{}})) \{}
+\DoxyCodeLine{154             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}Missing 'logging' section"{}});}
+\DoxyCodeLine{155         \}}
+\DoxyCodeLine{156         \textcolor{keywordtype}{bool} enable = this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_symbols"{}}][\textcolor{stringliteral}{"{}enable"{}}];}
+\DoxyCodeLine{157         \textcolor{keywordflow}{if} (!enable) \{}
+\DoxyCodeLine{158             std::cout << \textcolor{stringliteral}{"{}[WARNING] : symbols logging is disabled"{}} << std::endl;}
+\DoxyCodeLine{159         \}}
+\DoxyCodeLine{160         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_symbols"{}}][\textcolor{stringliteral}{"{}path"{}}];}
+\DoxyCodeLine{161     \}}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{165     \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{166     \mbox{\hyperlink{classConfigurator_aa79147ebc4a7ce3f7d64b456b30f0aef}{logFuzzingEnabled}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{167         \textcolor{keywordflow}{if} (!\_config.contains(\textcolor{stringliteral}{"{}logging"{}})) \{}
+\DoxyCodeLine{168             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}Missing 'logging' section"{}});}
+\DoxyCodeLine{169         \}}
+\DoxyCodeLine{170         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_fuzzing"{}}][\textcolor{stringliteral}{"{}enable"{}}];}
+\DoxyCodeLine{171     \}}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{175     std::string}
+\DoxyCodeLine{176     \mbox{\hyperlink{classConfigurator_a6777e2fb3e5ba2aedd08c12cee035821}{getLogFuzzingPath}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{177         \textcolor{keywordflow}{if} (!\_config.contains(\textcolor{stringliteral}{"{}logging"{}})) \{}
+\DoxyCodeLine{178             \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}Missing 'logging' section"{}});}
+\DoxyCodeLine{179         \}}
+\DoxyCodeLine{180         \textcolor{keywordtype}{bool} enable = this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_fuzzing"{}}][\textcolor{stringliteral}{"{}enable"{}}];}
+\DoxyCodeLine{181         \textcolor{keywordflow}{if} (!enable) \{}
+\DoxyCodeLine{182             std::cout << \textcolor{stringliteral}{"{}[WARNING] : fuzzing logging is disabled"{}} << std::endl;}
+\DoxyCodeLine{183         \}}
+\DoxyCodeLine{184         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}logging"{}}][\textcolor{stringliteral}{"{}log\_fuzzing"{}}][\textcolor{stringliteral}{"{}path"{}}];}
+\DoxyCodeLine{185     \}}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{191     std::string}
+\DoxyCodeLine{192     \mbox{\hyperlink{classConfigurator_aa97fa89b12360d9b2be936c3229c2566}{getFuzzingCorpusPath}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{193         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}corpus\_path"{}}];}
+\DoxyCodeLine{194     \}}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{202     \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{203     \mbox{\hyperlink{classConfigurator_a69d63956aaac0b4c3a75c61c7b566fac}{use\_default\_bounds}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{204         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}use\_default"{}}];}
+\DoxyCodeLine{205     \}}
+\DoxyCodeLine{206 }
+\DoxyCodeLine{209     std::set<int> \mbox{\hyperlink{classConfigurator_adb3ba06e5e008617e8703d21aeb3b669}{getInspectOpcodes}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{210         dr\_printf(\textcolor{stringliteral}{"{}getting opcodes to inspect..."{}});}
+\DoxyCodeLine{211         std::set<int> ops;}
+\DoxyCodeLine{212         \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} op : this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}inspect\_opcodes"{}}]) \{}
+\DoxyCodeLine{213             \textcolor{keyword}{auto} op\_dr = this-\/>get\_opcode((std::string) op);}
+\DoxyCodeLine{214             \textcolor{keywordflow}{if} (op\_dr < 0) \{}
+\DoxyCodeLine{215                 main\_logger.log\_error(\textcolor{stringliteral}{"{}cannot translate \{\} to DR opcode"{}}, (std::string) op);}
+\DoxyCodeLine{216             \}}
+\DoxyCodeLine{217             ops.insert(op\_dr);}
+\DoxyCodeLine{218         \}}
+\DoxyCodeLine{219         \textcolor{keywordflow}{return} ops;}
+\DoxyCodeLine{220     \}}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{229     std::set <std::string> \mbox{\hyperlink{classConfigurator_a8b33b7cf3211d057cf08e7c5d87363eb}{get\_modules\_names}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{230         main\_logger.log\_info(\textcolor{stringliteral}{"{}getting modules names..."{}});}
+\DoxyCodeLine{231         std::set <std::string> module\_names;}
+\DoxyCodeLine{232         \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} mn : this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}inspect\_funcs"{}}]) \{}
+\DoxyCodeLine{233             std::string name = mn[\textcolor{stringliteral}{"{}module\_name"{}}];}
+\DoxyCodeLine{234             module\_names.insert((std::string) name);}
+\DoxyCodeLine{235         \}}
+\DoxyCodeLine{236         \textcolor{keywordflow}{return} module\_names;}
+\DoxyCodeLine{237     \}}
+\DoxyCodeLine{238 }
+\DoxyCodeLine{244     std::set <std::pair<std::string, std::string>> \mbox{\hyperlink{classConfigurator_ab38e66feddb6a37bf0f7aaef0ded707d}{get\_modules\_info}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{245         dr\_printf(\textcolor{stringliteral}{"{}getting modules names...\(\backslash\)n"{}});}
+\DoxyCodeLine{246         std::set <std::pair<std::string, std::string>> modules\_info;}
+\DoxyCodeLine{247         \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} mn : this-\/>\_config[\textcolor{stringliteral}{"{}fuzzing"{}}][\textcolor{stringliteral}{"{}inspect\_funcs"{}}]) \{}
+\DoxyCodeLine{248             std::string name = mn[\textcolor{stringliteral}{"{}module\_name"{}}];}
+\DoxyCodeLine{249             std::string path = mn[\textcolor{stringliteral}{"{}module\_path"{}}];}
+\DoxyCodeLine{250             modules\_info.insert(std::make\_pair(name, path));}
+\DoxyCodeLine{251         \}}
+\DoxyCodeLine{252         \textcolor{keywordflow}{return} modules\_info;}
+\DoxyCodeLine{253     \}}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{257     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classConfigurator_ac061765bd3fab5eaff02c1b8d9f8fec2}{debugModeEnabled}}()\textcolor{keyword}{ const }\{}
+\DoxyCodeLine{258         \textcolor{keywordflow}{return} this-\/>\_config[\textcolor{stringliteral}{"{}debug"{}}];}
+\DoxyCodeLine{259     \}}
+\DoxyCodeLine{260 \};}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MY\_CONFIG\_header}}
+
+\end{DoxyCode}

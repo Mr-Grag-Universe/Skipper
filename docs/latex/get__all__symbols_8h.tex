@@ -1,0 +1,91 @@
+\hypertarget{get__all__symbols_8h}{}\doxysection{/home/debian/\+Skipper/src/include/get\+\_\+all\+\_\+symbols.h File Reference}
+\label{get__all__symbols_8h}\index{/home/debian/Skipper/src/include/get\_all\_symbols.h@{/home/debian/Skipper/src/include/get\_all\_symbols.h}}
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include \char`\"{}dr\+\_\+api.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drreg.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drsyms.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drmgr.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}drx.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}dr\+\_\+modules.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}../loggers.\+h\char`\"{}}\newline
+Include dependency graph for get\+\_\+all\+\_\+symbols.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{get__all__symbols_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{get__all__symbols_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{get__all__symbols_8h_a078a3407d47ec9ec926d0b26676f2b84}{get\+\_\+all\+\_\+symbols\+\_\+with\+\_\+offsets\+\_\+callback}} (drsym\+\_\+info\+\_\+t $\ast$info, drsym\+\_\+error\+\_\+t status, void $\ast$data)
+\begin{DoxyCompactList}\small\item\em just callback for get\+\_\+all\+\_\+symbols function \end{DoxyCompactList}\item 
+std\+::map$<$ std\+::string, generic\+\_\+func\+\_\+t $>$ \mbox{\hyperlink{get__all__symbols_8h_ac8449904f330e4bb540b01860965dfd1}{get\+\_\+all\+\_\+symbols\+\_\+with\+\_\+offsets}} (std\+::string module\+\_\+name, std\+::string module\+\_\+path)
+\begin{DoxyCompactList}\small\item\em Get the all symbols with offsets object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Stepan Kafanov 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2025-\/03-\/31
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2025 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{get__all__symbols_8h_ac8449904f330e4bb540b01860965dfd1}\label{get__all__symbols_8h_ac8449904f330e4bb540b01860965dfd1}} 
+\index{get\_all\_symbols.h@{get\_all\_symbols.h}!get\_all\_symbols\_with\_offsets@{get\_all\_symbols\_with\_offsets}}
+\index{get\_all\_symbols\_with\_offsets@{get\_all\_symbols\_with\_offsets}!get\_all\_symbols.h@{get\_all\_symbols.h}}
+\doxysubsubsection{\texorpdfstring{get\_all\_symbols\_with\_offsets()}{get\_all\_symbols\_with\_offsets()}}
+{\footnotesize\ttfamily std\+::map$<$ std\+::string, generic\+\_\+func\+\_\+t $>$ get\+\_\+all\+\_\+symbols\+\_\+with\+\_\+offsets (\begin{DoxyParamCaption}\item[{std\+::string}]{module\+\_\+name,  }\item[{std\+::string}]{module\+\_\+path }\end{DoxyParamCaption})}
+
+
+
+Get the all symbols with offsets object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em module\+\_\+name} & -\/ module to look for symbols \\
+\hline
+{\em module\+\_\+path} & -\/ path to that module \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::map$<$std\+::string, generic\+\_\+func\+\_\+t$>$ -\/ dict \{\textquotesingle{}symbol\+\_\+name\textquotesingle{} \+: symbol\+\_\+offset\} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{get__all__symbols_8h_a078a3407d47ec9ec926d0b26676f2b84}\label{get__all__symbols_8h_a078a3407d47ec9ec926d0b26676f2b84}} 
+\index{get\_all\_symbols.h@{get\_all\_symbols.h}!get\_all\_symbols\_with\_offsets\_callback@{get\_all\_symbols\_with\_offsets\_callback}}
+\index{get\_all\_symbols\_with\_offsets\_callback@{get\_all\_symbols\_with\_offsets\_callback}!get\_all\_symbols.h@{get\_all\_symbols.h}}
+\doxysubsubsection{\texorpdfstring{get\_all\_symbols\_with\_offsets\_callback()}{get\_all\_symbols\_with\_offsets\_callback()}}
+{\footnotesize\ttfamily bool get\+\_\+all\+\_\+symbols\+\_\+with\+\_\+offsets\+\_\+callback (\begin{DoxyParamCaption}\item[{drsym\+\_\+info\+\_\+t $\ast$}]{info,  }\item[{drsym\+\_\+error\+\_\+t}]{status,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+just callback for get\+\_\+all\+\_\+symbols function 
+
+
+\begin{DoxyParams}{Parameters}
+{\em info} & -\/ DR symbol info \\
+\hline
+{\em status} & -\/ DR look through status \\
+\hline
+{\em data} & -\/ Extra data, passsed to callback. Callback stores info about found symbols there. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+always \char`\"{}true\char`\"{} to continue looking for new symbols 
+\end{DoxyReturn}

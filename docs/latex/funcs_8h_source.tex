@@ -1,0 +1,92 @@
+\hypertarget{funcs_8h_source}{}\doxysection{funcs.\+h}
+\label{funcs_8h_source}\index{/home/debian/Skipper/src/include/funcs.h@{/home/debian/Skipper/src/include/funcs.h}}
+\mbox{\hyperlink{funcs_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#ifndef FUNCS\_DR\_header}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#define FUNCS\_DR\_header}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <sstream>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include "{}dr\_api.h"{}}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include "{}drreg.h"{}}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include "{}drsyms.h"{}}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include "{}drmgr.h"{}}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include "{}drx.h"{}}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include "{}dr\_modules.h"{}}}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{types_8h}{types.h}}"{}}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{29 \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{funcs_8h_a2fc824318fd11e5d4fe36f0e35684955}{get\_symbol\_offset}}(std::string module\_name, std::string module\_path, std::string symbol\_name) \{}
+\DoxyCodeLine{30     drsym\_init(NULL);}
+\DoxyCodeLine{31     drsym\_error\_t error;}
+\DoxyCodeLine{32     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{33     }
+\DoxyCodeLine{34     error = drsym\_get\_module\_debug\_kind(module\_path.c\_str(), \&kind);}
+\DoxyCodeLine{35     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{36         \textcolor{comment}{// main\_logger.log\_error("{}error in drsym\_get\_module\_debug\_kind() : get\_symbol\_offset : kind error"{});}}
+\DoxyCodeLine{37         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}ERROR: error in drsym\_get\_module\_debug\_kind() : get\_symbol\_offset\(\backslash\)n"{}});}
+\DoxyCodeLine{38         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{39     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{40         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{41     \}}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43     \textcolor{keywordtype}{size\_t} offset = 0;}
+\DoxyCodeLine{44     error = drsym\_lookup\_symbol(module\_path.c\_str(), }
+\DoxyCodeLine{45                                 symbol\_name.c\_str(),}
+\DoxyCodeLine{46                                 \&offset,}
+\DoxyCodeLine{47                                 DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{48     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{49         \textcolor{comment}{// main\_logger.log\_error("{}error in drsym\_lookup\_symbol() : get\_symbol\_offset"{});}}
+\DoxyCodeLine{50         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}ERROR: error in drsym\_lookup\_symbol() : get\_symbol\_offset\(\backslash\)n"{}});}
+\DoxyCodeLine{51         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{52     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{53         \textcolor{comment}{// printf("{}offset: \%d\(\backslash\)n"{}, offset);}}
+\DoxyCodeLine{54     \}}
+\DoxyCodeLine{55     }
+\DoxyCodeLine{56     drsym\_exit();}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{58     \textcolor{keywordflow}{return} offset;}
+\DoxyCodeLine{59 \}}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{67 std::vector<ModuleInfo> \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}() \{}
+\DoxyCodeLine{68     \textcolor{keyword}{auto} iterator = dr\_module\_iterator\_start();}
+\DoxyCodeLine{69     std::vector<ModuleInfo> modules;}
+\DoxyCodeLine{70     \textcolor{keywordflow}{while} (dr\_module\_iterator\_hasnext(iterator)) \{}
+\DoxyCodeLine{71         \textcolor{keyword}{auto} * module = dr\_module\_iterator\_next(iterator);}
+\DoxyCodeLine{72         modules.push\_back(\{dr\_module\_preferred\_name(module), module-\/>full\_path\});}
+\DoxyCodeLine{73         dr\_free\_module\_data(module);}
+\DoxyCodeLine{74     \}}
+\DoxyCodeLine{75     dr\_module\_iterator\_stop(iterator);}
+\DoxyCodeLine{76     \textcolor{keywordflow}{return} modules;}
+\DoxyCodeLine{77 \}}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{84 std::vector <std::string> \mbox{\hyperlink{funcs_8h_a569a2b2417d85f0f7112d0f47f19d960}{get\_modules\_names}}() \{}
+\DoxyCodeLine{85     \textcolor{keyword}{auto} modules = \mbox{\hyperlink{funcs_8h_a9ca16f4a97a4856078ddf19626e08f86}{get\_all\_modules}}();}
+\DoxyCodeLine{86     std::vector <std::string> modules\_names;}
+\DoxyCodeLine{87     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} module : modules) \{}
+\DoxyCodeLine{88         \textcolor{keyword}{auto} mn = module.name;}
+\DoxyCodeLine{89         modules\_names.push\_back(mn);}
+\DoxyCodeLine{90     \}}
+\DoxyCodeLine{91     \textcolor{keywordflow}{return} modules\_names;}
+\DoxyCodeLine{92 \}}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{100 std::string \mbox{\hyperlink{funcs_8h_a5a9593f1fd1c0608e3357842f89937d2}{int\_to\_hex}}(\textcolor{keywordtype}{int} my\_integer) \{}
+\DoxyCodeLine{101     std::stringstream sstream;}
+\DoxyCodeLine{102     sstream << std::hex << my\_integer;}
+\DoxyCodeLine{103     std::string result = sstream.str();}
+\DoxyCodeLine{104     \textcolor{keywordflow}{return} result;}
+\DoxyCodeLine{105 \}}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{112 std::string \mbox{\hyperlink{funcs_8h_aba532940df77bb2847dcabd25caf5b59}{get\_thread\_id}}() \{}
+\DoxyCodeLine{113     std::stringstream ss;}
+\DoxyCodeLine{114     ss << std::this\_thread::get\_id();}
+\DoxyCodeLine{115     \textcolor{keywordflow}{return} ss.str();}
+\DoxyCodeLine{116 \}}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// FUNCS\_DR\_header}}
+
+\end{DoxyCode}

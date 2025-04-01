@@ -1,0 +1,138 @@
+\indexentry{CodeSegmentDescriber@{CodeSegmentDescriber}|hyperpage}{7}
+\indexentry{Configurator@{Configurator}|hyperpage}{7}
+\indexentry{Configurator@{Configurator}!config@{config}|hyperpage}{8}
+\indexentry{config@{config}!Configurator@{Configurator}|hyperpage}{8}
+\indexentry{Configurator@{Configurator}!config@{config}|hyperpage}{9}
+\indexentry{config@{config}!Configurator@{Configurator}|hyperpage}{9}
+\indexentry{Configurator@{Configurator}!debugModeEnabled@{debugModeEnabled}|hyperpage}{9}
+\indexentry{debugModeEnabled@{debugModeEnabled}!Configurator@{Configurator}|hyperpage}{9}
+\indexentry{Configurator@{Configurator}!get\_modules\_info@{get\_modules\_info}|hyperpage}{9}
+\indexentry{get\_modules\_info@{get\_modules\_info}!Configurator@{Configurator}|hyperpage}{9}
+\indexentry{Configurator@{Configurator}!get\_modules\_names@{get\_modules\_names}|hyperpage}{9}
+\indexentry{get\_modules\_names@{get\_modules\_names}!Configurator@{Configurator}|hyperpage}{9}
+\indexentry{Configurator@{Configurator}!getFuzzConfig@{getFuzzConfig}|hyperpage}{10}
+\indexentry{getFuzzConfig@{getFuzzConfig}!Configurator@{Configurator}|hyperpage}{10}
+\indexentry{Configurator@{Configurator}!getFuzzingCorpusPath@{getFuzzingCorpusPath}|hyperpage}{10}
+\indexentry{getFuzzingCorpusPath@{getFuzzingCorpusPath}!Configurator@{Configurator}|hyperpage}{10}
+\indexentry{Configurator@{Configurator}!getInspectionFunctions@{getInspectionFunctions}|hyperpage}{10}
+\indexentry{getInspectionFunctions@{getInspectionFunctions}!Configurator@{Configurator}|hyperpage}{10}
+\indexentry{Configurator@{Configurator}!getInspectOpcodes@{getInspectOpcodes}|hyperpage}{10}
+\indexentry{getInspectOpcodes@{getInspectOpcodes}!Configurator@{Configurator}|hyperpage}{10}
+\indexentry{Configurator@{Configurator}!getLogFuzzingPath@{getLogFuzzingPath}|hyperpage}{11}
+\indexentry{getLogFuzzingPath@{getLogFuzzingPath}!Configurator@{Configurator}|hyperpage}{11}
+\indexentry{Configurator@{Configurator}!getLogSymbolsPath@{getLogSymbolsPath}|hyperpage}{11}
+\indexentry{getLogSymbolsPath@{getLogSymbolsPath}!Configurator@{Configurator}|hyperpage}{11}
+\indexentry{Configurator@{Configurator}!getTracerConfig@{getTracerConfig}|hyperpage}{11}
+\indexentry{getTracerConfig@{getTracerConfig}!Configurator@{Configurator}|hyperpage}{11}
+\indexentry{Configurator@{Configurator}!load\_config@{load\_config}|hyperpage}{11}
+\indexentry{load\_config@{load\_config}!Configurator@{Configurator}|hyperpage}{11}
+\indexentry{Configurator@{Configurator}!logFuzzingEnabled@{logFuzzingEnabled}|hyperpage}{12}
+\indexentry{logFuzzingEnabled@{logFuzzingEnabled}!Configurator@{Configurator}|hyperpage}{12}
+\indexentry{Configurator@{Configurator}!logSymbolsEnabled@{logSymbolsEnabled}|hyperpage}{12}
+\indexentry{logSymbolsEnabled@{logSymbolsEnabled}!Configurator@{Configurator}|hyperpage}{12}
+\indexentry{Configurator@{Configurator}!use\_default\_bounds@{use\_default\_bounds}|hyperpage}{12}
+\indexentry{use\_default\_bounds@{use\_default\_bounds}!Configurator@{Configurator}|hyperpage}{12}
+\indexentry{FuncConfig@{FuncConfig}|hyperpage}{13}
+\indexentry{Guarder@{Guarder}|hyperpage}{13}
+\indexentry{Guarder@{Guarder}!guards\_opened@{guards\_opened}|hyperpage}{14}
+\indexentry{guards\_opened@{guards\_opened}!Guarder@{Guarder}|hyperpage}{14}
+\indexentry{Guarder@{Guarder}!set\_global\_guards@{set\_global\_guards}|hyperpage}{14}
+\indexentry{set\_global\_guards@{set\_global\_guards}!Guarder@{Guarder}|hyperpage}{14}
+\indexentry{Guarder@{Guarder}!throw\_instr@{throw\_instr}|hyperpage}{14}
+\indexentry{throw\_instr@{throw\_instr}!Guarder@{Guarder}|hyperpage}{14}
+\indexentry{Logger@{Logger}|hyperpage}{15}
+\indexentry{Logger@{Logger}!log@{log}|hyperpage}{16}
+\indexentry{log@{log}!Logger@{Logger}|hyperpage}{16}
+\indexentry{Logger@{Logger}!log\_program\_params@{log\_program\_params}|hyperpage}{16}
+\indexentry{log\_program\_params@{log\_program\_params}!Logger@{Logger}|hyperpage}{16}
+\indexentry{Logger@{Logger}!set\_log\_file@{set\_log\_file}|hyperpage}{16}
+\indexentry{set\_log\_file@{set\_log\_file}!Logger@{Logger}|hyperpage}{16}
+\indexentry{Logger@{Logger}!start\_logging@{start\_logging}|hyperpage}{17}
+\indexentry{start\_logging@{start\_logging}!Logger@{Logger}|hyperpage}{17}
+\indexentry{ModuleInfo@{ModuleInfo}|hyperpage}{17}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{18}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!clamp\_value@{clamp\_value}|hyperpage}{19}
+\indexentry{clamp\_value@{clamp\_value}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{19}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!clear\_value@{clear\_value}|hyperpage}{19}
+\indexentry{clear\_value@{clear\_value}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{19}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{19}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{19}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{19}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{19}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{20}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{20}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!convert\_from\_string@{convert\_from\_string}|hyperpage}{21}
+\indexentry{convert\_from\_string@{convert\_from\_string}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{21}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!get\_value\_str@{get\_value\_str}|hyperpage}{21}
+\indexentry{get\_value\_str@{get\_value\_str}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{21}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!option\_takes\_arg@{option\_takes\_arg}|hyperpage}{21}
+\indexentry{option\_takes\_arg@{option\_takes\_arg}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{21}
+\indexentry{Option$<$ T $>$@{Option$<$ T $>$}!option\_takes\_arg@{option\_takes\_arg}|hyperpage}{21}
+\indexentry{option\_takes\_arg@{option\_takes\_arg}!Option$<$ T $>$@{Option$<$ T $>$}|hyperpage}{21}
+\indexentry{Parser@{Parser}|hyperpage}{22}
+\indexentry{sym\_info\_t@{sym\_info\_t}|hyperpage}{22}
+\indexentry{thread\_data@{thread\_data}|hyperpage}{23}
+\indexentry{TraceArea@{TraceArea}|hyperpage}{23}
+\indexentry{Tracer@{Tracer}|hyperpage}{24}
+\indexentry{Tracer@{Tracer}!traceOverflow@{traceOverflow}|hyperpage}{24}
+\indexentry{traceOverflow@{traceOverflow}!Tracer@{Tracer}|hyperpage}{24}
+\indexentry{UnitypeOption@{UnitypeOption}|hyperpage}{25}
+\indexentry{/home/debian/Skipper/src/client.cpp@{/home/debian/Skipper/src/client.cpp}|hyperpage}{27}
+\indexentry{client.cpp@{client.cpp}!address\_in\_code\_segment@{address\_in\_code\_segment}|hyperpage}{28}
+\indexentry{address\_in\_code\_segment@{address\_in\_code\_segment}!client.cpp@{client.cpp}|hyperpage}{28}
+\indexentry{client.cpp@{client.cpp}!dr\_client\_main@{dr\_client\_main}|hyperpage}{28}
+\indexentry{dr\_client\_main@{dr\_client\_main}!client.cpp@{client.cpp}|hyperpage}{28}
+\indexentry{/home/debian/Skipper/src/include/classes/Config.h@{/home/debian/Skipper/src/include/classes/Config.h}|hyperpage}{28}
+\indexentry{/home/debian/Skipper/src/include/classes/Config.h@{/home/debian/Skipper/src/include/classes/Config.h}|hyperpage}{30}
+\indexentry{/home/debian/Skipper/src/include/classes/Guarder.h@{/home/debian/Skipper/src/include/classes/Guarder.h}|hyperpage}{32}
+\indexentry{/home/debian/Skipper/src/include/classes/Guarder.h@{/home/debian/Skipper/src/include/classes/Guarder.h}|hyperpage}{34}
+\indexentry{/home/debian/Skipper/src/include/classes/Logger.h@{/home/debian/Skipper/src/include/classes/Logger.h}|hyperpage}{35}
+\indexentry{/home/debian/Skipper/src/include/classes/Logger.h@{/home/debian/Skipper/src/include/classes/Logger.h}|hyperpage}{36}
+\indexentry{/home/debian/Skipper/src/include/classes/Options.h@{/home/debian/Skipper/src/include/classes/Options.h}|hyperpage}{38}
+\indexentry{/home/debian/Skipper/src/include/classes/Options.h@{/home/debian/Skipper/src/include/classes/Options.h}|hyperpage}{39}
+\indexentry{/home/debian/Skipper/src/include/classes/Tracer.h@{/home/debian/Skipper/src/include/classes/Tracer.h}|hyperpage}{43}
+\indexentry{Tracer.h@{Tracer.h}!insert\_tracing@{insert\_tracing}|hyperpage}{45}
+\indexentry{insert\_tracing@{insert\_tracing}!Tracer.h@{Tracer.h}|hyperpage}{45}
+\indexentry{Tracer.h@{Tracer.h}!trace\_overflow@{trace\_overflow}|hyperpage}{46}
+\indexentry{trace\_overflow@{trace\_overflow}!Tracer.h@{Tracer.h}|hyperpage}{46}
+\indexentry{/home/debian/Skipper/src/include/classes/Tracer.h@{/home/debian/Skipper/src/include/classes/Tracer.h}|hyperpage}{46}
+\indexentry{/home/debian/Skipper/src/include/debug.h@{/home/debian/Skipper/src/include/debug.h}|hyperpage}{50}
+\indexentry{debug.h@{debug.h}!print\_module\_data@{print\_module\_data}|hyperpage}{51}
+\indexentry{print\_module\_data@{print\_module\_data}!debug.h@{debug.h}|hyperpage}{51}
+\indexentry{/home/debian/Skipper/src/include/debug.h@{/home/debian/Skipper/src/include/debug.h}|hyperpage}{52}
+\indexentry{/home/debian/Skipper/src/include/func\_bounds.h@{/home/debian/Skipper/src/include/func\_bounds.h}|hyperpage}{53}
+\indexentry{func\_bounds.h@{func\_bounds.h}!get\_func\_bounds@{get\_func\_bounds}|hyperpage}{54}
+\indexentry{get\_func\_bounds@{get\_func\_bounds}!func\_bounds.h@{func\_bounds.h}|hyperpage}{54}
+\indexentry{/home/debian/Skipper/src/include/func\_bounds.h@{/home/debian/Skipper/src/include/func\_bounds.h}|hyperpage}{55}
+\indexentry{/home/debian/Skipper/src/include/funcs.h@{/home/debian/Skipper/src/include/funcs.h}|hyperpage}{57}
+\indexentry{funcs.h@{funcs.h}!get\_all\_modules@{get\_all\_modules}|hyperpage}{58}
+\indexentry{get\_all\_modules@{get\_all\_modules}!funcs.h@{funcs.h}|hyperpage}{58}
+\indexentry{funcs.h@{funcs.h}!get\_modules\_names@{get\_modules\_names}|hyperpage}{58}
+\indexentry{get\_modules\_names@{get\_modules\_names}!funcs.h@{funcs.h}|hyperpage}{58}
+\indexentry{funcs.h@{funcs.h}!get\_symbol\_offset@{get\_symbol\_offset}|hyperpage}{59}
+\indexentry{get\_symbol\_offset@{get\_symbol\_offset}!funcs.h@{funcs.h}|hyperpage}{59}
+\indexentry{funcs.h@{funcs.h}!get\_thread\_id@{get\_thread\_id}|hyperpage}{59}
+\indexentry{get\_thread\_id@{get\_thread\_id}!funcs.h@{funcs.h}|hyperpage}{59}
+\indexentry{funcs.h@{funcs.h}!int\_to\_hex@{int\_to\_hex}|hyperpage}{59}
+\indexentry{int\_to\_hex@{int\_to\_hex}!funcs.h@{funcs.h}|hyperpage}{59}
+\indexentry{/home/debian/Skipper/src/include/funcs.h@{/home/debian/Skipper/src/include/funcs.h}|hyperpage}{60}
+\indexentry{/home/debian/Skipper/src/include/get\_all\_symbols.h@{/home/debian/Skipper/src/include/get\_all\_symbols.h}|hyperpage}{61}
+\indexentry{get\_all\_symbols.h@{get\_all\_symbols.h}!get\_all\_symbols\_with\_offsets@{get\_all\_symbols\_with\_offsets}|hyperpage}{63}
+\indexentry{get\_all\_symbols\_with\_offsets@{get\_all\_symbols\_with\_offsets}!get\_all\_symbols.h@{get\_all\_symbols.h}|hyperpage}{63}
+\indexentry{get\_all\_symbols.h@{get\_all\_symbols.h}!get\_all\_symbols\_with\_offsets\_callback@{get\_all\_symbols\_with\_offsets\_callback}|hyperpage}{63}
+\indexentry{get\_all\_symbols\_with\_offsets\_callback@{get\_all\_symbols\_with\_offsets\_callback}!get\_all\_symbols.h@{get\_all\_symbols.h}|hyperpage}{63}
+\indexentry{/home/debian/Skipper/src/include/get\_all\_symbols.h@{/home/debian/Skipper/src/include/get\_all\_symbols.h}|hyperpage}{63}
+\indexentry{/home/debian/Skipper/src/include/types.h@{/home/debian/Skipper/src/include/types.h}|hyperpage}{65}
+\indexentry{/home/debian/Skipper/src/include/types.h@{/home/debian/Skipper/src/include/types.h}|hyperpage}{66}
+\indexentry{/home/debian/Skipper/src/loggers.h@{/home/debian/Skipper/src/loggers.h}|hyperpage}{67}
+\indexentry{/home/debian/Skipper/src/loggers.h@{/home/debian/Skipper/src/loggers.h}|hyperpage}{68}

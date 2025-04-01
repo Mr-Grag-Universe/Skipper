@@ -1,0 +1,68 @@
+\hypertarget{classTracer}{}\doxysection{Tracer Class Reference}
+\label{classTracer}\index{Tracer@{Tracer}}
+
+
+Class, that inserts tracing function in basic blocks.  
+
+
+
+
+{\ttfamily \#include $<$Tracer.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTracer_afc07eaef479ab4f68ebea2baec8b6b3b}\label{classTracer_afc07eaef479ab4f68ebea2baec8b6b3b}} 
+bool {\bfseries set\+\_\+config} (\mbox{\hyperlink{classConfigurator}{Configurator}} config)
+\begin{DoxyCompactList}\small\item\em set up configuration for client tracing \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classTracer_ad41b93151174779e6278996a024b6937}\label{classTracer_ad41b93151174779e6278996a024b6937}} 
+void {\bfseries set\+\_\+trace\+\_\+area} (size\+\_\+t start, size\+\_\+t end)
+\begin{DoxyCompactList}\small\item\em set up trace-\/memory (extra-\/counters section) address \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classTracer_a09d420c495a39a8c71642a20aa2f4495}{trace\+Overflow}} (void $\ast$drcontext, void $\ast$tag, instrlist\+\_\+t $\ast$bb, instr\+\_\+t $\ast$instr)
+\begin{DoxyCompactList}\small\item\em This method inserts instrumentation into basic-\/blocks. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTracer_ab1e1f89c4b6d9afa8a52e8db6d9ce2dc}\label{classTracer_ab1e1f89c4b6d9afa8a52e8db6d9ce2dc}} 
+json {\bfseries tracer\+\_\+config}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classTracer_af5756bea912ded6d7d5f5460796ec34c}\label{classTracer_af5756bea912ded6d7d5f5460796ec34c}} 
+int {\bfseries get\+\_\+reg\+\_\+id} (reg\+\_\+id\+\_\+t reg)
+\begin{DoxyCompactList}\small\item\em Get register ID if submited and submit if it is not. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class, that inserts tracing function in basic blocks. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classTracer_a09d420c495a39a8c71642a20aa2f4495}\label{classTracer_a09d420c495a39a8c71642a20aa2f4495}} 
+\index{Tracer@{Tracer}!traceOverflow@{traceOverflow}}
+\index{traceOverflow@{traceOverflow}!Tracer@{Tracer}}
+\doxysubsubsection{\texorpdfstring{traceOverflow()}{traceOverflow()}}
+{\footnotesize\ttfamily void Tracer\+::trace\+Overflow (\begin{DoxyParamCaption}\item[{void $\ast$}]{drcontext,  }\item[{void $\ast$}]{tag,  }\item[{instrlist\+\_\+t $\ast$}]{bb,  }\item[{instr\+\_\+t $\ast$}]{instr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This method inserts instrumentation into basic-\/blocks. 
+
+{\ttfamily use\+\_\+asm} parameter regulates whether client shall use inline ASM insertion or clean call Dynamo\+RIO function to insert tracing.
+
+
+\begin{DoxyParams}{Parameters}
+{\em drcontext} & -\/ DR context \\
+\hline
+{\em tag} & -\/ DR tag \\
+\hline
+{\em bb} & -\/ current basic block \\
+\hline
+{\em instr} & -\/ current ASM instruction \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/debian/\+Skipper/src/include/classes/\mbox{\hyperlink{Tracer_8h}{Tracer.\+h}}\end{DoxyCompactItemize}

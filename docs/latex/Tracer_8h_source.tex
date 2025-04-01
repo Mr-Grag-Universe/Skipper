@@ -1,0 +1,304 @@
+\hypertarget{Tracer_8h_source}{}\doxysection{Tracer.\+h}
+\label{Tracer_8h_source}\index{/home/debian/Skipper/src/include/classes/Tracer.h@{/home/debian/Skipper/src/include/classes/Tracer.h}}
+\mbox{\hyperlink{Tracer_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef MY\_TRACER\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define MY\_TRACER\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#define X86}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{Config_8h}{Config.h}}"{}}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{19 \textcolor{keyword}{struct }\mbox{\hyperlink{structCodeSegmentDescriber}{CodeSegmentDescriber}} \{}
+\DoxyCodeLine{20     \textcolor{keywordtype}{size\_t} start;}
+\DoxyCodeLine{21     \textcolor{keywordtype}{size\_t} end;}
+\DoxyCodeLine{22 \};}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{25 \textcolor{keyword}{struct }\mbox{\hyperlink{structTraceArea}{TraceArea}} \{}
+\DoxyCodeLine{26     \textcolor{keywordtype}{size\_t} start;}
+\DoxyCodeLine{27     \textcolor{keywordtype}{size\_t} end;}
+\DoxyCodeLine{28     \textcolor{keywordtype}{size\_t} size;}
+\DoxyCodeLine{29 \};}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{32 \textcolor{keywordtype}{int} \mbox{\hyperlink{Tracer_8h_a123d1a69b9cc1c4ef9d6cfa21c8660e5}{get\_msb\_ind}}(uint x) \{}
+\DoxyCodeLine{33     \textcolor{keywordflow}{if} (x == 0)}
+\DoxyCodeLine{34         \textcolor{keywordflow}{return} -\/1; \textcolor{comment}{// if there is not any rised bits (==0)}}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36     \textcolor{keywordtype}{int} msb\_index = 0;}
+\DoxyCodeLine{37     \textcolor{keywordflow}{while} (x >>= 1) \{}
+\DoxyCodeLine{38         msb\_index++;}
+\DoxyCodeLine{39     \}}
+\DoxyCodeLine{40     \textcolor{keywordflow}{return} msb\_index;}
+\DoxyCodeLine{41 \}}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{55 \textcolor{keywordtype}{int} \mbox{\hyperlink{Tracer_8h_a50d52849f73aeaddc776d9de6fbeac5a}{trace\_overflow}}(\textcolor{keywordtype}{int}* offset\_int\_ptr, uint32\_t size, uint32\_t ind, uint32\_t reg\_id) \{}
+\DoxyCodeLine{56     \textcolor{keywordtype}{char}* offset = (\textcolor{keywordtype}{char}*) offset\_int\_ptr;}
+\DoxyCodeLine{57     reg\_id\_t dst\_reg = (reg\_id\_t) reg\_id;}
+\DoxyCodeLine{58     \textcolor{keywordflow}{if} (size < 65*(ind+1)) \{}
+\DoxyCodeLine{59         \textcolor{comment}{// TODO : cheking}}
+\DoxyCodeLine{60         printf(\textcolor{stringliteral}{"{}memory is not enough for tracing\(\backslash\)n"{}});}
+\DoxyCodeLine{61     \}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63     \textcolor{comment}{// restore context}}
+\DoxyCodeLine{64     dr\_mcontext\_t mc = \{ \textcolor{keyword}{sizeof}(mc), DR\_MC\_ALL\};}
+\DoxyCodeLine{65     dr\_get\_mcontext(dr\_get\_current\_drcontext(), \&mc);}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67     \textcolor{comment}{// flag register}}
+\DoxyCodeLine{68     reg\_t xflags = mc.xflags;}
+\DoxyCodeLine{69     \textcolor{comment}{// target register}}
+\DoxyCodeLine{70     reg\_t reg = reg\_get\_value(dst\_reg, \&mc);}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72     \textcolor{comment}{// most signigicant bit}}
+\DoxyCodeLine{73     \textcolor{keywordtype}{int} msb\_ind\_reg = \mbox{\hyperlink{Tracer_8h_a123d1a69b9cc1c4ef9d6cfa21c8660e5}{get\_msb\_ind}}((uint) reg);}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75     \textcolor{comment}{// trace}}
+\DoxyCodeLine{76     \textcolor{keywordflow}{if} (msb\_ind\_reg >= 0) \{}
+\DoxyCodeLine{77         ((\textcolor{keywordtype}{char} *)offset)[(ind*65+msb\_ind\_reg) \% size] += 1;}
+\DoxyCodeLine{78     \}}
+\DoxyCodeLine{79     ((\textcolor{keywordtype}{char} *)offset)[(ind*65+64) \% size] += xflags \& EFLAGS\_CF;}
+\DoxyCodeLine{80     }
+\DoxyCodeLine{81     \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{82 \}}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{99 \textcolor{keywordtype}{void} \mbox{\hyperlink{Tracer_8h_ac543296ab3c51210dd61838f989023a8}{insert\_tracing}}(\textcolor{keywordtype}{void} *drcontext, \textcolor{keywordtype}{void} *tag, instrlist\_t *bb, instr\_t *where, }
+\DoxyCodeLine{100                     \textcolor{keywordtype}{char}* offset, uint32\_t size, uint32\_t ind, uint32\_t reg\_id) \{}
+\DoxyCodeLine{101     \textcolor{keyword}{auto} xax = DR\_REG\_XAX;}
+\DoxyCodeLine{102     \textcolor{keyword}{auto} xbx = DR\_REG\_XBX;}
+\DoxyCodeLine{103     \textcolor{keyword}{auto} xcx = DR\_REG\_XCX;}
+\DoxyCodeLine{104     \textcolor{keyword}{auto} xdx = DR\_REG\_XDX;}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{106     \textcolor{comment}{// save registers and flags}}
+\DoxyCodeLine{107     dr\_save\_arith\_flags(drcontext, bb, where, SPILL\_SLOT\_2); \textcolor{comment}{// store into xax by default}}
+\DoxyCodeLine{108     dr\_save\_reg(drcontext, bb, where, xax, SPILL\_SLOT\_3);}
+\DoxyCodeLine{109     dr\_save\_reg(drcontext, bb, where, xbx, SPILL\_SLOT\_4);}
+\DoxyCodeLine{110     dr\_save\_reg(drcontext, bb, where, xcx, SPILL\_SLOT\_5);}
+\DoxyCodeLine{111     dr\_save\_reg(drcontext, bb, where, xdx, SPILL\_SLOT\_6);}
+\DoxyCodeLine{112     }
+\DoxyCodeLine{113     instr\_t * instr;}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115     \textcolor{comment}{// save interesting reg value into RCX}}
+\DoxyCodeLine{116     instr = XINST\_CREATE\_move(}
+\DoxyCodeLine{117         drcontext,}
+\DoxyCodeLine{118         opnd\_create\_reg(DR\_REG\_RCX),}
+\DoxyCodeLine{119         opnd\_create\_reg(reg\_id)}
+\DoxyCodeLine{120     );}
+\DoxyCodeLine{121     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123     \textcolor{comment}{// =========================================================================}}
+\DoxyCodeLine{124     \textcolor{comment}{// get\_msb\_ind}}
+\DoxyCodeLine{125     \textcolor{comment}{// RCX -\/ research register}}
+\DoxyCodeLine{126     \textcolor{comment}{// RAX -\/ return result}}
+\DoxyCodeLine{127     \textcolor{comment}{// create labels mgb\_loop, msb\_finish, msb\_ret\_minus\_1}}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{129     instr = INSTR\_CREATE\_xor(}
+\DoxyCodeLine{130         drcontext,}
+\DoxyCodeLine{131         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{132         opnd\_create\_reg(DR\_REG\_RAX)}
+\DoxyCodeLine{133     );}
+\DoxyCodeLine{134     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{135     instr = INSTR\_CREATE\_bsr(}
+\DoxyCodeLine{136         drcontext,}
+\DoxyCodeLine{137         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{138         opnd\_create\_reg(DR\_REG\_RCX)}
+\DoxyCodeLine{139     );}
+\DoxyCodeLine{140     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{141     instr = INSTR\_CREATE\_mov\_imm(}
+\DoxyCodeLine{142         drcontext,}
+\DoxyCodeLine{143         opnd\_create\_reg(DR\_REG\_RCX),}
+\DoxyCodeLine{144         OPND\_CREATE\_INT64(0x3f)}
+\DoxyCodeLine{145     );}
+\DoxyCodeLine{146     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{147     instr = INSTR\_CREATE\_and(}
+\DoxyCodeLine{148         drcontext,}
+\DoxyCodeLine{149         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{150         opnd\_create\_reg(DR\_REG\_RCX)}
+\DoxyCodeLine{151     );}
+\DoxyCodeLine{152     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{153 }
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155     \textcolor{comment}{// ==============================================================================}}
+\DoxyCodeLine{156     }
+\DoxyCodeLine{157     instr = XINST\_CREATE\_move(}
+\DoxyCodeLine{158         drcontext,}
+\DoxyCodeLine{159         opnd\_create\_reg(DR\_REG\_RCX),}
+\DoxyCodeLine{160         opnd\_create\_reg(DR\_REG\_RAX)}
+\DoxyCodeLine{161     );}
+\DoxyCodeLine{162     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{163     \textcolor{comment}{// answer in RCX}}
+\DoxyCodeLine{164     \textcolor{comment}{// write address into RAX}}
+\DoxyCodeLine{165     \textcolor{keyword}{auto} pos = ind*65;}
+\DoxyCodeLine{166     instr = INSTR\_CREATE\_mov\_imm(}
+\DoxyCodeLine{167         drcontext,}
+\DoxyCodeLine{168         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{169         OPND\_CREATE\_INT64(offset+pos)}
+\DoxyCodeLine{170     );}
+\DoxyCodeLine{171     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{172     instr = INSTR\_CREATE\_add(}
+\DoxyCodeLine{173         drcontext,}
+\DoxyCodeLine{174         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{175         opnd\_create\_reg(DR\_REG\_RCX)}
+\DoxyCodeLine{176     );}
+\DoxyCodeLine{177     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{179     instr = INSTR\_CREATE\_mov\_ld(}
+\DoxyCodeLine{180         drcontext,}
+\DoxyCodeLine{181         opnd\_create\_reg(DR\_REG\_DL),}
+\DoxyCodeLine{182         OPND\_CREATE\_MEM8(DR\_REG\_RAX, 0)}
+\DoxyCodeLine{183     );}
+\DoxyCodeLine{184     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{185     \textcolor{comment}{// add 1}}
+\DoxyCodeLine{186     instr = INSTR\_CREATE\_inc(}
+\DoxyCodeLine{187         drcontext,}
+\DoxyCodeLine{188         opnd\_create\_reg(DR\_REG\_DL)}
+\DoxyCodeLine{189     );}
+\DoxyCodeLine{190     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{191     \textcolor{comment}{// store value}}
+\DoxyCodeLine{192     instr = XINST\_CREATE\_store(}
+\DoxyCodeLine{193         drcontext,}
+\DoxyCodeLine{194         OPND\_CREATE\_MEM8(DR\_REG\_RAX, 0),}
+\DoxyCodeLine{195         opnd\_create\_reg(DR\_REG\_DL)}
+\DoxyCodeLine{196     );}
+\DoxyCodeLine{197     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{198 }
+\DoxyCodeLine{199     \textcolor{comment}{// =========================================================================}}
+\DoxyCodeLine{200     \textcolor{comment}{// occupied RAX for address, RCX for flags, RDX -\/ supportive}}
+\DoxyCodeLine{201     \textcolor{comment}{// read saved flags and store them to reg RCX}}
+\DoxyCodeLine{202     dr\_restore\_reg(}
+\DoxyCodeLine{203         drcontext, bb, where, (reg\_id\_t) DR\_REG\_RCX, SPILL\_SLOT\_2}
+\DoxyCodeLine{204     );}
+\DoxyCodeLine{205     instr = INSTR\_CREATE\_and(}
+\DoxyCodeLine{206         drcontext,}
+\DoxyCodeLine{207         opnd\_create\_reg(DR\_REG\_ECX),}
+\DoxyCodeLine{208         OPND\_CREATE\_INT32((uint32\_t) EFLAGS\_CF)}
+\DoxyCodeLine{209     );}
+\DoxyCodeLine{210     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{211     \textcolor{comment}{// store flag}}
+\DoxyCodeLine{212     \textcolor{keyword}{auto} i = (ind*65+64) \% size;}
+\DoxyCodeLine{213     \textcolor{comment}{// form address}}
+\DoxyCodeLine{214     instr = INSTR\_CREATE\_mov\_imm(}
+\DoxyCodeLine{215         drcontext,}
+\DoxyCodeLine{216         opnd\_create\_reg(DR\_REG\_RAX),}
+\DoxyCodeLine{217         OPND\_CREATE\_INT64(offset)}
+\DoxyCodeLine{218     );}
+\DoxyCodeLine{219     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{220     \textcolor{comment}{// read byte}}
+\DoxyCodeLine{221     instr = INSTR\_CREATE\_mov\_ld(}
+\DoxyCodeLine{222         drcontext,}
+\DoxyCodeLine{223         opnd\_create\_reg(DR\_REG\_DL),}
+\DoxyCodeLine{224         OPND\_CREATE\_MEM8(DR\_REG\_RAX, i)}
+\DoxyCodeLine{225     );}
+\DoxyCodeLine{226     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{227     \textcolor{comment}{// plus CF bit}}
+\DoxyCodeLine{228     instr = INSTR\_CREATE\_add(}
+\DoxyCodeLine{229         drcontext,}
+\DoxyCodeLine{230         opnd\_create\_reg(DR\_REG\_DL),}
+\DoxyCodeLine{231         opnd\_create\_reg(DR\_REG\_CL)}
+\DoxyCodeLine{232     );}
+\DoxyCodeLine{233     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{234     \textcolor{comment}{// store new value}}
+\DoxyCodeLine{235     instr = XINST\_CREATE\_store(}
+\DoxyCodeLine{236         drcontext,}
+\DoxyCodeLine{237         OPND\_CREATE\_MEM8(DR\_REG\_RAX, i),}
+\DoxyCodeLine{238         opnd\_create\_reg(DR\_REG\_DL)}
+\DoxyCodeLine{239     );}
+\DoxyCodeLine{240     instrlist\_meta\_preinsert(bb, where, instr);}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242     \textcolor{comment}{// restore flags and registers}}
+\DoxyCodeLine{243     dr\_restore\_reg(drcontext, bb, where, xdx, SPILL\_SLOT\_6);}
+\DoxyCodeLine{244     dr\_restore\_reg(drcontext, bb, where, xcx, SPILL\_SLOT\_5);}
+\DoxyCodeLine{245     dr\_restore\_reg(drcontext, bb, where, xbx, SPILL\_SLOT\_4);}
+\DoxyCodeLine{246     dr\_restore\_reg(drcontext, bb, where, xax, SPILL\_SLOT\_3);}
+\DoxyCodeLine{247     dr\_restore\_arith\_flags(drcontext, bb, where, SPILL\_SLOT\_2);}
+\DoxyCodeLine{248 \}}
+\DoxyCodeLine{249 }
+\DoxyCodeLine{254 \textcolor{keyword}{class }\mbox{\hyperlink{classTracer}{Tracer}} \{}
+\DoxyCodeLine{255     \mbox{\hyperlink{structTraceArea}{TraceArea}} trace\_area;}
+\DoxyCodeLine{257     std::map<app\_pc, size\_t> pc\_ind\_map;}
+\DoxyCodeLine{259     std::map<reg\_id\_t, size\_t> reg\_ind\_map;}
+\DoxyCodeLine{260 \textcolor{keyword}{public}:}
+\DoxyCodeLine{261     json tracer\_config;}
+\DoxyCodeLine{262     \mbox{\hyperlink{classTracer}{Tracer}}() \{\}}
+\DoxyCodeLine{263 }
+\DoxyCodeLine{265     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classTracer_afc07eaef479ab4f68ebea2baec8b6b3b}{set\_config}}(\mbox{\hyperlink{classConfigurator}{Configurator}} config) \{}
+\DoxyCodeLine{266         std::cout << \textcolor{stringliteral}{"{}setting config to tracer!"{}} << std::endl;}
+\DoxyCodeLine{267         this-\/>tracer\_config = config.\mbox{\hyperlink{classConfigurator_ad54923859a18f257292fca330d5cf215}{getTracerConfig}}();}
+\DoxyCodeLine{268         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{269     \}}
+\DoxyCodeLine{270 }
+\DoxyCodeLine{272     \textcolor{keywordtype}{void} \mbox{\hyperlink{classTracer_ad41b93151174779e6278996a024b6937}{set\_trace\_area}}(\textcolor{keywordtype}{size\_t} start, \textcolor{keywordtype}{size\_t} end) \{}
+\DoxyCodeLine{273         this-\/>trace\_area = \{start, end, end-\/start\};}
+\DoxyCodeLine{274     \}}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{278     \textcolor{keywordtype}{int} \mbox{\hyperlink{classTracer_af5756bea912ded6d7d5f5460796ec34c}{get\_reg\_id}}(reg\_id\_t reg) \{}
+\DoxyCodeLine{279         \textcolor{keyword}{auto} iter = this-\/>reg\_ind\_map.find(reg);}
+\DoxyCodeLine{280         \textcolor{keywordflow}{if} (iter != this-\/>reg\_ind\_map.end()) \{}
+\DoxyCodeLine{281             \textcolor{keywordflow}{return} this-\/>reg\_ind\_map[reg];}
+\DoxyCodeLine{282         \}}
+\DoxyCodeLine{283         this-\/>reg\_ind\_map[reg] = this-\/>reg\_ind\_map.size();}
+\DoxyCodeLine{284         \textcolor{keywordflow}{return} this-\/>reg\_ind\_map[reg];}
+\DoxyCodeLine{285     \}}
+\DoxyCodeLine{286 \textcolor{keyword}{public}:}
+\DoxyCodeLine{296     \textcolor{keywordtype}{void} \mbox{\hyperlink{classTracer_a09d420c495a39a8c71642a20aa2f4495}{traceOverflow}}(\textcolor{keywordtype}{void} *drcontext, \textcolor{keywordtype}{void} *tag, instrlist\_t *bb, instr\_t *instr) \{}
+\DoxyCodeLine{297         \textcolor{keywordflow}{if} (!instr\_num\_dsts(instr)) \{}
+\DoxyCodeLine{298             \textcolor{keywordflow}{return};}
+\DoxyCodeLine{299         \}}
+\DoxyCodeLine{300 }
+\DoxyCodeLine{301         opnd\_t dst = instr\_get\_dst(instr, 0);}
+\DoxyCodeLine{302         \textcolor{keywordflow}{if} (!opnd\_is\_reg(dst)) \{}
+\DoxyCodeLine{303             \textcolor{keywordflow}{return};}
+\DoxyCodeLine{304         \}}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{306         reg\_id\_t dst\_reg = opnd\_get\_reg(dst);}
+\DoxyCodeLine{307         \textcolor{keywordtype}{int} reg\_ind = this-\/>\mbox{\hyperlink{classTracer_af5756bea912ded6d7d5f5460796ec34c}{get\_reg\_id}}(dst\_reg);}
+\DoxyCodeLine{308 }
+\DoxyCodeLine{309         app\_pc instr\_pc = instr\_get\_app\_pc(instr);}
+\DoxyCodeLine{310         \textcolor{comment}{// new instruction? -\/ set index}}
+\DoxyCodeLine{311         \textcolor{keywordflow}{if} (this-\/>pc\_ind\_map.find(instr\_pc) == this-\/>pc\_ind\_map.end()) \{}
+\DoxyCodeLine{312             this-\/>pc\_ind\_map[instr\_pc] = this-\/>pc\_ind\_map.size();}
+\DoxyCodeLine{313         \}}
+\DoxyCodeLine{314         \textcolor{keywordtype}{size\_t} ind = this-\/>pc\_ind\_map[instr\_pc];}
+\DoxyCodeLine{315 }
+\DoxyCodeLine{316         \textcolor{keyword}{auto} * module = dr\_get\_main\_module();}
+\DoxyCodeLine{317         \textcolor{keyword}{auto} pc = module-\/>start;}
+\DoxyCodeLine{318         dr\_free\_module\_data(module);}
+\DoxyCodeLine{319         \textcolor{keywordtype}{size\_t} start\_size\_t = (size\_t) this-\/>trace\_area.start + (\textcolor{keywordtype}{size\_t}) pc;}
+\DoxyCodeLine{320 }
+\DoxyCodeLine{321         instr\_t *nxt = instr\_get\_next(instr);}
+\DoxyCodeLine{322         \textcolor{keywordflow}{if} (this-\/>tracer\_config[\textcolor{stringliteral}{"{}use\_asm"{}}]) \{}
+\DoxyCodeLine{323             \textcolor{keywordflow}{if} (this-\/>tracer\_config[\textcolor{stringliteral}{"{}debug"{}}]) \{}
+\DoxyCodeLine{324                 main\_logger.log\_debug(\textcolor{stringliteral}{"{}using inline-\/asm instrumentation!"{}});}
+\DoxyCodeLine{325                 dr\_printf(\textcolor{stringliteral}{"{}[DEBUG] : using inline-\/asm instrumentation!\(\backslash\)n"{}});}
+\DoxyCodeLine{326             \}}
+\DoxyCodeLine{327 }
+\DoxyCodeLine{328             \mbox{\hyperlink{Tracer_8h_ac543296ab3c51210dd61838f989023a8}{insert\_tracing}}(drcontext, tag, bb, nxt, }
+\DoxyCodeLine{329                           (\textcolor{keywordtype}{char}*) start\_size\_t, this-\/>trace\_area.size, ind, dst\_reg);}
+\DoxyCodeLine{330         \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{331             \textcolor{keywordflow}{if} (this-\/>tracer\_config[\textcolor{stringliteral}{"{}debug"{}}]) \{}
+\DoxyCodeLine{332                 main\_logger.log\_debug(\textcolor{stringliteral}{"{}using clean\_call instrumentation!"{}});}
+\DoxyCodeLine{333                 dr\_printf(\textcolor{stringliteral}{"{}[DEBUG] : using clean\_call instrumentation!\(\backslash\)n"{}});}
+\DoxyCodeLine{334             \}}
+\DoxyCodeLine{335             }
+\DoxyCodeLine{336             dr\_insert\_clean\_call\_ex(drcontext, }
+\DoxyCodeLine{337                                     bb, nxt, }
+\DoxyCodeLine{338                                     (\textcolor{keywordtype}{void} *) \mbox{\hyperlink{Tracer_8h_a50d52849f73aeaddc776d9de6fbeac5a}{trace\_overflow}}, }
+\DoxyCodeLine{339                                     (dr\_cleancall\_save\_t) (DR\_CLEANCALL\_READS\_APP\_CONTEXT | DR\_CLEANCALL\_MULTIPATH),}
+\DoxyCodeLine{340                                     4, }
+\DoxyCodeLine{341                                     OPND\_CREATE\_INTPTR(start\_size\_t),}
+\DoxyCodeLine{342                                     OPND\_CREATE\_INT32(this-\/>trace\_area.size),}
+\DoxyCodeLine{343                                     OPND\_CREATE\_INT32(ind),}
+\DoxyCodeLine{344                                     OPND\_CREATE\_INT32(dst\_reg));}
+\DoxyCodeLine{345         \}}
+\DoxyCodeLine{346         \textcolor{keywordflow}{if} (this-\/>tracer\_config[\textcolor{stringliteral}{"{}debug"{}}]) \{}
+\DoxyCodeLine{347             main\_logger.log\_debug(\textcolor{stringliteral}{"{}add number: \{\} | add index: \{\} | thread id: \{\}"{}}, }
+\DoxyCodeLine{348                                   this-\/>pc\_ind\_map.size(), ind, \mbox{\hyperlink{funcs_8h_aba532940df77bb2847dcabd25caf5b59}{get\_thread\_id}}());}
+\DoxyCodeLine{349             dr\_printf(\textcolor{stringliteral}{"{}[DEBUG] : add number: \%d | add index: \%d | thread id: \%s\(\backslash\)n"{}}, }
+\DoxyCodeLine{350                       this-\/>pc\_ind\_map.size(), ind, \mbox{\hyperlink{funcs_8h_aba532940df77bb2847dcabd25caf5b59}{get\_thread\_id}}().c\_str());}
+\DoxyCodeLine{351         \}}
+\DoxyCodeLine{352     \}}
+\DoxyCodeLine{353 \};}
+\DoxyCodeLine{354 }
+\DoxyCodeLine{355 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// MY\_TRACER\_header}}
+
+\end{DoxyCode}

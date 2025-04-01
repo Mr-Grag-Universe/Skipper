@@ -1,0 +1,206 @@
+\begin{theindex}
+
+  \item {/home/debian/Skipper/src/client.cpp}, \hyperpage{27}
+  \item {/home/debian/Skipper/src/include/classes/Config.h}, 
+		\hyperpage{28}, \hyperpage{30}
+  \item {/home/debian/Skipper/src/include/classes/Guarder.h}, 
+		\hyperpage{32}, \hyperpage{34}
+  \item {/home/debian/Skipper/src/include/classes/Logger.h}, 
+		\hyperpage{35, 36}
+  \item {/home/debian/Skipper/src/include/classes/Options.h}, 
+		\hyperpage{38, 39}
+  \item {/home/debian/Skipper/src/include/classes/Tracer.h}, 
+		\hyperpage{43}, \hyperpage{46}
+  \item {/home/debian/Skipper/src/include/debug.h}, \hyperpage{50}, 
+		\hyperpage{52}
+  \item {/home/debian/Skipper/src/include/func\_bounds.h}, 
+		\hyperpage{53}, \hyperpage{55}
+  \item {/home/debian/Skipper/src/include/funcs.h}, \hyperpage{57}, 
+		\hyperpage{60}
+  \item {/home/debian/Skipper/src/include/get\_all\_symbols.h}, 
+		\hyperpage{61}, \hyperpage{63}
+  \item {/home/debian/Skipper/src/include/types.h}, \hyperpage{65, 66}
+  \item {/home/debian/Skipper/src/loggers.h}, \hyperpage{67, 68}
+
+  \indexspace
+
+  \item {address\_in\_code\_segment}
+    \subitem {client.cpp}, \hyperpage{28}
+
+  \indexspace
+
+  \item {clamp\_value}
+    \subitem {Option$<$ T $>$}, \hyperpage{19}
+  \item {clear\_value}
+    \subitem {Option$<$ T $>$}, \hyperpage{19}
+  \item {client.cpp}
+    \subitem {address\_in\_code\_segment}, \hyperpage{28}
+    \subitem {dr\_client\_main}, \hyperpage{28}
+  \item {CodeSegmentDescriber}, \hyperpage{7}
+  \item {config}
+    \subitem {Configurator}, \hyperpage{8, 9}
+  \item {Configurator}, \hyperpage{7}
+    \subitem {config}, \hyperpage{8, 9}
+    \subitem {debugModeEnabled}, \hyperpage{9}
+    \subitem {get\_modules\_info}, \hyperpage{9}
+    \subitem {get\_modules\_names}, \hyperpage{9}
+    \subitem {getFuzzConfig}, \hyperpage{10}
+    \subitem {getFuzzingCorpusPath}, \hyperpage{10}
+    \subitem {getInspectionFunctions}, \hyperpage{10}
+    \subitem {getInspectOpcodes}, \hyperpage{10}
+    \subitem {getLogFuzzingPath}, \hyperpage{11}
+    \subitem {getLogSymbolsPath}, \hyperpage{11}
+    \subitem {getTracerConfig}, \hyperpage{11}
+    \subitem {load\_config}, \hyperpage{11}
+    \subitem {logFuzzingEnabled}, \hyperpage{12}
+    \subitem {logSymbolsEnabled}, \hyperpage{12}
+    \subitem {use\_default\_bounds}, \hyperpage{12}
+  \item {convert\_from\_string}
+    \subitem {Option$<$ T $>$}, \hyperpage{19--21}
+
+  \indexspace
+
+  \item {debug.h}
+    \subitem {print\_module\_data}, \hyperpage{51}
+  \item {debugModeEnabled}
+    \subitem {Configurator}, \hyperpage{9}
+  \item {dr\_client\_main}
+    \subitem {client.cpp}, \hyperpage{28}
+
+  \indexspace
+
+  \item {func\_bounds.h}
+    \subitem {get\_func\_bounds}, \hyperpage{54}
+  \item {FuncConfig}, \hyperpage{13}
+  \item {funcs.h}
+    \subitem {get\_all\_modules}, \hyperpage{58}
+    \subitem {get\_modules\_names}, \hyperpage{58}
+    \subitem {get\_symbol\_offset}, \hyperpage{59}
+    \subitem {get\_thread\_id}, \hyperpage{59}
+    \subitem {int\_to\_hex}, \hyperpage{59}
+
+  \indexspace
+
+  \item {get\_all\_modules}
+    \subitem {funcs.h}, \hyperpage{58}
+  \item {get\_all\_symbols.h}
+    \subitem {get\_all\_symbols\_with\_offsets}, \hyperpage{63}
+    \subitem {get\_all\_symbols\_with\_offsets\_callback}, 
+		\hyperpage{63}
+  \item {get\_all\_symbols\_with\_offsets}
+    \subitem {get\_all\_symbols.h}, \hyperpage{63}
+  \item {get\_all\_symbols\_with\_offsets\_callback}
+    \subitem {get\_all\_symbols.h}, \hyperpage{63}
+  \item {get\_func\_bounds}
+    \subitem {func\_bounds.h}, \hyperpage{54}
+  \item {get\_modules\_info}
+    \subitem {Configurator}, \hyperpage{9}
+  \item {get\_modules\_names}
+    \subitem {Configurator}, \hyperpage{9}
+    \subitem {funcs.h}, \hyperpage{58}
+  \item {get\_symbol\_offset}
+    \subitem {funcs.h}, \hyperpage{59}
+  \item {get\_thread\_id}
+    \subitem {funcs.h}, \hyperpage{59}
+  \item {get\_value\_str}
+    \subitem {Option$<$ T $>$}, \hyperpage{21}
+  \item {getFuzzConfig}
+    \subitem {Configurator}, \hyperpage{10}
+  \item {getFuzzingCorpusPath}
+    \subitem {Configurator}, \hyperpage{10}
+  \item {getInspectionFunctions}
+    \subitem {Configurator}, \hyperpage{10}
+  \item {getInspectOpcodes}
+    \subitem {Configurator}, \hyperpage{10}
+  \item {getLogFuzzingPath}
+    \subitem {Configurator}, \hyperpage{11}
+  \item {getLogSymbolsPath}
+    \subitem {Configurator}, \hyperpage{11}
+  \item {getTracerConfig}
+    \subitem {Configurator}, \hyperpage{11}
+  \item {Guarder}, \hyperpage{13}
+    \subitem {guards\_opened}, \hyperpage{14}
+    \subitem {set\_global\_guards}, \hyperpage{14}
+    \subitem {throw\_instr}, \hyperpage{14}
+  \item {guards\_opened}
+    \subitem {Guarder}, \hyperpage{14}
+
+  \indexspace
+
+  \item {insert\_tracing}
+    \subitem {Tracer.h}, \hyperpage{45}
+  \item {int\_to\_hex}
+    \subitem {funcs.h}, \hyperpage{59}
+
+  \indexspace
+
+  \item {load\_config}
+    \subitem {Configurator}, \hyperpage{11}
+  \item {log}
+    \subitem {Logger}, \hyperpage{16}
+  \item {log\_program\_params}
+    \subitem {Logger}, \hyperpage{16}
+  \item {logFuzzingEnabled}
+    \subitem {Configurator}, \hyperpage{12}
+  \item {Logger}, \hyperpage{15}
+    \subitem {log}, \hyperpage{16}
+    \subitem {log\_program\_params}, \hyperpage{16}
+    \subitem {set\_log\_file}, \hyperpage{16}
+    \subitem {start\_logging}, \hyperpage{17}
+  \item {logSymbolsEnabled}
+    \subitem {Configurator}, \hyperpage{12}
+
+  \indexspace
+
+  \item {ModuleInfo}, \hyperpage{17}
+
+  \indexspace
+
+  \item {Option$<$ T $>$}, \hyperpage{18}
+    \subitem {clamp\_value}, \hyperpage{19}
+    \subitem {clear\_value}, \hyperpage{19}
+    \subitem {convert\_from\_string}, \hyperpage{19--21}
+    \subitem {get\_value\_str}, \hyperpage{21}
+    \subitem {option\_takes\_arg}, \hyperpage{21}
+  \item {option\_takes\_arg}
+    \subitem {Option$<$ T $>$}, \hyperpage{21}
+
+  \indexspace
+
+  \item {Parser}, \hyperpage{22}
+  \item {print\_module\_data}
+    \subitem {debug.h}, \hyperpage{51}
+
+  \indexspace
+
+  \item {set\_global\_guards}
+    \subitem {Guarder}, \hyperpage{14}
+  \item {set\_log\_file}
+    \subitem {Logger}, \hyperpage{16}
+  \item {start\_logging}
+    \subitem {Logger}, \hyperpage{17}
+  \item {sym\_info\_t}, \hyperpage{22}
+
+  \indexspace
+
+  \item {thread\_data}, \hyperpage{23}
+  \item {throw\_instr}
+    \subitem {Guarder}, \hyperpage{14}
+  \item {trace\_overflow}
+    \subitem {Tracer.h}, \hyperpage{46}
+  \item {TraceArea}, \hyperpage{23}
+  \item {traceOverflow}
+    \subitem {Tracer}, \hyperpage{24}
+  \item {Tracer}, \hyperpage{24}
+    \subitem {traceOverflow}, \hyperpage{24}
+  \item {Tracer.h}
+    \subitem {insert\_tracing}, \hyperpage{45}
+    \subitem {trace\_overflow}, \hyperpage{46}
+
+  \indexspace
+
+  \item {UnitypeOption}, \hyperpage{25}
+  \item {use\_default\_bounds}
+    \subitem {Configurator}, \hyperpage{12}
+
+\end{theindex}

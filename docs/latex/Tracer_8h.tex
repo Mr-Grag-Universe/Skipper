@@ -1,0 +1,118 @@
+\hypertarget{Tracer_8h}{}\doxysection{/home/debian/\+Skipper/src/include/classes/\+Tracer.h File Reference}
+\label{Tracer_8h}\index{/home/debian/Skipper/src/include/classes/Tracer.h@{/home/debian/Skipper/src/include/classes/Tracer.h}}
+
+
+\mbox{\hyperlink{classTracer}{Tracer}} class description.  
+
+
+{\ttfamily \#include \char`\"{}Config.\+h\char`\"{}}\newline
+Include dependency graph for Tracer.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Tracer_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=203pt]{Tracer_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structCodeSegmentDescriber}{Code\+Segment\+Describer}}
+\begin{DoxyCompactList}\small\item\em just pair-\/structure \texorpdfstring{$<$}{<}code segment start offset, code segment end offset\texorpdfstring{$>$}{>} \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structTraceArea}{Trace\+Area}}
+\begin{DoxyCompactList}\small\item\em extra-\/counters section (memory area for extra trace for libfuzzer), contains bounds and size. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classTracer}{Tracer}}
+\begin{DoxyCompactList}\small\item\em Class, that inserts tracing function in basic blocks. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{Tracer_8h_a123d1a69b9cc1c4ef9d6cfa21c8660e5}\label{Tracer_8h_a123d1a69b9cc1c4ef9d6cfa21c8660e5}} 
+int {\bfseries get\+\_\+msb\+\_\+ind} (uint x)
+\begin{DoxyCompactList}\small\item\em gets most signifant bit of {\ttfamily x} digit \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{Tracer_8h_a50d52849f73aeaddc776d9de6fbeac5a}{trace\+\_\+overflow}} (int $\ast$offset\+\_\+int\+\_\+ptr, uint32\+\_\+t size, uint32\+\_\+t ind, uint32\+\_\+t reg\+\_\+id)
+\begin{DoxyCompactList}\small\item\em trace function for clean-\/call \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{Tracer_8h_ac543296ab3c51210dd61838f989023a8}{insert\+\_\+tracing}} (void $\ast$drcontext, void $\ast$tag, instrlist\+\_\+t $\ast$bb, instr\+\_\+t $\ast$where, char $\ast$offset, uint32\+\_\+t size, uint32\+\_\+t ind, uint32\+\_\+t reg\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Function for inline ASM insertion. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\mbox{\hyperlink{classTracer}{Tracer}} class description. 
+
+\begin{DoxyAuthor}{Author}
+Stepan Kafanov 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2025-\/03-\/31
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (c) 2025 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Tracer_8h_ac543296ab3c51210dd61838f989023a8}\label{Tracer_8h_ac543296ab3c51210dd61838f989023a8}} 
+\index{Tracer.h@{Tracer.h}!insert\_tracing@{insert\_tracing}}
+\index{insert\_tracing@{insert\_tracing}!Tracer.h@{Tracer.h}}
+\doxysubsubsection{\texorpdfstring{insert\_tracing()}{insert\_tracing()}}
+{\footnotesize\ttfamily void insert\+\_\+tracing (\begin{DoxyParamCaption}\item[{void $\ast$}]{drcontext,  }\item[{void $\ast$}]{tag,  }\item[{instrlist\+\_\+t $\ast$}]{bb,  }\item[{instr\+\_\+t $\ast$}]{where,  }\item[{char $\ast$}]{offset,  }\item[{uint32\+\_\+t}]{size,  }\item[{uint32\+\_\+t}]{ind,  }\item[{uint32\+\_\+t}]{reg\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+Function for inline ASM insertion. 
+
+Inserts ASM instraction directly before tracing ASM-\/instruction. Functional is the same as in trace\+\_\+overflow function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em drcontext} & -\/ DR context \\
+\hline
+{\em tag} & -\/ DR tag \\
+\hline
+{\em bb} & -\/ current basic block \\
+\hline
+{\em where} & -\/ current ASM instruction \\
+\hline
+{\em offset} & -\/ trace-\/memory address \\
+\hline
+{\em size} & -\/ trace-\/memory size \\
+\hline
+{\em ind} & -\/ tracing instruction\textquotesingle{}s index \\
+\hline
+{\em reg\+\_\+id} & -\/ register ID in Dynamo\+RIO \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Tracer_8h_a50d52849f73aeaddc776d9de6fbeac5a}\label{Tracer_8h_a50d52849f73aeaddc776d9de6fbeac5a}} 
+\index{Tracer.h@{Tracer.h}!trace\_overflow@{trace\_overflow}}
+\index{trace\_overflow@{trace\_overflow}!Tracer.h@{Tracer.h}}
+\doxysubsubsection{\texorpdfstring{trace\_overflow()}{trace\_overflow()}}
+{\footnotesize\ttfamily int trace\+\_\+overflow (\begin{DoxyParamCaption}\item[{int $\ast$}]{offset\+\_\+int\+\_\+ptr,  }\item[{uint32\+\_\+t}]{size,  }\item[{uint32\+\_\+t}]{ind,  }\item[{uint32\+\_\+t}]{reg\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+trace function for clean-\/call 
+
+This function will be called before each instruction client is tracing. It uses buffer of size 65 bytes to trace MSB (most significant bit) of tracing instruction operand and current carry flag from flag register.
+
+
+\begin{DoxyParams}{Parameters}
+{\em offset\+\_\+int\+\_\+ptr} & -\/ trace-\/memory address \\
+\hline
+{\em size} & -\/ trace-\/memory size \\
+\hline
+{\em ind} & -\/ tracing instruction\textquotesingle{}s index \\
+\hline
+{\em reg\+\_\+id} & -\/ register ID in Dynamo\+RIO \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 -\/ error code 
+\end{DoxyReturn}

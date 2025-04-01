@@ -1,0 +1,140 @@
+\hypertarget{func__bounds_8h_source}{}\doxysection{func\+\_\+bounds.\+h}
+\label{func__bounds_8h_source}\index{/home/debian/Skipper/src/include/func\_bounds.h@{/home/debian/Skipper/src/include/func\_bounds.h}}
+\mbox{\hyperlink{func__bounds_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef FIND\_FUNC\_BOUNDS\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define FIND\_FUNC\_BOUNDS\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <algorithm>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <set>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include "{}dr\_tools.h"{}}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include "{}drsyms.h"{}}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include "{}drmgr.h"{}}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{get__all__symbols_8h}{get\_all\_symbols.h}}"{}}}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{types_8h}{types.h}}"{}}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#include "{}../loggers.h"{}}}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 }
+\DoxyCodeLine{28 \textcolor{keywordtype}{bool} \mbox{\hyperlink{func__bounds_8h_a52ed3c3433f3e4dc32e5901b613aea70}{get\_func\_bounds\_callback}}(drsym\_info\_t *info, drsym\_error\_t status, \textcolor{keywordtype}{void} *data) \{}
+\DoxyCodeLine{29     \textcolor{keywordflow}{if} (info != NULL \&\& data != NULL) \{}
+\DoxyCodeLine{30         \textcolor{comment}{// if (status != DRSYM\_SUCCESS) \{}}
+\DoxyCodeLine{31         \textcolor{comment}{//     ("{}line shit is not success!\(\backslash\)n"{});}}
+\DoxyCodeLine{32         \textcolor{comment}{// \}}}
+\DoxyCodeLine{33         \textcolor{keyword}{auto} * d = (std::vector<std::pair<size\_t, std::string>> *) data;}
+\DoxyCodeLine{34         d-\/>push\_back(std::make\_pair(info-\/>start\_offs, info-\/>name));}
+\DoxyCodeLine{35     \}}
+\DoxyCodeLine{36     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{37 \}}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{56 std::map<std::string, std::pair<generic\_func\_t, generic\_func\_t>> }
+\DoxyCodeLine{57 \mbox{\hyperlink{func__bounds_8h_a43a94a242aa10bdd27fb41f4bce00cf2}{get\_func\_bounds}}(std::map<std::string, FuncConfig> inspect\_funcs, \textcolor{keywordtype}{bool} use\_pattern, \textcolor{keywordtype}{bool} use\_default\_bounds) }
+\DoxyCodeLine{58 \{}
+\DoxyCodeLine{59     \textcolor{keywordflow}{if} (inspect\_funcs.empty()) \{}
+\DoxyCodeLine{60         main\_logger.log\_error(\textcolor{stringliteral}{"{}empty instr function map!"{}});}
+\DoxyCodeLine{61         dr\_printf(\textcolor{stringliteral}{"{}[ERROR] : empty instr function map!\(\backslash\)n"{}});}
+\DoxyCodeLine{62         \textcolor{keywordflow}{throw} std::invalid\_argument(\textcolor{stringliteral}{"{}[ERROR] : empty instr function map!"{}});}
+\DoxyCodeLine{63     \}}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65     std::set<std::pair<std::string, std::string>> module\_path;}
+\DoxyCodeLine{66     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& func : inspect\_funcs) \{}
+\DoxyCodeLine{67         module\_path.insert(std::make\_pair(func.second.module\_name, func.second.module\_path));}
+\DoxyCodeLine{68     \}}
+\DoxyCodeLine{69     }
+\DoxyCodeLine{70     \textcolor{comment}{// with module offsets}}
+\DoxyCodeLine{71     std::map<std::string, generic\_func\_t> symbols;}
+\DoxyCodeLine{72     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& m\_p : module\_path) \{}
+\DoxyCodeLine{73         \textcolor{keyword}{auto} symbols\_offests = \mbox{\hyperlink{get__all__symbols_8h_ac8449904f330e4bb540b01860965dfd1}{get\_all\_symbols\_with\_offsets}}(m\_p.first, m\_p.second, use\_pattern);}
+\DoxyCodeLine{74         symbols.merge(symbols\_offests);}
+\DoxyCodeLine{75     \}}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77     std::vector <std::pair<size\_t, std::string>> symbols\_vector;}
+\DoxyCodeLine{78     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& symbol : symbols) \{}
+\DoxyCodeLine{79         symbols\_vector.push\_back(\{(size\_t) symbol.second, symbol.first\});}
+\DoxyCodeLine{80     \}}
+\DoxyCodeLine{81     std::sort(symbols\_vector.begin(), symbols\_vector.end());}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83     std::map<std::string, std::pair<generic\_func\_t, generic\_func\_t>> res;}
+\DoxyCodeLine{84     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& func : inspect\_funcs) \{}
+\DoxyCodeLine{85         std::string func\_name = func.first;}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87         \textcolor{keyword}{auto} iter = std::find\_if(symbols\_vector.begin(), symbols\_vector.end(), [\&func\_name](\textcolor{keyword}{const} \textcolor{keyword}{auto} x)\{}
+\DoxyCodeLine{88             return func\_name == std::string(x.second);}
+\DoxyCodeLine{89         \});}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91         \textcolor{keywordflow}{if} ((iter == symbols\_vector.end()) \&\& use\_pattern) \{}
+\DoxyCodeLine{92             main\_logger.log\_debug(\textcolor{stringliteral}{"{}second try..."{}});}
+\DoxyCodeLine{93             iter = std::find\_if(}
+\DoxyCodeLine{94                 symbols\_vector.begin(), symbols\_vector.end(), }
+\DoxyCodeLine{95                 [\&func\_name](\textcolor{keyword}{const} \textcolor{keyword}{auto} x)\{}
+\DoxyCodeLine{96                     return std::string(x.second).find(func\_name) != std::string::npos;}
+\DoxyCodeLine{97                 \});}
+\DoxyCodeLine{98         \}}
+\DoxyCodeLine{99         main\_logger.log\_debug(\textcolor{stringliteral}{"{}searching complete!"{}});}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101         \textcolor{keywordflow}{if} (iter == symbols\_vector.end()) \{}
+\DoxyCodeLine{102             main\_logger.log\_debug(\textcolor{stringliteral}{"{}cannot find such func\_name =("{}});}
+\DoxyCodeLine{103             \textcolor{keywordtype}{char} message[1024];}
+\DoxyCodeLine{104             main\_logger.log\_debug(\textcolor{stringliteral}{"{}message: there is not func name <\{\}> here"{}}, func\_name);}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{106             std::string answer;}
+\DoxyCodeLine{107             \textcolor{keywordtype}{size\_t} addr = 0;}
+\DoxyCodeLine{108             \textcolor{keyword}{auto} default\_address = func.second.default\_address;}
+\DoxyCodeLine{109             \textcolor{keywordflow}{if} (default\_address.first \&\& default\_address.first <= default\_address.second) \{}
+\DoxyCodeLine{110                 \textcolor{keywordflow}{if} (use\_default\_bounds) \{}
+\DoxyCodeLine{111                     res[func\_name] = std::make\_pair((generic\_func\_t) default\_address.first, }
+\DoxyCodeLine{112                                                     (generic\_func\_t) default\_address.second);}
+\DoxyCodeLine{113                     \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{114                 \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{115                     main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}do you want to use default\_address?[y/n] "{}});}
+\DoxyCodeLine{116                     dr\_printf(\textcolor{stringliteral}{"{}[CONTROLE] : do you want to use default\_address?[y/n] "{}});}
+\DoxyCodeLine{117                     std::cin >> answer;}
+\DoxyCodeLine{118                     main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}user answer: "{}}, answer);}
+\DoxyCodeLine{119                     \textcolor{keywordflow}{if} (answer == \textcolor{stringliteral}{"{}y"{}} || answer == \textcolor{stringliteral}{"{}yes"{}}) \{}
+\DoxyCodeLine{120                         res[func\_name] = std::make\_pair(}
+\DoxyCodeLine{121                                                             (generic\_func\_t) default\_address.first, }
+\DoxyCodeLine{122                                                             (generic\_func\_t) default\_address.second);}
+\DoxyCodeLine{123                         \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{124                     \}}
+\DoxyCodeLine{125                 \}}
+\DoxyCodeLine{126             \}}
+\DoxyCodeLine{127             \{}
+\DoxyCodeLine{128                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}do you want to enter address?[y/n] "{}});}
+\DoxyCodeLine{129                 dr\_printf(\textcolor{stringliteral}{"{}[CONTROLE] : do you want to enter address?[y/n] "{}});}
+\DoxyCodeLine{130                 std::cin >> answer;}
+\DoxyCodeLine{131                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}user answer: "{}}, answer);}
+\DoxyCodeLine{132                 \textcolor{keywordflow}{if} (answer == \textcolor{stringliteral}{"{}n"{}} || answer == \textcolor{stringliteral}{"{}no"{}}) \{}
+\DoxyCodeLine{133                     res[func\_name] = std::make\_pair((generic\_func\_t)0, (generic\_func\_t)0);}
+\DoxyCodeLine{134                     \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{135                 \}}
+\DoxyCodeLine{136                 \textcolor{keywordtype}{size\_t} start\{\}, stop\{\};}
+\DoxyCodeLine{137                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}enter start address: "{}});}
+\DoxyCodeLine{138                 dr\_printf(\textcolor{stringliteral}{"{}[CONTROLE] : enter start address: "{}});}
+\DoxyCodeLine{139                 std::cin >> start;}
+\DoxyCodeLine{140                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}user answer: "{}}, start);}
+\DoxyCodeLine{141                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}enter stop address: "{}});}
+\DoxyCodeLine{142                 dr\_printf(\textcolor{stringliteral}{"{}[CONTROLE] : enter stop address: "{}});}
+\DoxyCodeLine{143                 std::cin >> stop;}
+\DoxyCodeLine{144                 main\_logger.log(\textcolor{stringliteral}{"{}CONTROLE"{}}, \textcolor{stringliteral}{"{}user answer: "{}}, stop);}
+\DoxyCodeLine{145                 res[func\_name] = std::make\_pair((generic\_func\_t)start, (generic\_func\_t)stop);}
+\DoxyCodeLine{146                 \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{147             \}}
+\DoxyCodeLine{148         \}}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150         \textcolor{keywordflow}{if} (iter + 1 != symbols\_vector.end()) \{}
+\DoxyCodeLine{151             main\_logger.log\_debug(\textcolor{stringliteral}{"{}find complete!\(\backslash\)nnext\_name: \{\}"{}}, (iter+1)-\/>second);}
+\DoxyCodeLine{152             main\_logger.log\_debug(\textcolor{stringliteral}{"{}segment: \{\} -\/ \{\}"{}}, iter-\/>first, (iter+1)-\/>first);}
+\DoxyCodeLine{153             res[func\_name] = std::make\_pair((generic\_func\_t)iter-\/>first, }
+\DoxyCodeLine{154                                             (generic\_func\_t)(iter+1)-\/>first);}
+\DoxyCodeLine{155         \}}
+\DoxyCodeLine{156     \}}
+\DoxyCodeLine{157     }
+\DoxyCodeLine{158     \textcolor{keywordflow}{return} res;}
+\DoxyCodeLine{159 \}}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{161 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// FIND\_FUNC\_BOUNDS\_header}}
+
+\end{DoxyCode}

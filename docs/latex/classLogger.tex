@@ -1,0 +1,139 @@
+\hypertarget{classLogger}{}\doxysection{Logger Class Reference}
+\label{classLogger}\index{Logger@{Logger}}
+
+
+\mbox{\hyperlink{classLogger}{Logger}} class.  
+
+
+
+
+{\ttfamily \#include $<$Logger.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classLogger_af525a3e6518213dcc81d9e4b233ac667}\label{classLogger_af525a3e6518213dcc81d9e4b233ac667}} 
+{\bfseries Logger} (const std\+::string \&out\+\_\+file)
+\item 
+void \mbox{\hyperlink{classLogger_a3b845167143b7125e8a9a5a6b2ff3721}{set\+\_\+log\+\_\+file}} (const std\+::string \&new\+\_\+out\+\_\+file)
+\begin{DoxyCompactList}\small\item\em Set the file to logs collection. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classLogger_aee99e91dd45fde201f4805bfdafb24ca}{start\+\_\+logging}} (std\+::string new\+\_\+out\+\_\+file=\char`\"{}\char`\"{}, bool use\+\_\+tid=false)
+\begin{DoxyCompactList}\small\item\em Prepare logger for working. Opens log-\/file descriptor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_acaef6968daa2de42871e41eca2dc8ffb}\label{classLogger_acaef6968daa2de42871e41eca2dc8ffb}} 
+void {\bfseries stop\+\_\+logging} ()
+\begin{DoxyCompactList}\small\item\em Close file descriptor / stream. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{classLogger_a25971a5cd8c2b8ca76aa74765c2316e4}{log}} (std\+::string tag, const std\+::string \&format, Args... args)
+\begin{DoxyCompactList}\small\item\em arbitrary log function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_ae93ad1512ee556c5edb291b8bd5b342c}\label{classLogger_ae93ad1512ee556c5edb291b8bd5b342c}} 
+{\footnotesize template$<$typename T , typename... Args$>$ }\\void {\bfseries format\+String} (std\+::ostringstream \&oss, const std\+::string \&format, T value, Args... args)
+\item 
+\mbox{\Hypertarget{classLogger_a41914d58f38fec7bb5939dc77deea82b}\label{classLogger_a41914d58f38fec7bb5939dc77deea82b}} 
+void {\bfseries format\+String} (std\+::ostringstream \&oss, const std\+::string \&format)
+\item 
+\mbox{\Hypertarget{classLogger_a712896b841db5b434986ecfb0fe5bfbc}\label{classLogger_a712896b841db5b434986ecfb0fe5bfbc}} 
+bool {\bfseries is\+\_\+open} () const
+\begin{DoxyCompactList}\small\item\em checks whether logging stream is opened or not \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classLogger_af9a9f9cc826507a61fdd9b90bb6419dd}{log\+\_\+program\+\_\+params}} ()
+\begin{DoxyCompactList}\small\item\em Logs info about client program and passed args\+: path, number of arguments (argc), arguments from argv. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_a788b889200f1c91e710e7e1ea9aa2650}\label{classLogger_a788b889200f1c91e710e7e1ea9aa2650}} 
+void {\bfseries log\+\_\+line} ()
+\item 
+\mbox{\Hypertarget{classLogger_a3600fa7ddd6b7f45d41e75c8bad041c0}\label{classLogger_a3600fa7ddd6b7f45d41e75c8bad041c0}} 
+{\footnotesize template$<$typename... Args$>$ }\\void {\bfseries log\+\_\+debug} (const std\+::string \&format, Args... args)
+\begin{DoxyCompactList}\small\item\em Call this-\/\texorpdfstring{$>$}{>}log method with {\ttfamily tag = \char`\"{}\+DEBUG\char`\"{}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_aa16a3c86ee23870315a29916bb9a9b9d}\label{classLogger_aa16a3c86ee23870315a29916bb9a9b9d}} 
+{\footnotesize template$<$typename... Args$>$ }\\void {\bfseries log\+\_\+info} (const std\+::string \&format, Args... args)
+\begin{DoxyCompactList}\small\item\em Call this-\/\texorpdfstring{$>$}{>}log method with {\ttfamily tag = \char`\"{}\+INFO\char`\"{}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_ae2e32f1589900387457c7d403d1bc1bb}\label{classLogger_ae2e32f1589900387457c7d403d1bc1bb}} 
+{\footnotesize template$<$typename... Args$>$ }\\void {\bfseries log\+\_\+error} (const std\+::string \&format, Args... args)
+\begin{DoxyCompactList}\small\item\em Call this-\/\texorpdfstring{$>$}{>}log method with {\ttfamily tag = \char`\"{}\+ERROR\char`\"{}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_a350ba39db669ebffc5b68f77003c684c}\label{classLogger_a350ba39db669ebffc5b68f77003c684c}} 
+{\footnotesize template$<$typename... Args$>$ }\\void {\bfseries log\+\_\+warning} (const std\+::string \&format, Args... args)
+\begin{DoxyCompactList}\small\item\em Call this-\/\texorpdfstring{$>$}{>}log method with {\ttfamily tag = \char`\"{}\+WARNING\char`\"{}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classLogger_afb27958401e74cd873f09c6eff6f784f}\label{classLogger_afb27958401e74cd873f09c6eff6f784f}} 
+void {\bfseries log\+\_\+modules} ()
+\begin{DoxyCompactList}\small\item\em Logs all visible by DR modules. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\mbox{\hyperlink{classLogger}{Logger}} class. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classLogger_a25971a5cd8c2b8ca76aa74765c2316e4}\label{classLogger_a25971a5cd8c2b8ca76aa74765c2316e4}} 
+\index{Logger@{Logger}!log@{log}}
+\index{log@{log}!Logger@{Logger}}
+\doxysubsubsection{\texorpdfstring{log()}{log()}}
+{\footnotesize\ttfamily template$<$typename... Args$>$ \\
+void Logger\+::log (\begin{DoxyParamCaption}\item[{std\+::string}]{tag,  }\item[{const std\+::string \&}]{format,  }\item[{Args...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+arbitrary log function 
+
+apply args to \textquotesingle{}\{\}\textquotesingle{} inside passed message string and write it into log-\/file with passed {\ttfamily tag}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Args} & -\/ args for \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em tag} & -\/ tag of message. message will be like \char`\"{}\mbox{[}tag\mbox{]} \+: message\char`\"{} \\
+\hline
+{\em format} & -\/ message string with \textquotesingle{}\{\}\textquotesingle{} to insert passed args \\
+\hline
+{\em args} & -\/ agrs to insert into format message string \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classLogger_af9a9f9cc826507a61fdd9b90bb6419dd}\label{classLogger_af9a9f9cc826507a61fdd9b90bb6419dd}} 
+\index{Logger@{Logger}!log\_program\_params@{log\_program\_params}}
+\index{log\_program\_params@{log\_program\_params}!Logger@{Logger}}
+\doxysubsubsection{\texorpdfstring{log\_program\_params()}{log\_program\_params()}}
+{\footnotesize\ttfamily bool Logger\+::log\+\_\+program\+\_\+params (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Logs info about client program and passed args\+: path, number of arguments (argc), arguments from argv. 
+
+\begin{DoxyReturn}{Returns}
+~\newline
+ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classLogger_a3b845167143b7125e8a9a5a6b2ff3721}\label{classLogger_a3b845167143b7125e8a9a5a6b2ff3721}} 
+\index{Logger@{Logger}!set\_log\_file@{set\_log\_file}}
+\index{set\_log\_file@{set\_log\_file}!Logger@{Logger}}
+\doxysubsubsection{\texorpdfstring{set\_log\_file()}{set\_log\_file()}}
+{\footnotesize\ttfamily void Logger\+::set\+\_\+log\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{new\+\_\+out\+\_\+file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the file to logs collection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+out\+\_\+file} & -\/ file to write logs in \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classLogger_aee99e91dd45fde201f4805bfdafb24ca}\label{classLogger_aee99e91dd45fde201f4805bfdafb24ca}} 
+\index{Logger@{Logger}!start\_logging@{start\_logging}}
+\index{start\_logging@{start\_logging}!Logger@{Logger}}
+\doxysubsubsection{\texorpdfstring{start\_logging()}{start\_logging()}}
+{\footnotesize\ttfamily void Logger\+::start\+\_\+logging (\begin{DoxyParamCaption}\item[{std\+::string}]{new\+\_\+out\+\_\+file = {\ttfamily \char`\"{}\char`\"{}},  }\item[{bool}]{use\+\_\+tid = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Prepare logger for working. Opens log-\/file descriptor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+out\+\_\+file} & -\/ optional new log-\/file name to set \\
+\hline
+{\em use\+\_\+tid} & -\/ shall logger log messages to file with thread-\/id prefix like \textquotesingle{}1234-\/log-\/file-\/name.\+txt\textquotesingle{} \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/debian/\+Skipper/src/include/classes/\mbox{\hyperlink{Logger_8h}{Logger.\+h}}\end{DoxyCompactItemize}

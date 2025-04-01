@@ -1,0 +1,93 @@
+\hypertarget{get__all__symbols_8h_source}{}\doxysection{get\+\_\+all\+\_\+symbols.\+h}
+\label{get__all__symbols_8h_source}\index{/home/debian/Skipper/src/include/get\_all\_symbols.h@{/home/debian/Skipper/src/include/get\_all\_symbols.h}}
+\mbox{\hyperlink{get__all__symbols_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#ifndef GET\_ALL\_SYMBOLS\_header}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#define GET\_ALL\_SYMBOLS\_header}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include "{}dr\_api.h"{}}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include "{}drreg.h"{}}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include "{}drsyms.h"{}}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include "{}drmgr.h"{}}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include "{}drx.h"{}}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include "{}dr\_modules.h"{}}}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include "{}../loggers.h"{}}}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{33 \textcolor{keywordtype}{bool} \mbox{\hyperlink{get__all__symbols_8h_a078a3407d47ec9ec926d0b26676f2b84}{get\_all\_symbols\_with\_offsets\_callback}}(}
+\DoxyCodeLine{34     drsym\_info\_t *info,}
+\DoxyCodeLine{35     drsym\_error\_t status,}
+\DoxyCodeLine{36     \textcolor{keywordtype}{void} *data)}
+\DoxyCodeLine{37 \{}
+\DoxyCodeLine{38     \textcolor{keyword}{auto} d = (std::map<std::string, generic\_func\_t> *)data;}
+\DoxyCodeLine{39     \textcolor{keywordflow}{if} (info-\/>name) \{}
+\DoxyCodeLine{40         (*d)[info-\/>name] = (generic\_func\_t)info-\/>start\_offs;}
+\DoxyCodeLine{41     \}}
+\DoxyCodeLine{42     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{43 \}}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{52 std::map<std::string, generic\_func\_t>}
+\DoxyCodeLine{53 \mbox{\hyperlink{get__all__symbols_8h_ac8449904f330e4bb540b01860965dfd1}{get\_all\_symbols\_with\_offsets}}(}
+\DoxyCodeLine{54     std::string module\_name,}
+\DoxyCodeLine{55     std::string module\_path)}
+\DoxyCodeLine{56 \{}
+\DoxyCodeLine{57     \textcolor{keywordflow}{if} (module\_name.empty() || module\_path.empty()) \{}
+\DoxyCodeLine{58         main\_logger.log\_error(\textcolor{stringliteral}{"{}should not be any empty args have been passed in <get\_all\_symbols\_with\_offsets> function!"{}});}
+\DoxyCodeLine{59         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}should not be any empty args have been passed in <get\_all\_symbols\_with\_offsets> function!\(\backslash\)n"{}});}
+\DoxyCodeLine{60         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}empty arg has been passed!"{}});}
+\DoxyCodeLine{61     \}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63     module\_data\_t *module = dr\_lookup\_module\_by\_name(module\_name.c\_str());}
+\DoxyCodeLine{64     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{65         main\_logger.log\_error(\textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\{\}\(\backslash\)"{} : get\_all\_symbols"{}}, module\_name);}
+\DoxyCodeLine{66         dr\_fprintf(STDERR, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{} : get\_all\_symbols\(\backslash\)n"{}}, module\_name.c\_str());}
+\DoxyCodeLine{67         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}cannot load module"{}});}
+\DoxyCodeLine{68     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{69         main\_logger.log\_info(\textcolor{stringliteral}{"{}module\_path: \{\}"{}}, module-\/>full\_path);}
+\DoxyCodeLine{70     \}}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72     \textcolor{keywordflow}{if} (drsym\_init(NULL) != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{73         dr\_printf(\textcolor{stringliteral}{"{}init dr\_sym error. exception throwen\(\backslash\)n"{}});}
+\DoxyCodeLine{74         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}cannot init dr\_mgr"{}});}
+\DoxyCodeLine{75     \}}
+\DoxyCodeLine{76     drsym\_error\_t error;}
+\DoxyCodeLine{77     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79     error = drsym\_get\_module\_debug\_kind(module\_path.c\_str(), \&kind);}
+\DoxyCodeLine{80     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{81         perror(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind() : get\_all\_symbols\(\backslash\)n"{}});}
+\DoxyCodeLine{82         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{83         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}[EXEPTION]: error in drsym\_get\_module\_debug\_kind() : get\_all\_symbols"{}});}
+\DoxyCodeLine{84     \}}
+\DoxyCodeLine{85     \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{86         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{87     \}}
+\DoxyCodeLine{88     \textcolor{keywordtype}{size\_t} base = (size\_t)module-\/>start;}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90     \textcolor{comment}{// \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# job start \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92     \textcolor{comment}{// all pairs <symbol\_name, offset>}}
+\DoxyCodeLine{93     std::map<std::string, generic\_func\_t> data;}
+\DoxyCodeLine{94     error = drsym\_enumerate\_symbols\_ex(module\_path.c\_str(),}
+\DoxyCodeLine{95                                        \mbox{\hyperlink{get__all__symbols_8h_a078a3407d47ec9ec926d0b26676f2b84}{get\_all\_symbols\_with\_offsets\_callback}},}
+\DoxyCodeLine{96                                        \textcolor{keyword}{sizeof}(drsym\_info\_t),}
+\DoxyCodeLine{97                                        \&data,}
+\DoxyCodeLine{98                                        DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100     \textcolor{comment}{// + module offset}}
+\DoxyCodeLine{101     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \&symbol : data) \{}
+\DoxyCodeLine{102         symbol.second = (generic\_func\_t)((\textcolor{keywordtype}{size\_t})symbol.second + base);}
+\DoxyCodeLine{103     \}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105     drsym\_exit();}
+\DoxyCodeLine{106     dr\_free\_module\_data(module);}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108     \textcolor{keywordflow}{return} data;}
+\DoxyCodeLine{109 \}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// GET\_ALL\_SYMBOLS\_header}}
+
+\end{DoxyCode}

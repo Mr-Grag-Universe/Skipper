@@ -1,0 +1,126 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\contentsline {chapter}{\numberline {1}Hierarchical Index}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Class Hierarchy}{1}{section.1.1}%
+\contentsline {chapter}{\numberline {2}Class Index}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Class List}{3}{section.2.1}%
+\contentsline {chapter}{\numberline {3}File Index}{5}{chapter.3}%
+\contentsline {section}{\numberline {3.1}File List}{5}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Class Documentation}{7}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Code\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Segment\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Describer Struct Reference}{7}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Detailed Description}{7}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Configurator Class Reference}{7}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Detailed Description}{8}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Member Function Documentation}{8}{subsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.2.1}config()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{9}{subsubsection.4.2.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2.2}config()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{9}{subsubsection.4.2.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.2.3}debugModeEnabled()}{9}{subsubsection.4.2.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.2.4}get\_modules\_info()}{9}{subsubsection.4.2.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.2.5}get\_modules\_names()}{10}{subsubsection.4.2.2.5}%
+\contentsline {subsubsection}{\numberline {4.2.2.6}getFuzzConfig()}{10}{subsubsection.4.2.2.6}%
+\contentsline {subsubsection}{\numberline {4.2.2.7}getFuzzingCorpusPath()}{10}{subsubsection.4.2.2.7}%
+\contentsline {subsubsection}{\numberline {4.2.2.8}getInspectionFunctions()}{10}{subsubsection.4.2.2.8}%
+\contentsline {subsubsection}{\numberline {4.2.2.9}getInspectOpcodes()}{11}{subsubsection.4.2.2.9}%
+\contentsline {subsubsection}{\numberline {4.2.2.10}getLogFuzzingPath()}{11}{subsubsection.4.2.2.10}%
+\contentsline {subsubsection}{\numberline {4.2.2.11}getLogSymbolsPath()}{11}{subsubsection.4.2.2.11}%
+\contentsline {subsubsection}{\numberline {4.2.2.12}getTracerConfig()}{11}{subsubsection.4.2.2.12}%
+\contentsline {subsubsection}{\numberline {4.2.2.13}load\_config()}{11}{subsubsection.4.2.2.13}%
+\contentsline {subsubsection}{\numberline {4.2.2.14}logFuzzingEnabled()}{12}{subsubsection.4.2.2.14}%
+\contentsline {subsubsection}{\numberline {4.2.2.15}logSymbolsEnabled()}{12}{subsubsection.4.2.2.15}%
+\contentsline {subsubsection}{\numberline {4.2.2.16}use\_default\_bounds()}{12}{subsubsection.4.2.2.16}%
+\contentsline {section}{\numberline {4.3}Func\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Config Struct Reference}{13}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Detailed Description}{13}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Guarder Class Reference}{13}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Detailed Description}{14}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Member Function Documentation}{14}{subsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.2.1}guards\_opened()}{14}{subsubsection.4.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.4.2.2}set\_global\_guards()}{14}{subsubsection.4.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.4.2.3}throw\_instr()}{14}{subsubsection.4.4.2.3}%
+\contentsline {section}{\numberline {4.5}Logger Class Reference}{15}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Detailed Description}{16}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Member Function Documentation}{16}{subsection.4.5.2}%
+\contentsline {subsubsection}{\numberline {4.5.2.1}log()}{16}{subsubsection.4.5.2.1}%
+\contentsline {subsubsection}{\numberline {4.5.2.2}log\_program\_params()}{16}{subsubsection.4.5.2.2}%
+\contentsline {subsubsection}{\numberline {4.5.2.3}set\_log\_file()}{16}{subsubsection.4.5.2.3}%
+\contentsline {subsubsection}{\numberline {4.5.2.4}start\_logging()}{17}{subsubsection.4.5.2.4}%
+\contentsline {section}{\numberline {4.6}Module\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Info Struct Reference}{17}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Detailed Description}{17}{subsection.4.6.1}%
+\contentsline {section}{\numberline {4.7}Option$<$ T $>$ Class Template Reference}{18}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Member Function Documentation}{19}{subsection.4.7.1}%
+\contentsline {subsubsection}{\numberline {4.7.1.1}clamp\_value()}{19}{subsubsection.4.7.1.1}%
+\contentsline {subsubsection}{\numberline {4.7.1.2}clear\_value()}{19}{subsubsection.4.7.1.2}%
+\contentsline {subsubsection}{\numberline {4.7.1.3}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [1/9]}}{19}{subsubsection.4.7.1.3}%
+\contentsline {subsubsection}{\numberline {4.7.1.4}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [2/9]}}{20}{subsubsection.4.7.1.4}%
+\contentsline {subsubsection}{\numberline {4.7.1.5}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [3/9]}}{20}{subsubsection.4.7.1.5}%
+\contentsline {subsubsection}{\numberline {4.7.1.6}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [4/9]}}{20}{subsubsection.4.7.1.6}%
+\contentsline {subsubsection}{\numberline {4.7.1.7}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [5/9]}}{20}{subsubsection.4.7.1.7}%
+\contentsline {subsubsection}{\numberline {4.7.1.8}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [6/9]}}{20}{subsubsection.4.7.1.8}%
+\contentsline {subsubsection}{\numberline {4.7.1.9}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [7/9]}}{20}{subsubsection.4.7.1.9}%
+\contentsline {subsubsection}{\numberline {4.7.1.10}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [8/9]}}{21}{subsubsection.4.7.1.10}%
+\contentsline {subsubsection}{\numberline {4.7.1.11}convert\_from\_string()\hspace {0.1cm}{\footnotesize \ttfamily [9/9]}}{21}{subsubsection.4.7.1.11}%
+\contentsline {subsubsection}{\numberline {4.7.1.12}get\_value\_str()}{21}{subsubsection.4.7.1.12}%
+\contentsline {subsubsection}{\numberline {4.7.1.13}option\_takes\_arg()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{21}{subsubsection.4.7.1.13}%
+\contentsline {subsubsection}{\numberline {4.7.1.14}option\_takes\_arg()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{21}{subsubsection.4.7.1.14}%
+\contentsline {section}{\numberline {4.8}Parser Class Reference}{22}{section.4.8}%
+\contentsline {section}{\numberline {4.9}sym\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}info\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}t Struct Reference}{22}{section.4.9}%
+\contentsline {subsection}{\numberline {4.9.1}Detailed Description}{23}{subsection.4.9.1}%
+\contentsline {section}{\numberline {4.10}thread\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}data Struct Reference}{23}{section.4.10}%
+\contentsline {subsection}{\numberline {4.10.1}Detailed Description}{23}{subsection.4.10.1}%
+\contentsline {section}{\numberline {4.11}Trace\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Area Struct Reference}{23}{section.4.11}%
+\contentsline {subsection}{\numberline {4.11.1}Detailed Description}{23}{subsection.4.11.1}%
+\contentsline {section}{\numberline {4.12}Tracer Class Reference}{24}{section.4.12}%
+\contentsline {subsection}{\numberline {4.12.1}Detailed Description}{24}{subsection.4.12.1}%
+\contentsline {subsection}{\numberline {4.12.2}Member Function Documentation}{24}{subsection.4.12.2}%
+\contentsline {subsubsection}{\numberline {4.12.2.1}traceOverflow()}{24}{subsubsection.4.12.2.1}%
+\contentsline {section}{\numberline {4.13}Unitype\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Option Class Reference}{25}{section.4.13}%
+\contentsline {chapter}{\numberline {5}File Documentation}{27}{chapter.5}%
+\contentsline {section}{\numberline {5.1}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/client.cpp File Reference}{27}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Function Documentation}{28}{subsection.5.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.1.1}address\_in\_code\_segment()}{28}{subsubsection.5.1.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.1.2}dr\_client\_main()}{28}{subsubsection.5.1.1.2}%
+\contentsline {section}{\numberline {5.2}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/classes/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Config.h File Reference}{28}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Detailed Description}{30}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}Config.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{30}{section.5.3}%
+\contentsline {section}{\numberline {5.4}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/classes/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Guarder.h File Reference}{32}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Detailed Description}{33}{subsection.5.4.1}%
+\contentsline {section}{\numberline {5.5}Guarder.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{34}{section.5.5}%
+\contentsline {section}{\numberline {5.6}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/classes/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Logger.h File Reference}{35}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Detailed Description}{36}{subsection.5.6.1}%
+\contentsline {section}{\numberline {5.7}Logger.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{36}{section.5.7}%
+\contentsline {section}{\numberline {5.8}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/classes/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Options.h File Reference}{38}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Detailed Description}{39}{subsection.5.8.1}%
+\contentsline {section}{\numberline {5.9}Options.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{39}{section.5.9}%
+\contentsline {section}{\numberline {5.10}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/classes/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Tracer.h File Reference}{43}{section.5.10}%
+\contentsline {subsection}{\numberline {5.10.1}Detailed Description}{45}{subsection.5.10.1}%
+\contentsline {subsection}{\numberline {5.10.2}Function Documentation}{45}{subsection.5.10.2}%
+\contentsline {subsubsection}{\numberline {5.10.2.1}insert\_tracing()}{45}{subsubsection.5.10.2.1}%
+\contentsline {subsubsection}{\numberline {5.10.2.2}trace\_overflow()}{46}{subsubsection.5.10.2.2}%
+\contentsline {section}{\numberline {5.11}Tracer.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{46}{section.5.11}%
+\contentsline {section}{\numberline {5.12}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/debug.h File Reference}{50}{section.5.12}%
+\contentsline {subsection}{\numberline {5.12.1}Detailed Description}{51}{subsection.5.12.1}%
+\contentsline {subsection}{\numberline {5.12.2}Function Documentation}{51}{subsection.5.12.2}%
+\contentsline {subsubsection}{\numberline {5.12.2.1}print\_module\_data()}{51}{subsubsection.5.12.2.1}%
+\contentsline {section}{\numberline {5.13}debug.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{52}{section.5.13}%
+\contentsline {section}{\numberline {5.14}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/func\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}bounds.h File Reference}{53}{section.5.14}%
+\contentsline {subsection}{\numberline {5.14.1}Detailed Description}{54}{subsection.5.14.1}%
+\contentsline {subsection}{\numberline {5.14.2}Function Documentation}{54}{subsection.5.14.2}%
+\contentsline {subsubsection}{\numberline {5.14.2.1}get\_func\_bounds()}{55}{subsubsection.5.14.2.1}%
+\contentsline {section}{\numberline {5.15}func\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}bounds.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{55}{section.5.15}%
+\contentsline {section}{\numberline {5.16}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/funcs.h File Reference}{57}{section.5.16}%
+\contentsline {subsection}{\numberline {5.16.1}Function Documentation}{58}{subsection.5.16.1}%
+\contentsline {subsubsection}{\numberline {5.16.1.1}get\_all\_modules()}{58}{subsubsection.5.16.1.1}%
+\contentsline {subsubsection}{\numberline {5.16.1.2}get\_modules\_names()}{59}{subsubsection.5.16.1.2}%
+\contentsline {subsubsection}{\numberline {5.16.1.3}get\_symbol\_offset()}{59}{subsubsection.5.16.1.3}%
+\contentsline {subsubsection}{\numberline {5.16.1.4}get\_thread\_id()}{59}{subsubsection.5.16.1.4}%
+\contentsline {subsubsection}{\numberline {5.16.1.5}int\_to\_hex()}{59}{subsubsection.5.16.1.5}%
+\contentsline {section}{\numberline {5.17}funcs.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{60}{section.5.17}%
+\contentsline {section}{\numberline {5.18}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/get\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}all\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}symbols.h File Reference}{61}{section.5.18}%
+\contentsline {subsection}{\numberline {5.18.1}Detailed Description}{62}{subsection.5.18.1}%
+\contentsline {subsection}{\numberline {5.18.2}Function Documentation}{63}{subsection.5.18.2}%
+\contentsline {subsubsection}{\numberline {5.18.2.1}get\_all\_symbols\_with\_offsets()}{63}{subsubsection.5.18.2.1}%
+\contentsline {subsubsection}{\numberline {5.18.2.2}get\_all\_symbols\_with\_offsets\_callback()}{63}{subsubsection.5.18.2.2}%
+\contentsline {section}{\numberline {5.19}get\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}all\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}symbols.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{63}{section.5.19}%
+\contentsline {section}{\numberline {5.20}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/include/types.h File Reference}{65}{section.5.20}%
+\contentsline {section}{\numberline {5.21}types.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{66}{section.5.21}%
+\contentsline {section}{\numberline {5.22}/home/debian/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Skipper/src/loggers.h File Reference}{67}{section.5.22}%
+\contentsline {section}{\numberline {5.23}loggers.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}h}{68}{section.5.23}%
+\contentsline {chapter}{Index}{69}{section*.61}%

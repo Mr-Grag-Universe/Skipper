@@ -183,9 +183,15 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
 {
     // parsing command line arguments
     Parser parser;
-    auto ptr = std::make_shared<Option<std::string>>("config", "input/settings.json", "d1", "d2");
+    auto ptr = std::make_shared<Option<std::string>>(
+        "config", 
+        "input/settings.json", 
+        "A configuration file with all the necessary settings for managing client behavior.", 
+        "A configuration file with all the necessary settings for managing client behavior. "
+        "More information can be found in project repository."
+    );
     parser.add_option(ptr);
-    std::string path_to_config = "input/settings.openssl.json";
+    std::string path_to_config = "input/settings.json";
     if (parser.parse_argv(argc, argv, NULL, NULL) && parser["config"]->is_specified()) {
         path_to_config = parser["config"]->get_value_str();
     }

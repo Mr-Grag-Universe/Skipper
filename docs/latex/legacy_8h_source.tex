@@ -1,0 +1,348 @@
+\hypertarget{legacy_8h_source}{}\doxysection{legacy.\+h}
+\label{legacy_8h_source}\index{/home/debian/Skipper/src/include/legacy.h@{/home/debian/Skipper/src/include/legacy.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef FIND\_PATTERN\_header}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define FIND\_PATTERN\_header}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}funcs.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}types.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{struct }\mbox{\hyperlink{structExtraData}{ExtraData}} \{}
+\DoxyCodeLine{8     std::string search\_pattern;}
+\DoxyCodeLine{9     std::vector<std::string> names;}
+\DoxyCodeLine{10     std::vector<size\_t> offsets;}
+\DoxyCodeLine{11 \};}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keywordtype}{bool} find\_func\_address\_callback(drsym\_info\_t *info, drsym\_error\_t status, \textcolor{keywordtype}{void} *data) \{}
+\DoxyCodeLine{14     \mbox{\hyperlink{structExtraData}{ExtraData}} * d = (\mbox{\hyperlink{structExtraData}{ExtraData}}*) data;}
+\DoxyCodeLine{15     \textcolor{comment}{// printf("{}symbol: \%s\(\backslash\)n"{}, name);}}
+\DoxyCodeLine{16     \textcolor{keywordflow}{if} (info-\/>name) \{}
+\DoxyCodeLine{17         \textcolor{keywordflow}{if} (strstr(info-\/>name, d-\/>search\_pattern.c\_str())) \{}
+\DoxyCodeLine{18             printf(\textcolor{stringliteral}{"{}symbol: \%s\(\backslash\)n"{}}, info-\/>name);}
+\DoxyCodeLine{19             printf(\textcolor{stringliteral}{"{}start\_offs: \%zu\(\backslash\)n"{}}, info-\/>start\_offs);}
+\DoxyCodeLine{20             printf(\textcolor{stringliteral}{"{}end\_offs: \%zu\(\backslash\)n"{}}, info-\/>end\_offs);}
+\DoxyCodeLine{21             d-\/>names.push\_back(std::string(info-\/>name));}
+\DoxyCodeLine{22             d-\/>offsets.push\_back(info-\/>start\_offs);}
+\DoxyCodeLine{23         \}}
+\DoxyCodeLine{24     \}}
+\DoxyCodeLine{25     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{26 \}}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28 std::pair<std::vector<std::string>, std::vector<size\_t>> }
+\DoxyCodeLine{29 get\_pattern\_addresses(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * module\_name, \textcolor{keyword}{const} \textcolor{keywordtype}{char} * pattern) \{}
+\DoxyCodeLine{30     \textcolor{keywordflow}{if} (module\_name == NULL) \{}
+\DoxyCodeLine{31         perror(\textcolor{stringliteral}{"{}NULL module name has been passed!\(\backslash\)n"{}});}
+\DoxyCodeLine{32         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}NULL module name has been passed!"{}});}
+\DoxyCodeLine{33     \}}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35     module\_data\_t * module = dr\_lookup\_module\_by\_name(module\_name);}
+\DoxyCodeLine{36     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{37         fprintf(stderr, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{}"{}}, module\_name);}
+\DoxyCodeLine{38     \}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40     drsym\_init(NULL);}
+\DoxyCodeLine{41     drsym\_error\_t error;}
+\DoxyCodeLine{42     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{43    }
+\DoxyCodeLine{44     error = drsym\_get\_module\_debug\_kind(module\_name, \&kind);}
+\DoxyCodeLine{45     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{46         perror(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind()\(\backslash\)n"{}});}
+\DoxyCodeLine{47         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{48         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind()"{}});}
+\DoxyCodeLine{49     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{50         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{51     \}}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{53     \mbox{\hyperlink{structExtraData}{ExtraData}} data = \mbox{\hyperlink{structExtraData}{ExtraData}}();}
+\DoxyCodeLine{54     data.search\_pattern = pattern;}
+\DoxyCodeLine{55     error = drsym\_enumerate\_symbols\_ex( module\_name,}
+\DoxyCodeLine{56                                         find\_func\_address\_callback,}
+\DoxyCodeLine{57                                         \textcolor{keyword}{sizeof}(drsym\_info\_t),}
+\DoxyCodeLine{58                                         \&data,}
+\DoxyCodeLine{59                                         DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{61     drsym\_exit();}
+\DoxyCodeLine{62     dr\_free\_module\_data(module);}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{64     \textcolor{keywordflow}{return} std::make\_pair(data.names, data.offsets);}
+\DoxyCodeLine{65 \}}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68 \textcolor{comment}{// используется в неиспользуемой функции}}
+\DoxyCodeLine{69 \textcolor{keywordtype}{bool} callback(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * name, \textcolor{keywordtype}{size\_t} modoffs, \textcolor{keywordtype}{void} * data) \{}
+\DoxyCodeLine{70     \textcolor{comment}{// printf("{}symbol: \%s\(\backslash\)n"{}, name);}}
+\DoxyCodeLine{71     \textcolor{keywordflow}{if} (name \&\& name[0] == \textcolor{charliteral}{'\_'}) \{}
+\DoxyCodeLine{72         \textcolor{keywordflow}{if} (strstr(name, \textcolor{stringliteral}{"{}\_asm\_sort"{}})) \{}
+\DoxyCodeLine{73             \textcolor{comment}{// return false;}}
+\DoxyCodeLine{74             printf(\textcolor{stringliteral}{"{}symbol: \%s\(\backslash\)n"{}}, name);}
+\DoxyCodeLine{75             printf(\textcolor{stringliteral}{"{}modoffs: \%zu\(\backslash\)n"{}}, modoffs);}
+\DoxyCodeLine{76         \}}
+\DoxyCodeLine{77     \}}
+\DoxyCodeLine{78     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{79 \}}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 \textcolor{comment}{// нигде не используется}}
+\DoxyCodeLine{82 std::vector<std::string> get\_functions\_names(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * module\_name) \{}
+\DoxyCodeLine{83     std::vector<std::string> func\_names;}
+\DoxyCodeLine{84     \textcolor{keywordflow}{if} (module\_name == NULL) \{}
+\DoxyCodeLine{85         perror(\textcolor{stringliteral}{"{}NULL module name has been passed!\(\backslash\)n"{}});}
+\DoxyCodeLine{86         \textcolor{keywordflow}{throw} std::invalid\_argument(\textcolor{stringliteral}{"{}NULL module name"{}});}
+\DoxyCodeLine{87     \}}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89     module\_data\_t * module = dr\_lookup\_module\_by\_name(module\_name);}
+\DoxyCodeLine{90     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{91         fprintf(stderr, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{}"{}}, module\_name);}
+\DoxyCodeLine{92     \}}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94     drsym\_init(NULL);}
+\DoxyCodeLine{95     drsym\_error\_t error;}
+\DoxyCodeLine{96     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{97    }
+\DoxyCodeLine{98     error = drsym\_get\_module\_debug\_kind(module\_name, \&kind);}
+\DoxyCodeLine{99     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{100         perror(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind()\(\backslash\)n"{}});}
+\DoxyCodeLine{101         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{102         \textcolor{keywordflow}{throw} std::invalid\_argument(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind()"{}});}
+\DoxyCodeLine{103     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{104         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{105     \}}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107     printf(}
+\DoxyCodeLine{108         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{109         \textcolor{stringliteral}{"{}\#\#\#\#\#\#\#\#\#\#\#  export symbols  \#\#\#\#\#\#\#\#\#\#\#\#\(\backslash\)n"{}}}
+\DoxyCodeLine{110         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{111         );}
+\DoxyCodeLine{112     \textcolor{comment}{// все экспортируемые функции}}
+\DoxyCodeLine{113     dr\_symbol\_export\_iterator\_t * sym\_exp\_iter = dr\_symbol\_export\_iterator\_start(module-\/>handle);}
+\DoxyCodeLine{114     \textcolor{keywordflow}{while} (dr\_symbol\_export\_iterator\_hasnext(sym\_exp\_iter)) \{}
+\DoxyCodeLine{115         dr\_symbol\_export\_t * symbol = dr\_symbol\_export\_iterator\_next(sym\_exp\_iter);}
+\DoxyCodeLine{116         \textcolor{keywordflow}{if} (symbol != NULL) \{}
+\DoxyCodeLine{117             \textcolor{keywordflow}{if} (strstr(symbol-\/>name, \textcolor{stringliteral}{"{}\_asm\_sort"{}})) \{}
+\DoxyCodeLine{118                 printf(\textcolor{stringliteral}{"{}symbol iter: \%p\(\backslash\)n"{}}}
+\DoxyCodeLine{119                         \textcolor{stringliteral}{"{}\(\backslash\)tname: \%s\(\backslash\)n"{}}}
+\DoxyCodeLine{120                         \textcolor{stringliteral}{"{}\(\backslash\)taddr: \%p\(\backslash\)n"{}},}
+\DoxyCodeLine{121                         sym\_exp\_iter, symbol-\/>name, symbol-\/>addr);}
+\DoxyCodeLine{122             \}}
+\DoxyCodeLine{123             func\_names.push\_back(symbol-\/>name);}
+\DoxyCodeLine{124         \}}
+\DoxyCodeLine{125     \}}
+\DoxyCodeLine{126     dr\_symbol\_export\_iterator\_stop(sym\_exp\_iter);}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128     printf(}
+\DoxyCodeLine{129         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{130         \textcolor{stringliteral}{"{}\#\#\#\#\#\#\#\#\#\#\#  import symbols  \#\#\#\#\#\#\#\#\#\#\#\#\(\backslash\)n"{}}}
+\DoxyCodeLine{131         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{132         );}
+\DoxyCodeLine{133     \textcolor{comment}{// все экспортируемые функции}}
+\DoxyCodeLine{134     dr\_symbol\_import\_iterator\_t * sym\_imp\_iter = dr\_symbol\_import\_iterator\_start(module-\/>handle, NULL);}
+\DoxyCodeLine{135     \textcolor{keywordflow}{while} (dr\_symbol\_import\_iterator\_hasnext(sym\_imp\_iter)) \{}
+\DoxyCodeLine{136         dr\_symbol\_import\_t * symbol = dr\_symbol\_import\_iterator\_next(sym\_imp\_iter);}
+\DoxyCodeLine{137         \textcolor{keywordflow}{if} (symbol != NULL) \{}
+\DoxyCodeLine{138             \textcolor{keywordflow}{if} (strstr(symbol-\/>name, \textcolor{stringliteral}{"{}\_asm\_sort"{}})) \{}
+\DoxyCodeLine{139                 printf(\textcolor{stringliteral}{"{}symbol iter: \%p\(\backslash\)n"{}}}
+\DoxyCodeLine{140                         \textcolor{stringliteral}{"{}\(\backslash\)tname: \%s\(\backslash\)n"{}},}
+\DoxyCodeLine{141                         sym\_imp\_iter, symbol-\/>name);}
+\DoxyCodeLine{142             \}}
+\DoxyCodeLine{143             func\_names.push\_back(symbol-\/>name);}
+\DoxyCodeLine{144         \}}
+\DoxyCodeLine{145     \}}
+\DoxyCodeLine{146     dr\_symbol\_import\_iterator\_stop(sym\_imp\_iter);}
+\DoxyCodeLine{147 }
+\DoxyCodeLine{148     printf(}
+\DoxyCodeLine{149         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{150         \textcolor{stringliteral}{"{}\#\#\#\#\#\#\#\#\#\#  enumerate symbols  \#\#\#\#\#\#\#\#\#\#\(\backslash\)n"{}}}
+\DoxyCodeLine{151         \textcolor{stringliteral}{"{}=========================================\(\backslash\)n"{}}}
+\DoxyCodeLine{152         );}
+\DoxyCodeLine{153     \textcolor{keywordtype}{char} func\_name[] = \textcolor{stringliteral}{"{}\_asm\_sort"{}};}
+\DoxyCodeLine{154     error = drsym\_enumerate\_symbols(module\_name,}
+\DoxyCodeLine{155                                     callback,}
+\DoxyCodeLine{156                                     func\_name,}
+\DoxyCodeLine{157                                     DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160     drsym\_exit();}
+\DoxyCodeLine{161     dr\_free\_module\_data(module);}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163     \textcolor{keywordflow}{return} func\_names;}
+\DoxyCodeLine{164 \}}
+\DoxyCodeLine{165 }
+\DoxyCodeLine{166 \textcolor{comment}{// негде не используется}}
+\DoxyCodeLine{167 std::vector<sym\_info\_t> filter\_symbols(\textcolor{keyword}{const} std::vector<sym\_info\_t> \& symbols, \textcolor{keyword}{const} std::string module\_name) \{}
+\DoxyCodeLine{168     module\_data\_t * module = dr\_lookup\_module\_by\_name(module\_name.c\_str());}
+\DoxyCodeLine{169     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{170         fprintf(stderr, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{}"{}}, module\_name.c\_str());}
+\DoxyCodeLine{171     \}}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173     drsym\_init(NULL);}
+\DoxyCodeLine{174     std::vector<sym\_info\_t> filtered\_symbols;}
+\DoxyCodeLine{175     \textcolor{keywordtype}{char} * buf = (\textcolor{keywordtype}{char} *) malloc(1000);}
+\DoxyCodeLine{176     drsym\_type\_t * expanded\_type = NULL;}
+\DoxyCodeLine{177     drsym\_error\_t error;}
+\DoxyCodeLine{178     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& sym : symbols) \{}
+\DoxyCodeLine{179         \textcolor{comment}{// generic\_func\_t func = dr\_get\_proc\_address(module-\/>handle, sym.name.c\_str());}}
+\DoxyCodeLine{180         error = drsym\_expand\_type(  module\_name.c\_str(),}
+\DoxyCodeLine{181                             sym.type\_id,}
+\DoxyCodeLine{182                             1,}
+\DoxyCodeLine{183                             buf,}
+\DoxyCodeLine{184                             1000,}
+\DoxyCodeLine{185                             \&expanded\_type);}
+\DoxyCodeLine{186         \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{187             std::cout << \textcolor{stringliteral}{"{}error: "{}} << error << std::endl;}
+\DoxyCodeLine{188         \}}
+\DoxyCodeLine{189         \textcolor{comment}{// if (expanded\_type-\/>kind == DRSYM\_TYPE\_PTR) \{}}
+\DoxyCodeLine{190         \textcolor{comment}{//     filtered\_symbols.push\_back(sym);}}
+\DoxyCodeLine{191         \textcolor{comment}{// \}}}
+\DoxyCodeLine{192     \}}
+\DoxyCodeLine{193     drsym\_exit();}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195     dr\_free\_module\_data(module);}
+\DoxyCodeLine{196     \textcolor{keywordflow}{return} filtered\_symbols;}
+\DoxyCodeLine{197 \}}
+\DoxyCodeLine{198 }
+\DoxyCodeLine{199 \textcolor{comment}{// нигде не используется}}
+\DoxyCodeLine{200 std::vector<sym\_info\_t> filter\_from\_list(\textcolor{keyword}{const} std::vector<sym\_info\_t> \& symbols, \textcolor{keyword}{const} std::vector<std::string> \& sym\_list) \{}
+\DoxyCodeLine{201     std::vector<sym\_info\_t> res;}
+\DoxyCodeLine{202     \textcolor{comment}{// можно оптимизировать через какое-\/нибудь RB-\/tree}}
+\DoxyCodeLine{203     \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} \& sym : sym\_list) \{}
+\DoxyCodeLine{204         \textcolor{keyword}{auto} iter = std::find\_if(symbols.begin(), symbols.end(), [\&sym](\textcolor{keyword}{const} \mbox{\hyperlink{structsym__info__t}{sym\_info\_t}} \& el)\{return el.name.find(sym) != std::string::npos;\});}
+\DoxyCodeLine{205         \textcolor{keywordflow}{if} (iter != symbols.end()) \{}
+\DoxyCodeLine{206             res.push\_back(*iter);}
+\DoxyCodeLine{207             printf(\textcolor{stringliteral}{"{}\%s\(\backslash\)n"{}}, iter-\/>name.c\_str());}
+\DoxyCodeLine{208         \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{209             printf(\textcolor{stringliteral}{"{}not found: \%s!\(\backslash\)n"{}}, sym.c\_str());}
+\DoxyCodeLine{210         \}}
+\DoxyCodeLine{211     \}}
+\DoxyCodeLine{212     \textcolor{keywordflow}{return} res;}
+\DoxyCodeLine{213 \}}
+\DoxyCodeLine{214 }
+\DoxyCodeLine{215 \textcolor{keywordtype}{bool} get\_all\_symbols\_callback(drsym\_info\_t *info, drsym\_error\_t status, \textcolor{keywordtype}{void} *data) \{}
+\DoxyCodeLine{216     std::set<std::string> * d = (std::set<std::string>*) data;}
+\DoxyCodeLine{217     \textcolor{keywordflow}{if} (info-\/>name) \{}
+\DoxyCodeLine{218         d-\/>insert(info-\/>name);}
+\DoxyCodeLine{219     \}}
+\DoxyCodeLine{220     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{221 \}}
+\DoxyCodeLine{222 }
+\DoxyCodeLine{223 std::vector<std::string> }
+\DoxyCodeLine{224 get\_all\_symbols(std::string module\_name, std::string module\_path) \{}
+\DoxyCodeLine{225     \textcolor{keywordflow}{if} (module\_name.empty() || module\_path.empty()) \{}
+\DoxyCodeLine{226         perror(\textcolor{stringliteral}{"{}NULL module name has been passed! : get\_all\_symbols\(\backslash\)n"{}});}
+\DoxyCodeLine{227         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}NULL module name has been passed! : get\_all\_symbols"{}});}
+\DoxyCodeLine{228     \}}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230     module\_data\_t * module = dr\_lookup\_module\_by\_name(module\_name.c\_str());}
+\DoxyCodeLine{231     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{232         fprintf(stderr, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{} : get\_all\_symbols\(\backslash\)n"{}}, module\_name.c\_str());}
+\DoxyCodeLine{233     \}}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235     drsym\_init(NULL);}
+\DoxyCodeLine{236     drsym\_error\_t error;}
+\DoxyCodeLine{237     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{238    }
+\DoxyCodeLine{239     error = drsym\_get\_module\_debug\_kind(module\_path.c\_str(), \&kind);}
+\DoxyCodeLine{240     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{241         perror(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind() : get\_all\_symbols\(\backslash\)n"{}});}
+\DoxyCodeLine{242         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{243         \textcolor{keywordflow}{throw} std::runtime\_error(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind() : get\_all\_symbols"{}});}
+\DoxyCodeLine{244     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{245         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{246     \}}
+\DoxyCodeLine{247 }
+\DoxyCodeLine{248     std::set<std::string> data;}
+\DoxyCodeLine{249     error = drsym\_enumerate\_symbols\_ex( module\_path.c\_str(),}
+\DoxyCodeLine{250                                         get\_all\_symbols\_callback,}
+\DoxyCodeLine{251                                         \textcolor{keyword}{sizeof}(drsym\_info\_t),}
+\DoxyCodeLine{252                                         \&data,}
+\DoxyCodeLine{253                                         DRSYM\_DEMANGLE\_FULL);}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{255     \textcolor{keyword}{auto} iterator\_ex = dr\_symbol\_export\_iterator\_start(module-\/>handle);}
+\DoxyCodeLine{256     \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{257         \textcolor{keyword}{auto} * symbol = dr\_symbol\_export\_iterator\_next(iterator\_ex);}
+\DoxyCodeLine{258         data.insert(std::string(symbol-\/>name));}
+\DoxyCodeLine{259     \} \textcolor{keywordflow}{while} (dr\_symbol\_export\_iterator\_hasnext(iterator\_ex));}
+\DoxyCodeLine{260     dr\_symbol\_export\_iterator\_stop(iterator\_ex);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262     \textcolor{keyword}{auto} iterator\_im = dr\_symbol\_import\_iterator\_start(module-\/>handle, NULL);}
+\DoxyCodeLine{263     \textcolor{keywordflow}{do} \{}
+\DoxyCodeLine{264         \textcolor{keyword}{auto} * symbol = dr\_symbol\_import\_iterator\_next(iterator\_im);}
+\DoxyCodeLine{265         data.insert(std::string(symbol-\/>name));}
+\DoxyCodeLine{266     \} \textcolor{keywordflow}{while} (dr\_symbol\_import\_iterator\_hasnext(iterator\_im));}
+\DoxyCodeLine{267     dr\_symbol\_import\_iterator\_stop(iterator\_im);}
+\DoxyCodeLine{268 }
+\DoxyCodeLine{269     drsym\_exit();}
+\DoxyCodeLine{270     dr\_free\_module\_data(module);}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272     dr\_printf(\textcolor{stringliteral}{"{}set of symbols to vector transformation...\(\backslash\)n"{}});}
+\DoxyCodeLine{273     std::vector<std::string> res(data.begin(), data.end());}
+\DoxyCodeLine{274 }
+\DoxyCodeLine{275     \textcolor{keywordflow}{return} res;}
+\DoxyCodeLine{276 \}}
+\DoxyCodeLine{277 }
+\DoxyCodeLine{278 \textcolor{keywordtype}{bool} callback\_get\_all\_symbols\_1(drsym\_info\_t * info, drsym\_error\_t status, \textcolor{keywordtype}{void} * data) \{}
+\DoxyCodeLine{279     ((std::vector<std::string>*)data)-\/>push\_back(info-\/>name);}
+\DoxyCodeLine{280     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{281 \}}
+\DoxyCodeLine{282 \textcolor{keywordtype}{bool} callback\_get\_all\_symbols\_2(\textcolor{keyword}{const} \textcolor{keywordtype}{char} *name, \textcolor{keywordtype}{size\_t} modoffs, \textcolor{keywordtype}{void} *data) \{}
+\DoxyCodeLine{283     \mbox{\hyperlink{structsym__info__t}{sym\_info\_t}} info(name, modoffs);}
+\DoxyCodeLine{284     \textcolor{comment}{// printf("{}youuuu\(\backslash\)n"{});}}
+\DoxyCodeLine{285     ((std::vector<sym\_info\_t>*)data)-\/>push\_back(info);}
+\DoxyCodeLine{286     \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{287 \}}
+\DoxyCodeLine{288 }
+\DoxyCodeLine{289 std::vector<std::string> get\_all\_symbols(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * module\_name, drsym\_flags\_t flag) \{}
+\DoxyCodeLine{290     drsym\_init(NULL);}
+\DoxyCodeLine{291     drsym\_error\_t error;}
+\DoxyCodeLine{292     drsym\_debug\_kind\_t kind;}
+\DoxyCodeLine{293     }
+\DoxyCodeLine{294     error = drsym\_get\_module\_debug\_kind(module\_name, \&kind);}
+\DoxyCodeLine{295     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{296         perror(\textcolor{stringliteral}{"{}error in drsym\_get\_module\_debug\_kind()\(\backslash\)n"{}});}
+\DoxyCodeLine{297         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{298         \textcolor{keywordflow}{throw} \textcolor{stringliteral}{"{}error"{}};}
+\DoxyCodeLine{299     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{300         \textcolor{comment}{// printf("{}kind: \%d\(\backslash\)n"{}, kind);}}
+\DoxyCodeLine{301     \}}
+\DoxyCodeLine{302 }
+\DoxyCodeLine{303     std::vector<std::string> syms;}
+\DoxyCodeLine{304     error = drsym\_enumerate\_symbols\_ex(module\_name,}
+\DoxyCodeLine{305                                     callback\_get\_all\_symbols\_1,}
+\DoxyCodeLine{306                                     \textcolor{keyword}{sizeof}(drsym\_info\_t),}
+\DoxyCodeLine{307                                     \&syms,}
+\DoxyCodeLine{308                                     flag);}
+\DoxyCodeLine{309     \textcolor{comment}{/*error = drsym\_enumerate\_symbols(module\_name,}}
+\DoxyCodeLine{310 \textcolor{comment}{                                    callback\_get\_all\_symbols\_2,}}
+\DoxyCodeLine{311 \textcolor{comment}{                                    \&syms,}}
+\DoxyCodeLine{312 \textcolor{comment}{                                    flag);*/}}
+\DoxyCodeLine{313     }
+\DoxyCodeLine{314     module\_data\_t * module = dr\_lookup\_module\_by\_name(module\_name);}
+\DoxyCodeLine{315     \textcolor{keywordflow}{if} (module == NULL) \{}
+\DoxyCodeLine{316         fprintf(stderr, \textcolor{stringliteral}{"{}cannot load module with name \(\backslash\)"{}\%s\(\backslash\)"{}"{}}, module\_name);}
+\DoxyCodeLine{317     \}}
+\DoxyCodeLine{318     \textcolor{comment}{// все импортируемые функции}}
+\DoxyCodeLine{319     dr\_symbol\_import\_iterator\_t * sym\_imp\_iter = dr\_symbol\_import\_iterator\_start(module-\/>handle, NULL);}
+\DoxyCodeLine{320     \textcolor{keywordflow}{while} (dr\_symbol\_import\_iterator\_hasnext(sym\_imp\_iter)) \{}
+\DoxyCodeLine{321         dr\_symbol\_import\_t * symbol = dr\_symbol\_import\_iterator\_next(sym\_imp\_iter);}
+\DoxyCodeLine{322         \textcolor{keywordflow}{if} (symbol != NULL) \{}
+\DoxyCodeLine{323             syms.push\_back(symbol-\/>name);}
+\DoxyCodeLine{324         \}}
+\DoxyCodeLine{325     \}}
+\DoxyCodeLine{326     dr\_symbol\_import\_iterator\_stop(sym\_imp\_iter);}
+\DoxyCodeLine{327     dr\_free\_module\_data(module);}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{329     \textcolor{keywordflow}{if} (error != DRSYM\_SUCCESS) \{}
+\DoxyCodeLine{330         perror(\textcolor{stringliteral}{"{}error in drsym\_lookup\_symbol()\(\backslash\)n"{}});}
+\DoxyCodeLine{331         fprintf(stderr, \textcolor{stringliteral}{"{}ERROR: \%d\(\backslash\)n"{}}, error);}
+\DoxyCodeLine{332         \textcolor{keywordflow}{throw} \textcolor{stringliteral}{"{}error"{}};}
+\DoxyCodeLine{333     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{334         \textcolor{comment}{// printf("{}HIIII"{});}}
+\DoxyCodeLine{335     \}}
+\DoxyCodeLine{336     }
+\DoxyCodeLine{337     drsym\_exit();}
+\DoxyCodeLine{338 }
+\DoxyCodeLine{339     \textcolor{keywordflow}{return} syms;}
+\DoxyCodeLine{340 \}}
+\DoxyCodeLine{341 }
+\DoxyCodeLine{342 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// FIND\_PATTERN\_header}}
+
+\end{DoxyCode}

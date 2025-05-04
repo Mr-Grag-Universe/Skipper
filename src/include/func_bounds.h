@@ -70,7 +70,7 @@ get_func_bounds(std::map<std::string, FuncConfig> inspect_funcs, bool use_patter
     // with module offsets
     std::map<std::string, generic_func_t> symbols;
     for (auto & m_p : module_path) {
-        auto symbols_offests = get_all_symbols_with_offsets(m_p.first, m_p.second, use_pattern);
+        auto symbols_offests = get_all_symbols_with_offsets(m_p.first, m_p.second);
         symbols.merge(symbols_offests);
     }
 

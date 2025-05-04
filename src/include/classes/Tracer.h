@@ -273,6 +273,10 @@ public:
         this->trace_area = {start, end, end-start};
     }
 
+    TraceArea get_trace_area() const {
+        return this->trace_area;
+    }
+
 protected:
     /// @brief Get register ID if submited and submit if it is not.
     int get_reg_id(reg_id_t reg) {

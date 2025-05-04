@@ -282,8 +282,8 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
     if (!inspect_functions.empty()) {
         auto symbols_map = get_all_symbols_with_offsets(
                                         (*inspect_functions.begin()).second.module_name, 
-                                        (*inspect_functions.begin()).second.module_path, 
-                                        config.getFuzzConfig()["use_pattern"]);
+                                        (*inspect_functions.begin()).second.module_path); // , 
+                                        // config.getFuzzConfig()["use_pattern"]);
         for (auto & symbol : symbols_map) {
             if (config.logSymbolsEnabled()) {
                 std::ostringstream oss;
@@ -336,7 +336,7 @@ void dr_client_main(client_id_t id, int argc, const char *argv[])
             break;
         }
     }
-    main_logger.log_info("{} : extra_counters address found successfully!", tid);
+    main_logger.log_info("{} : extra_counters address with diff={}/{} found successfully!", tid, tracer.get_trace_area().end - tracer.get_trace_area().start, tracer.get_trace_area().size);
     
     main_logger.log_info("{} : DR configured!", tid);
     main_logger.log_line();

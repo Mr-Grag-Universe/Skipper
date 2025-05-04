@@ -1,5 +1,8 @@
 # Skipper
 
+<!-- ![Icon](demo/icon.png) -->
+<img src=demo/icon.png width=200>
+
 This is my scientific work.
 
 Skipper_1.0 is a working stable version of my fuzzing client for Libfuzzer from LLVM and Google, which can improve stability and speed of **crypto library fuzzing**.
